@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { httpsCallable } from "firebase/functions";
 import { functions } from "../../firebase";
 
@@ -39,12 +39,42 @@ const ChatInterface = () => {
 
   return (
     <div className="chat-interface">
+      <div className="chat-header">
+        <h3>🤖 EduAid Bot - Your Study Companion</h3>
+        <p>Ask me anything about your studies!</p>
+      </div>
       <div className="messages-container">
+        {messages.length === 0 && (
+          <div className="welcome-message">
+            <h4>👋 Hi there! I'm here to help you with:</h4>
+            <ul>
+              <li>📚 Homework explanations</li>
+              <li>📝 Exam preparation</li>
+              <li>🧮 Math problems</li>
+              <li>🔬 Science concepts</li>
+              <li>📖 Literature analysis</li>
+            </ul>
+          </div>
+        )}
         {messages.map((msg, index) => (
           <div key={index} className={`message ${msg.sender}`}>
-            {msg.text}
+            <div className="message-content">
+              {msg.text}
+            </div>
+            <div className="message-time">
+              {msg.timestamp.toLocaleTimeString()}
+            </div>
           </div>
         ))}
+        {isLoading && (
+          <div className="message bot">
+            <div className="typing-indicator">
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+          </div>
+        )}
       </div>
       <div className="input-container">
         <input
@@ -52,11 +82,18 @@ const ChatInterface = () => {
           onChange={(e) => setInput(e.target.value)}
           placeholder="Ask me anything about your studies..."
           onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
+          disabled={isLoading}
         />
-        <button onClick={handleSendMessage} disabled={isLoading}>
-          Send
+        <button 
+          onClick={handleSendMessage} 
+          disabled={isLoading || !input.trim()}
+          className="send-btn"
+        >
+          {isLoading ? "..." : "Send"}
         </button>
       </div>
     </div>
   );
 };
+
+export default ChatInterface;

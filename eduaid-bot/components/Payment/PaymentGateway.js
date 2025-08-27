@@ -1,5 +1,6 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { httpsCallable } from "firebase/functions";
+import { functions } from "../../firebase";
 
 const PaymentGateway = () => {
   const [selectedPlan, setSelectedPlan] = useState(null);
@@ -53,28 +54,46 @@ const PaymentGateway = () => {
 
   return (
     <div className="payment-gateway">
-      <h2>Upgrade to Premium</h2>
+      <div className="payment-header">
+        <h2>💎 Upgrade to Premium</h2>
+        <p>Unlock advanced features to accelerate your learning</p>
+      </div>
 
       <div className="plans-grid">
         {plans.map((plan) => (
-          <div key={plan.id} className="plan-card">
+          <div key={plan.id} className={`plan-card ${plan.id === 'premium' ? 'featured' : ''}`}>
+            {plan.id === 'premium' && <div className="badge">Most Popular</div>}
             <h3>{plan.name}</h3>
-            <p className="price">KES {plan.price}/month</p>
-            <ul>
+            <div className="price">
+              <span className="currency">KES</span>
+              <span className="amount">{plan.price}</span>
+              <span className="period">/month</span>
+            </div>
+            <ul className="features-list">
               {plan.features.map((feature, index) => (
-                <li key={index}>{feature}</li>
+                <li key={index}>
+                  <span className="checkmark">✓</span>
+                  {feature}
+                </li>
               ))}
             </ul>
             <button
               onClick={() => handlePayment(plan)}
               disabled={isProcessing}
-              className="subscribe-btn"
+              className={`subscribe-btn ${plan.id === 'premium' ? 'premium-btn' : ''}`}
             >
-              {isProcessing ? "Processing..." : `Subscribe to ${plan.name}`}
+              {isProcessing ? "⏳ Processing..." : `Choose ${plan.name}`}
             </button>
           </div>
         ))}
       </div>
+      
+      <div className="payment-info">
+        <p>💳 Secure payment powered by IntaSend</p>
+        <p>🔒 Cancel anytime • 7-day money-back guarantee</p>
+      </div>
     </div>
   );
 };
+
+export default PaymentGateway;
