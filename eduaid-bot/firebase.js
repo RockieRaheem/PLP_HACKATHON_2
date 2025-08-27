@@ -21,15 +21,69 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
-// Initialize Firebase services
-export const auth = getAuth(app);
-export const googleProvider = new GoogleAuthProvider();
-export const db = getFirestore(app);
-export const storage = getStorage(app);
-export const functions = getFunctions(app);
-export const analytics = getAnalytics(app);
+// Initialize Firebase services with error handling
+let auth, googleProvider, db, storage, functions, analytics;
+let isDemoMode = false;
 
-// Export demo mode flag (false since we have real credentials)
-export const isDemoMode = false;
+try {
+  auth = getAuth(app);
+  googleProvider = new GoogleAuthProvider();
+  db = getFirestore(app);
+  storage = getStorage(app);
+  functions = getFunctions(app);
+  analytics = getAnalytics(app);
+  console.log("🔥 Using Real Firebase Configuration");
+} catch (error) {
+  console.warn(
+    "⚠️ Firebase services not fully configured. Some features may not work."
+  );
+  console.warn(
+    "Please enable Authentication and Firestore in Firebase Console"
+  );
+  console.warn("Error:", error.message);
 
+  // Create mock services to prevent app crashes
+  auth = {
+    signInWithEmailAndPassword: () =>
+      Promise.reject(
+        new Error(
+          "Authentication not enabled. Please enable it in Firebase Console."
+        )
+      ),
+    signInWithPopup: () =>
+      Promise.reject(
+        new Error(
+          "Authentication not enabled. Please enable it in Firebase Console."
+        )
+      ),
+    createUserWithEmailAndPassword: () =>
+      Promise.reject(
+        new Error(
+          "Authentication not enabled. Please enable it in Firebase Console."
+        )
+      ),
+    signOut: () => Promise.resolve(),
+    onAuthStateChanged: (callback) => {
+      callback(null);
+      return () => {};
+    },
+  };
+
+  googleProvider = { providerId: "google.com" };
+  db = { collection: () => ({ add: () => Promise.resolve({ id: "mock" }) }) };
+  storage = {
+    ref: () => ({
+      put: () =>
+        Promise.resolve({
+          ref: { getDownloadURL: () => Promise.resolve("mock-url") },
+        }),
+    }),
+  };
+  functions = { httpsCallable: () => () => Promise.resolve({ data: "mock" }) };
+  analytics = null;
+
+  isDemoMode = true;
+}
+
+export { auth, googleProvider, db, storage, functions, analytics, isDemoMode };
 export default app;

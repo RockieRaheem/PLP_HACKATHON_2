@@ -187,6 +187,10 @@ body {
   margin-bottom: 1rem;
   border: 1px solid #fecaca;
   font-size: 0.9rem;
+  white-space: pre-line;
+  text-align: left;
+  max-width: 100%;
+  overflow-wrap: break-word;
 }
 
 /* Demo Mode Styles */

@@ -67,7 +67,23 @@ const AuthComponent = () => {
       }
     } catch (error) {
       console.error("Auth error:", error);
-      setError(error.message);
+
+      if (
+        error.message.includes("configuration-not-found") ||
+        error.message.includes("Authentication not enabled")
+      ) {
+        setError(
+          "🚨 Firebase Authentication is not enabled yet!\n\n" +
+            "📋 Quick Fix:\n" +
+            "1. Go to Firebase Console\n" +
+            "2. Enable Authentication → Email/Password\n" +
+            "3. Enable Authentication → Google\n" +
+            "4. Create Firestore Database\n\n" +
+            "🔗 Your project: https://console.firebase.google.com/project/eduaid-bot-hackathon"
+        );
+      } else {
+        setError(error.message);
+      }
     } finally {
       setLoading(false);
     }
@@ -109,7 +125,23 @@ const AuthComponent = () => {
       );
     } catch (error) {
       console.error("Google sign-in error:", error);
-      setError(error.message);
+
+      if (
+        error.message.includes("configuration-not-found") ||
+        error.message.includes("Authentication not enabled")
+      ) {
+        setError(
+          "🚨 Firebase Authentication is not enabled yet!\n\n" +
+            "📋 Quick Fix:\n" +
+            "1. Go to Firebase Console\n" +
+            "2. Enable Authentication → Email/Password\n" +
+            "3. Enable Authentication → Google\n" +
+            "4. Create Firestore Database\n\n" +
+            "🔗 Your project: https://console.firebase.google.com/project/eduaid-bot-hackathon"
+        );
+      } else {
+        setError(error.message);
+      }
     } finally {
       setLoading(false);
     }
