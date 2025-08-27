@@ -1,15 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { onAuthStateChanged } from 'firebase/auth';
-import { auth } from '../firebase';
+import { auth } from './firebase';
 
 // Components
-import AuthComponent from '../components/Auth/Login';
-import ChatInterface from '../components/Chat/ChatInterface';
-import PdfUploader from '../components/FileUpload/PdfUploader';
-import StudyPlanner from '../components/StudyPlanner/StudyPlanner';
-import ProgressDashboard from '../components/Progress/ProgressDashboard';
-import PaymentGateway from '../components/Payment/PaymentGateway';
+import AuthComponent from './components/Auth/Login';
+import ChatInterface from './components/Chat/ChatInterface';
+import PdfUploader from './components/FileUpload/PdfUploader';
+import StudyPlanner from './components/StudyPlanner/StudyPlanner';
+import ProgressDashboard from './components/Progress/ProgressDashboard';
+import PaymentGateway from './components/Payment/PaymentGateway';
 
 // Styles
 import './App.css';
