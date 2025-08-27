@@ -1,22 +1,22 @@
-import React, { useState, useEffect } from 'react';
-import { onAuthStateChanged } from 'firebase/auth';
-import { auth } from './firebase';
+import React, { useState, useEffect } from "react";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "./firebase";
 
 // Components
-import AuthComponent from './components/Auth/Login';
-import ChatInterface from './components/Chat/ChatInterface';
-import PdfUploader from './components/FileUpload/PdfUploader';
-import StudyPlanner from './components/StudyPlanner/StudyPlanner';
-import ProgressDashboard from './components/Progress/ProgressDashboard';
-import PaymentGateway from './components/Payment/PaymentGateway';
+import AuthComponent from "./components/Auth/Login";
+import ChatInterface from "./components/Chat/ChatInterface";
+import PdfUploader from "./components/FileUpload/PdfUploader";
+import StudyPlanner from "./components/StudyPlanner/StudyPlanner";
+import ProgressDashboard from "./components/Progress/ProgressDashboard";
+import PaymentGateway from "./components/Payment/PaymentGateway";
 
 // Styles
-import './App.css';
+import "./App.css";
 
 function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('chat');
+  const [activeTab, setActiveTab] = useState("chat");
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -44,24 +44,24 @@ function App() {
   }
 
   const tabs = [
-    { id: 'chat', label: '💬 Chat', icon: '💬' },
-    { id: 'upload', label: '📄 Upload', icon: '📄' },
-    { id: 'planner', label: '📚 Planner', icon: '📚' },
-    { id: 'progress', label: '📊 Progress', icon: '📊' },
-    { id: 'premium', label: '💎 Premium', icon: '💎' },
+    { id: "chat", label: "💬 Chat", icon: "💬" },
+    { id: "upload", label: "📄 Upload", icon: "📄" },
+    { id: "planner", label: "📚 Planner", icon: "📚" },
+    { id: "progress", label: "📊 Progress", icon: "📊" },
+    { id: "premium", label: "💎 Premium", icon: "💎" },
   ];
 
   const renderActiveComponent = () => {
     switch (activeTab) {
-      case 'chat':
+      case "chat":
         return <ChatInterface />;
-      case 'upload':
+      case "upload":
         return <PdfUploader />;
-      case 'planner':
+      case "planner":
         return <StudyPlanner />;
-      case 'progress':
+      case "progress":
         return <ProgressDashboard userId={user.uid} />;
-      case 'premium':
+      case "premium":
         return <PaymentGateway />;
       default:
         return <ChatInterface />;
@@ -78,10 +78,7 @@ function App() {
           </div>
           <div className="user-info">
             <span>Welcome, {user.displayName || user.email}!</span>
-            <button 
-              onClick={() => auth.signOut()} 
-              className="logout-btn"
-            >
+            <button onClick={() => auth.signOut()} className="logout-btn">
               Logout
             </button>
           </div>
@@ -93,7 +90,7 @@ function App() {
           {tabs.map((tab) => (
             <button
               key={tab.id}
-              className={`nav-tab ${activeTab === tab.id ? 'active' : ''}`}
+              className={`nav-tab ${activeTab === tab.id ? "active" : ""}`}
               onClick={() => setActiveTab(tab.id)}
             >
               <span className="tab-icon">{tab.icon}</span>
@@ -104,13 +101,13 @@ function App() {
       </nav>
 
       <main className="app-main">
-        <div className="main-content">
-          {renderActiveComponent()}
-        </div>
+        <div className="main-content">{renderActiveComponent()}</div>
       </main>
 
       <footer className="app-footer">
-        <p>🌍 Empowering African Students • Built with ❤️ for Quality Education</p>
+        <p>
+          🌍 Empowering African Students • Built with ❤️ for Quality Education
+        </p>
         <div className="footer-links">
           <span>Powered by OpenAI & Firebase</span>
           <span>•</span>

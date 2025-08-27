@@ -74,11 +74,13 @@ exports.generateStudyPlan = functions.https.onCall(async (data, context) => {
   try {
     const { subjects, studyHoursPerDay, preferredStudyTimes } = data;
 
-    const prompt = `Create a detailed 7-day study plan for the following subjects: ${subjects.map(s => s.name).join(', ')}.
+    const prompt = `Create a detailed 7-day study plan for the following subjects: ${subjects
+      .map((s) => s.name)
+      .join(", ")}.
     
     Requirements:
     - ${studyHoursPerDay} hours of study per day
-    - Preferred study times: ${preferredStudyTimes.join(', ')}
+    - Preferred study times: ${preferredStudyTimes.join(", ")}
     - Focus on African curriculum standards
     - Include specific topics and time allocation
     - Prioritize subjects with upcoming exams
@@ -88,8 +90,11 @@ exports.generateStudyPlan = functions.https.onCall(async (data, context) => {
     const completion = await openai.chat.completions.create({
       model: "gpt-3.5-turbo",
       messages: [
-        { role: "system", content: "You are an educational planner for African students." },
-        { role: "user", content: prompt }
+        {
+          role: "system",
+          content: "You are an educational planner for African students.",
+        },
+        { role: "user", content: prompt },
       ],
       max_tokens: 1000,
       temperature: 0.5,
@@ -102,8 +107,18 @@ exports.generateStudyPlan = functions.https.onCall(async (data, context) => {
     } catch (parseError) {
       // Fallback to demo plan
       plan = [
-        { date: "Today", subject: subjects[0]?.name || "Mathematics", topic: "Algebra Review", duration: "2 hours" },
-        { date: "Tomorrow", subject: subjects[0]?.name || "Mathematics", topic: "Geometry Practice", duration: "1.5 hours" }
+        {
+          date: "Today",
+          subject: subjects[0]?.name || "Mathematics",
+          topic: "Algebra Review",
+          duration: "2 hours",
+        },
+        {
+          date: "Tomorrow",
+          subject: subjects[0]?.name || "Mathematics",
+          topic: "Geometry Practice",
+          duration: "1.5 hours",
+        },
       ];
     }
 
@@ -131,18 +146,16 @@ exports.processPdfDocument = functions.https.onCall(async (data, context) => {
 
     // For demo purposes, return mock analysis
     // In production, you would use PDF parsing libraries like pdf-parse
-    const mockAnalysis = "This document appears to be about mathematics concepts including algebra and geometry. Key topics identified: quadratic equations, triangular properties, and coordinate geometry.";
+    const mockAnalysis =
+      "This document appears to be about mathematics concepts including algebra and geometry. Key topics identified: quadratic equations, triangular properties, and coordinate geometry.";
 
     return {
       extractedText: "Sample extracted text from PDF...",
-      analysis: mockAnalysis
+      analysis: mockAnalysis,
     };
   } catch (error) {
     console.error("PDF processing error:", error);
-    throw new functions.https.HttpsError(
-      "internal",
-      "Failed to process PDF"
-    );
+    throw new functions.https.HttpsError("internal", "Failed to process PDF");
   }
 });
 
