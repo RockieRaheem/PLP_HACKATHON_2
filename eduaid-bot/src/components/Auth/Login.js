@@ -6,7 +6,7 @@ import {
   updateProfile,
 } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
-import { auth, db, googleProvider } from "../../firebase";
+import { auth, db, googleProvider, isDemoMode } from "../../firebase";
 
 const AuthComponent = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -27,6 +27,17 @@ const AuthComponent = () => {
     setError("");
 
     try {
+      if (isDemoMode) {
+        // Demo mode simulation
+        setError("🎭 Demo Mode: Authentication simulated successfully!");
+        setTimeout(() => {
+          setError("");
+          // In demo mode, just show success without actual Firebase calls
+        }, 1500);
+        setLoading(false);
+        return;
+      }
+
       if (isLogin) {
         await signInWithEmailAndPassword(auth, email, password);
       } else {
@@ -67,6 +78,17 @@ const AuthComponent = () => {
     setError("");
 
     try {
+      if (isDemoMode) {
+        // Demo mode simulation
+        setError("🎭 Demo Mode: Google sign-in simulated successfully!");
+        setTimeout(() => {
+          setError("");
+          // In demo mode, just show success
+        }, 1500);
+        setLoading(false);
+        return;
+      }
+
       const result = await signInWithPopup(auth, googleProvider);
       const user = result.user;
 
@@ -95,6 +117,20 @@ const AuthComponent = () => {
 
   return (
     <div className="auth-container">
+      {isDemoMode && (
+        <div className="demo-notice">
+          <h4>🎭 Demo Mode Active</h4>
+          <p>
+            Firebase credentials not configured. Authentication will be
+            simulated.
+          </p>
+          <small>
+            To use real authentication, update your .env file with actual
+            Firebase credentials.
+          </small>
+        </div>
+      )}
+
       <div className="auth-card">
         <h2>{isLogin ? "Welcome Back!" : "Join EduAid Bot"}</h2>
 
