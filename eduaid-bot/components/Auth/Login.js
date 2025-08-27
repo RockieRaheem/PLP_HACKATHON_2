@@ -1,4 +1,3 @@
-// components/Auth/Login.js
 import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,

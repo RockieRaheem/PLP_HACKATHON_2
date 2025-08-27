@@ -1,4 +1,3 @@
-// components/Chat/ChatInterface.js
 import { useState, useEffect } from "react";
 import { httpsCallable } from "firebase/functions";
 import { functions } from "../../firebase";
