@@ -15,7 +15,7 @@ const firebaseConfig = {
   storageBucket: "eduaid-bot-hackathon.firebasestorage.app",
   messagingSenderId: "116732315494",
   appId: "1:116732315494:web:cac67b9eeb10c42926eaa7",
-  measurementId: "G-GM87QRPWYX"
+  measurementId: "G-GM87QRPWYX",
 };
 
 // Initialize Firebase
