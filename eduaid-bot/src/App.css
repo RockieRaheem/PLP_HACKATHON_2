@@ -93,18 +93,22 @@ body {
 }
 
 .logout-btn {
-  background: #f56565;
-  color: white;
+  margin-top: 8px;
+  background: #ffd93d;
+  color: #23264a;
   border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 0.5rem;
+  border-radius: 8px;
+  padding: 6px 18px;
+  font-size: 0.97rem;
+  font-weight: 500;
   cursor: pointer;
-  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(60, 60, 60, 0.07);
+  transition: background 0.18s, color 0.18s;
 }
 
 .logout-btn:hover {
-  background: #e53e3e;
-  transform: translateY(-1px);
+  background: #ffb300;
+  color: #fff;
 }
 
 /* Continue with all the other styles... */
@@ -112,206 +116,606 @@ body {
 
 /* Auth Component */
 .auth-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  padding: 2rem;
-}
-
-.auth-card {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  border-radius: 1rem;
-  padding: 2rem;
+  position: relative;
+  z-index: 1;
+  max-width: 520px;
   width: 100%;
-  max-width: 400px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  min-width: 340px;
+  margin: 40px auto;
+  background: radial-gradient(
+      ellipse at 60% 40%,
+      #23264a 0%,
+      #2575fc 60%,
+      #23264a 100%
+    ),
+    url("https://www.transparenttextures.com/patterns/stardust.png") repeat;
+  background-clip: padding-box;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(28, 32, 48, 0.13);
+  padding: 32px 40px 32px 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-.auth-card h2 {
-  text-align: center;
-  margin-bottom: 1.5rem;
-  color: #667eea;
+.auth-container h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #23264a;
+  margin-bottom: 18px;
+}
+
+.auth-form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin-bottom: 12px;
 }
 
 .form-group {
-  margin-bottom: 1rem;
-}
-
-.form-group input,
-.form-group select {
   width: 100%;
-  padding: 0.75rem;
-  border: 2px solid #e2e8f0;
-  border-radius: 0.5rem;
-  font-size: 1rem;
-  transition: border-color 0.3s ease;
+  display: flex;
+  flex-direction: column;
 }
 
-.form-group input:focus,
-.form-group select:focus {
+.auth-input,
+.auth-select {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 8px;
+  border: 1px solid #e3e6ee;
+  font-size: 1rem;
+  background: #f6f7fb;
+  color: #23264a;
+  margin-top: 4px;
+  transition: border 0.2s, box-shadow 0.2s;
+}
+
+.auth-input:focus,
+.auth-select:focus {
+  border: 1.5px solid #2575fc;
+  box-shadow: 0 2px 8px rgba(37, 117, 252, 0.08);
   outline: none;
-  border-color: #667eea;
 }
 
 .auth-btn {
-  width: 100%;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  border: none;
-  padding: 0.75rem;
-  border-radius: 0.5rem;
-  font-size: 1rem;
+  background: #2575fc;
+  color: #fff;
+  font-size: 1.08rem;
   font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 0;
+  margin-top: 8px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(37, 117, 252, 0.08);
+  transition: background 0.2s, color 0.2s, transform 0.2s;
 }
 
 .auth-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
-}
-
-.auth-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-  transform: none;
-}
-
-.error-message {
-  background: #fee2e2;
-  color: #dc2626;
-  padding: 0.75rem;
-  border-radius: 0.5rem;
-  margin-bottom: 1rem;
-  border: 1px solid #fecaca;
-  font-size: 0.9rem;
-  white-space: pre-line;
-  text-align: left;
-  max-width: 100%;
-  overflow-wrap: break-word;
-}
-
-/* Demo Mode Styles */
-.demo-notice {
-  background: linear-gradient(135deg, #ff6b6b, #ffd93d);
-  color: #2c3e50;
-  padding: 15px;
-  border-radius: 10px;
-  margin: 0 20px 20px 20px;
-  text-align: center;
-  border: 2px solid #f39c12;
-  box-shadow: 0 4px 15px rgba(243, 156, 18, 0.3);
-  animation: pulse 2s infinite;
-}
-
-.demo-notice h4 {
-  margin: 0 0 8px 0;
-  font-size: 18px;
-  font-weight: bold;
-}
-
-.demo-notice p {
-  margin: 5px 0;
-  font-size: 14px;
-}
-
-.demo-notice small {
-  font-size: 12px;
-  opacity: 0.8;
-}
-
-@keyframes pulse {
-  0% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.02);
-  }
-  100% {
-    transform: scale(1);
-  }
-}
-
-.demo-message {
-  background: linear-gradient(135deg, #3498db, #2ecc71) !important;
-  color: white !important;
-  border: 2px solid #27ae60 !important;
+  background: #23264a;
+  color: #ffd93d;
+  transform: scale(1.03);
 }
 
 .auth-divider {
-  margin: 1.5rem 0;
+  width: 100%;
   text-align: center;
+  margin: 18px 0 12px 0;
   position: relative;
+}
+
+.auth-divider span {
+  background: #fff;
+  color: #888;
+  padding: 0 12px;
+  font-size: 1rem;
+  position: relative;
+  z-index: 1;
 }
 
 .auth-divider::before {
   content: "";
   position: absolute;
-  top: 50%;
   left: 0;
   right: 0;
+  top: 50%;
   height: 1px;
-  background: #e2e8f0;
-}
-
-.auth-divider span {
-  background: white;
-  padding: 0 1rem;
-  color: #666;
-  font-size: 0.9rem;
+  background: #e3e6ee;
+  z-index: 0;
 }
 
 .google-btn {
   width: 100%;
-  background: white;
-  color: #333;
-  border: 2px solid #e2e8f0;
-  padding: 0.75rem;
-  border-radius: 0.5rem;
-  font-size: 1rem;
+  background: #fff;
+  color: #23264a;
+  border: 1px solid #e3e6ee;
+  border-radius: 8px;
+  padding: 12px 0;
+  font-size: 1.08rem;
   font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.75rem;
-  margin-bottom: 1rem;
+  gap: 10px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(28, 32, 48, 0.07);
+  transition: background 0.2s, color 0.2s, border 0.2s;
 }
 
-.google-btn:hover:not(:disabled) {
-  border-color: #667eea;
-  transform: translateY(-2px);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-}
-
-.google-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-  transform: none;
+.google-btn:hover {
+  background: #f6f7fb;
+  color: #2575fc;
+  border: 1.5px solid #2575fc;
 }
 
 .google-icon {
-  width: 20px;
-  height: 20px;
+  width: 22px;
+  height: 22px;
 }
 
 .auth-switch {
+  margin-top: 18px;
+  color: #23264a;
+  font-size: 1rem;
   text-align: center;
-  margin-top: 1rem;
-  color: #666;
 }
 
 .switch-link {
-  color: #667eea;
-  cursor: pointer;
+  color: #2575fc;
   font-weight: 600;
+  cursor: pointer;
+  margin-left: 4px;
+  transition: color 0.2s;
 }
 
 .switch-link:hover {
-  text-decoration: underline;
+  color: #ffd93d;
 }
 
-/* Add more styles as needed for other components... */
+/* Modal and Overlay Styles */
+.auth-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(106, 17, 203, 0.18);
+  backdrop-filter: blur(6px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.5s;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.auth-modal {
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 8px 32px rgba(106, 17, 203, 0.18);
+  padding: 32px 24px 24px 24px;
+  min-width: 320px;
+  max-width: 400px;
+  width: 90vw;
+  position: relative;
+  animation: slideUp 0.5s;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(40px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.auth-close {
+  position: absolute;
+  top: 16px;
+  right: 18px;
+  background: none;
+  border: none;
+  font-size: 1.8rem;
+  color: #6a11cb;
+  cursor: pointer;
+  transition: color 0.2s;
+  z-index: 10;
+}
+
+.auth-close:hover {
+  color: #2575fc;
+}
+
+/* Dashboard Styles */
+.dashboard-bg {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #181c2b 0%, #2a2950 100%);
+  position: relative;
+  display: flex;
+  font-family: "Montserrat", "Roboto", Arial, sans-serif;
+  overflow: hidden;
+}
+
+.dashboard-bg::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: url("https://www.transparenttextures.com/patterns/stardust.png");
+  opacity: 0.18;
+}
+
+.dashboard-sidebar {
+  width: 220px;
+  background: rgba(28, 32, 48, 0.98);
+  border-right: 1px solid #23264a;
+  box-shadow: 0 4px 24px rgba(60, 60, 60, 0.07);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 36px 0 24px 0;
+  min-height: 100vh;
+  position: relative;
+  z-index: 2;
+  transition: box-shadow 0.2s;
+}
+
+.sidebar-logo {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #ffd93d;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  letter-spacing: 1px;
+}
+
+.sidebar-title {
+  font-size: 1.05rem;
+  color: #fff;
+  font-weight: 600;
+}
+
+.sidebar-user {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 32px;
+  width: 100%;
+}
+
+.sidebar-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(60, 60, 60, 0.07);
+  margin-bottom: 8px;
+  border: 2px solid #ffd93d;
+}
+
+.sidebar-username {
+  font-size: 0.97rem;
+  color: #ffd93d;
+  font-weight: 500;
+  margin-bottom: 2px;
+  text-align: center;
+  word-break: break-all;
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 90%;
+  margin-top: 10px;
+}
+
+.sidebar-tab {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 500;
+  padding: 10px 18px;
+  text-align: left;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.18s, color 0.18s, box-shadow 0.18s;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 0px 0px rgba(0, 0, 0, 0);
+}
+
+.sidebar-tab.active,
+.sidebar-tab:hover {
+  background: #23264a;
+  color: #ffd93d;
+  box-shadow: 0 2px 8px rgba(60, 60, 60, 0.07);
+}
+
+.sidebar-icon {
+  font-size: 1.15rem;
+  margin-right: 2px;
+}
+
+.sidebar-footer {
+  margin-top: auto;
+  color: #ffd93d;
+  font-size: 0.93rem;
+  font-weight: 400;
+  padding-bottom: 10px;
+  border-top: 1px solid #23264a;
+  width: 90%;
+  text-align: center;
+  margin-top: 32px;
+  padding-top: 12px;
+}
+
+.dashboard-main {
+  flex: 1;
+  padding: 36px 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  background: rgba(255, 255, 255, 0.97);
+  border-radius: 24px 0 0 24px;
+  box-shadow: 0 2px 8px rgba(60, 60, 60, 0.04);
+  margin: 24px 0 24px 0;
+  animation: fadeIn 0.7s;
+  position: relative;
+  z-index: 1;
+}
+
+.dashboard-welcome {
+  margin-bottom: 18px;
+  background: #f6f7fb;
+  border-radius: 12px;
+  padding: 14px 20px;
+  box-shadow: 0 2px 8px rgba(60, 60, 60, 0.04);
+  color: #23264a;
+  width: 100%;
+  max-width: 600px;
+  animation: slideDown 0.7s;
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateY(-30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.dashboard-welcome h2 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 6px;
+  color: #23264a;
+}
+
+.dashboard-subtext {
+  font-size: 1rem;
+  color: #2575fc;
+  font-weight: 400;
+}
+
+.dashboard-content {
+  width: 100%;
+  margin-top: 12px;
+  animation: fadeIn 0.7s;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.auth-galaxy-bg {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #181c2b 0%, #2a2950 100%);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Montserrat", "Roboto", Arial, sans-serif;
+  overflow: hidden;
+}
+
+.auth-galaxy-bg::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: url("https://www.transparenttextures.com/patterns/stardust.png");
+  opacity: 0.18;
+}
+
+.auth-container {
+  position: relative;
+  z-index: 1;
+  max-width: 520px;
+  width: 100%;
+  min-width: 340px;
+  margin: 40px auto;
+  background: rgba(255, 255, 255, 0.98);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(28, 32, 48, 0.13);
+  padding: 32px 40px 32px 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.auth-container h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #23264a;
+  margin-bottom: 18px;
+}
+
+.auth-form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin-bottom: 12px;
+}
+
+.form-group {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.auth-input,
+.auth-select {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 8px;
+  border: 1px solid #e3e6ee;
+  font-size: 1rem;
+  background: #f6f7fb;
+  color: #23264a;
+  margin-top: 4px;
+  transition: border 0.2s, box-shadow 0.2s;
+}
+
+.auth-input:focus,
+.auth-select:focus {
+  border: 1.5px solid #2575fc;
+  box-shadow: 0 2px 8px rgba(37, 117, 252, 0.08);
+  outline: none;
+}
+
+.auth-btn {
+  background: #2575fc;
+  color: #fff;
+  font-size: 1.08rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 0;
+  margin-top: 8px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(37, 117, 252, 0.08);
+  transition: background 0.2s, color 0.2s, transform 0.2s;
+}
+
+.auth-btn:hover {
+  background: #23264a;
+  color: #ffd93d;
+  transform: scale(1.03);
+}
+
+.auth-divider {
+  width: 100%;
+  text-align: center;
+  margin: 18px 0 12px 0;
+  position: relative;
+}
+
+.auth-divider span {
+  background: #fff;
+  color: #888;
+  padding: 0 12px;
+  font-size: 1rem;
+  position: relative;
+  z-index: 1;
+}
+
+.auth-divider::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 1px;
+  background: #e3e6ee;
+  z-index: 0;
+}
+
+.google-btn {
+  width: 100%;
+  background: #fff;
+  color: #23264a;
+  border: 1px solid #e3e6ee;
+  border-radius: 8px;
+  padding: 12px 0;
+  font-size: 1.08rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(28, 32, 48, 0.07);
+  transition: background 0.2s, color 0.2s, border 0.2s;
+}
+
+.google-btn:hover {
+  background: #f6f7fb;
+  color: #2575fc;
+  border: 1.5px solid #2575fc;
+}
+
+.google-icon {
+  width: 22px;
+  height: 22px;
+}
+
+.auth-switch {
+  margin-top: 18px;
+  color: #23264a;
+  font-size: 1rem;
+  text-align: center;
+}
+
+.switch-link {
+  color: #2575fc;
+  font-weight: 600;
+  cursor: pointer;
+  margin-left: 4px;
+  transition: color 0.2s;
+}
+
+.switch-link:hover {
+  color: #ffd93d;
+}
+
+@media (max-width: 800px) {
+  .auth-container {
+    max-width: 98vw;
+    min-width: 0;
+    padding: 18px 6px 18px 6px;
+  }
+}

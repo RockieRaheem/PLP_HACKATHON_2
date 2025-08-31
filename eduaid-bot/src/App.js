@@ -39,8 +39,9 @@ function App() {
     );
   }
 
+  // Show login as default for unauthenticated users
   if (!user) {
-    return <AuthComponent />;
+    return <AuthComponent setUser={setUser} />;
   }
 
   const tabs = [
@@ -69,51 +70,63 @@ function App() {
   };
 
   return (
-    <div className="App">
-      <header className="app-header">
-        <div className="header-content">
-          <div className="logo">
-            <h1>🤖 EduAid Bot</h1>
-            <span className="tagline">Your AI Study Companion</span>
-          </div>
-          <div className="user-info">
-            <span>Welcome, {user.displayName || user.email}!</span>
-            <button onClick={() => auth.signOut()} className="logout-btn">
-              Logout
-            </button>
-          </div>
+    <div className="dashboard-bg">
+      <aside className="dashboard-sidebar">
+        <div className="sidebar-logo">
+          <span role="img" aria-label="EduAid">
+            🤖
+          </span>
+          <span className="sidebar-title">EduAid Bot</span>
         </div>
-      </header>
-
-      <nav className="app-nav">
-        <div className="nav-tabs">
+        <div className="sidebar-user">
+          <img
+            src={
+              user.photoURL
+                ? user.photoURL
+                : `https://ui-avatars.com/api/?name=${encodeURIComponent(
+                    user.displayName || user.email
+                  )}`
+            }
+            alt="User avatar"
+            className="sidebar-avatar"
+          />
+          <div className="sidebar-username">
+            {user.displayName || user.email}
+          </div>
+          <button
+            className="logout-btn"
+            onClick={() => {
+              auth.signOut();
+            }}
+          >
+            Logout
+          </button>
+        </div>
+        <nav className="sidebar-nav">
           {tabs.map((tab) => (
             <button
               key={tab.id}
-              className={`nav-tab ${activeTab === tab.id ? "active" : ""}`}
+              className={`sidebar-tab${activeTab === tab.id ? " active" : ""}`}
               onClick={() => setActiveTab(tab.id)}
             >
-              <span className="tab-icon">{tab.icon}</span>
-              <span className="tab-label">{tab.label}</span>
+              <span className="sidebar-icon">{tab.icon}</span>
+              {tab.label}
             </button>
           ))}
+        </nav>
+        <div className="sidebar-footer">
+          <span>Made for Africa 🌍</span>
         </div>
-      </nav>
-
-      <main className="app-main">
-        <div className="main-content">{renderActiveComponent()}</div>
+      </aside>
+      <main className="dashboard-main">
+        <div className="dashboard-welcome">
+          <h2>Welcome, {user.displayName || user.email}!</h2>
+          <p className="dashboard-subtext">
+            Empowering your learning journey with AI, creativity, and vibes.
+          </p>
+        </div>
+        <div className="dashboard-content">{renderActiveComponent()}</div>
       </main>
-
-      <footer className="app-footer">
-        <p>
-          🌍 Empowering African Students • Built with ❤️ for Quality Education
-        </p>
-        <div className="footer-links">
-          <span>Powered by OpenAI & Firebase</span>
-          <span>•</span>
-          <span>Payments by IntaSend</span>
-        </div>
-      </footer>
     </div>
   );
 }
