@@ -2,6 +2,11 @@ const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 const pdf = require("pdf-parse");
 const axios = require("axios");
+const OpenAI = require("openai");
+
+const openai = new OpenAI({
+  apiKey: functions.config().openai.key,
+});
 
 exports.processPdfDocument = functions.https.onCall(async (data, context) => {
   if (!context.auth) {

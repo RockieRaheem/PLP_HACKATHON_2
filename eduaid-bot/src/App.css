@@ -1,4 +1,6 @@
 /* Global Styles */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap");
+
 * {
   margin: 0;
   padding: 0;
@@ -483,6 +485,24 @@ body {
   animation: fadeIn 0.7s;
   position: relative;
   z-index: 1;
+}
+
+/* Chat Full Container for Modern Chat Interface */
+.chat-full-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  background: transparent;
+}
+
+.chat-full-container .modern-chat-container {
+  width: 100%;
+  max-width: 900px;
+  height: calc(100vh - 100px);
+  margin: 0 auto;
 }
 
 .dashboard-welcome {

@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { auth, firestore } from "../../firebase";
 import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
@@ -7,9 +6,10 @@ import {
   GoogleAuthProvider,
 } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
-import "./GalacticalAuth.css";
+import { auth, db } from "../../firebase";
+import "../../src/GalacticalAuth.css";
 
-const AuthComponent = () => {
+const GalacticalAfricanAuth = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -173,7 +173,7 @@ const AuthComponent = () => {
           password
         );
         // Save comprehensive African-focused profile
-        await setDoc(doc(firestore, "users", userCredential.user.uid), {
+        await setDoc(doc(db, "users", userCredential.user.uid), {
           ...profile,
           email: email,
           createdAt: new Date(),
@@ -209,7 +209,7 @@ const AuthComponent = () => {
       const result = await signInWithPopup(auth, provider);
 
       await setDoc(
-        doc(firestore, "users", result.user.uid),
+        doc(db, "users", result.user.uid),
         {
           name: result.user.displayName,
           email: result.user.email,
@@ -884,4 +884,4 @@ const AuthComponent = () => {
   );
 };
 
-export default AuthComponent;
+export default GalacticalAfricanAuth;

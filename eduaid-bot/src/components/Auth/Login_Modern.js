@@ -29,18 +29,60 @@ const AuthComponent = () => {
 
   // African countries with flags
   const africaCountries = [
-    "🇩🇿 Algeria", "🇦🇴 Angola", "🇧🇯 Benin", "🇧🇼 Botswana", "🇧🇫 Burkina Faso",
-    "🇧🇮 Burundi", "🇨🇲 Cameroon", "🇨🇻 Cape Verde", "🇨🇫 Central African Republic",
-    "🇹🇩 Chad", "🇰🇲 Comoros", "🇨🇩 Democratic Republic of Congo", "🇨🇬 Republic of Congo",
-    "🇨🇮 Côte d'Ivoire", "🇩🇯 Djibouti", "🇪🇬 Egypt", "🇬🇶 Equatorial Guinea",
-    "🇪🇷 Eritrea", "🇪🇹 Ethiopia", "🇬🇦 Gabon", "🇬🇲 Gambia", "🇬🇭 Ghana",
-    "🇬🇳 Guinea", "🇬🇼 Guinea-Bissau", "🇰🇪 Kenya", "🇱🇸 Lesotho", "🇱🇷 Liberia",
-    "🇱🇾 Libya", "🇲🇬 Madagascar", "🇲🇼 Malawi", "🇲🇱 Mali", "🇲🇷 Mauritania",
-    "🇲🇺 Mauritius", "🇲🇦 Morocco", "🇲🇿 Mozambique", "🇳🇦 Namibia", "🇳🇪 Niger",
-    "🇳🇬 Nigeria", "🇷🇼 Rwanda", "🇸🇹 São Tomé and Príncipe", "🇸🇳 Senegal",
-    "🇸🇨 Seychelles", "🇸🇱 Sierra Leone", "🇸🇴 Somalia", "🇿🇦 South Africa",
-    "🇸🇸 South Sudan", "🇸🇩 Sudan", "🇸🇿 Eswatini", "🇹🇿 Tanzania", "🇹🇬 Togo",
-    "🇹🇳 Tunisia", "🇺🇬 Uganda", "🇿🇲 Zambia", "🇿🇼 Zimbabwe"
+    "🇩🇿 Algeria",
+    "🇦🇴 Angola",
+    "🇧🇯 Benin",
+    "🇧🇼 Botswana",
+    "🇧🇫 Burkina Faso",
+    "🇧🇮 Burundi",
+    "🇨🇲 Cameroon",
+    "🇨🇻 Cape Verde",
+    "🇨🇫 Central African Republic",
+    "🇹🇩 Chad",
+    "🇰🇲 Comoros",
+    "🇨🇩 Democratic Republic of Congo",
+    "🇨🇬 Republic of Congo",
+    "🇨🇮 Côte d'Ivoire",
+    "🇩🇯 Djibouti",
+    "🇪🇬 Egypt",
+    "🇬🇶 Equatorial Guinea",
+    "🇪🇷 Eritrea",
+    "🇪🇹 Ethiopia",
+    "🇬🇦 Gabon",
+    "🇬🇲 Gambia",
+    "🇬🇭 Ghana",
+    "🇬🇳 Guinea",
+    "🇬🇼 Guinea-Bissau",
+    "🇰🇪 Kenya",
+    "🇱🇸 Lesotho",
+    "🇱🇷 Liberia",
+    "🇱🇾 Libya",
+    "🇲🇬 Madagascar",
+    "🇲🇼 Malawi",
+    "🇲🇱 Mali",
+    "🇲🇷 Mauritania",
+    "🇲🇺 Mauritius",
+    "🇲🇦 Morocco",
+    "🇲🇿 Mozambique",
+    "🇳🇦 Namibia",
+    "🇳🇪 Niger",
+    "🇳🇬 Nigeria",
+    "🇷🇼 Rwanda",
+    "🇸🇹 São Tomé and Príncipe",
+    "🇸🇳 Senegal",
+    "🇸🇨 Seychelles",
+    "🇸🇱 Sierra Leone",
+    "🇸🇴 Somalia",
+    "🇿🇦 South Africa",
+    "🇸🇸 South Sudan",
+    "🇸🇩 Sudan",
+    "🇸🇿 Eswatini",
+    "🇹🇿 Tanzania",
+    "🇹🇬 Togo",
+    "🇹🇳 Tunisia",
+    "🇺🇬 Uganda",
+    "🇿🇲 Zambia",
+    "🇿🇼 Zimbabwe",
   ];
 
   // African education systems
@@ -56,7 +98,7 @@ const AuthComponent = () => {
     "Egyptian Thanaweya Amma",
     "Moroccan Baccalauréat",
     "Ethiopian Higher Education Entrance Examination",
-    "Algerian Baccalauréat"
+    "Algerian Baccalauréat",
   ];
 
   // Academic levels across African systems
@@ -72,14 +114,28 @@ const AuthComponent = () => {
     "University Undergraduate",
     "University Postgraduate",
     "Professional Development",
-    "Adult Education"
+    "Adult Education",
   ];
 
   // Major African languages
   const africanLanguages = [
-    "English", "French", "Arabic", "Portuguese", "Swahili", "Amharic",
-    "Yoruba", "Igbo", "Hausa", "Zulu", "Xhosa", "Afrikaans", "Twi",
-    "Kinyarwanda", "Luganda", "Oromo", "Berber"
+    "English",
+    "French",
+    "Arabic",
+    "Portuguese",
+    "Swahili",
+    "Amharic",
+    "Yoruba",
+    "Igbo",
+    "Hausa",
+    "Zulu",
+    "Xhosa",
+    "Afrikaans",
+    "Twi",
+    "Kinyarwanda",
+    "Luganda",
+    "Oromo",
+    "Berber",
   ];
 
   const validateForm = () => {
@@ -220,8 +276,12 @@ const AuthComponent = () => {
           <div className="flag-decoration">🌍</div>
           <div className="brand-logo">E</div>
           <h1 className="brand-title">EduAid</h1>
-          <p className="brand-subtitle">🌟 Illuminating African Minds Across the Galaxy 🌟</p>
-          <p className="brand-motto">"Elimu ni Ufunguo" (Education is the Key)</p>
+          <p className="brand-subtitle">
+            🌟 Illuminating African Minds Across the Galaxy 🌟
+          </p>
+          <p className="brand-motto">
+            "Elimu ni Ufunguo" (Education is the Key)
+          </p>
         </div>
 
         {/* Form Container */}
@@ -349,7 +409,11 @@ const AuthComponent = () => {
                     )}
                   </button>
                 ) : (
-                  <button type="button" onClick={nextStep} className="btn btn-primary">
+                  <button
+                    type="button"
+                    onClick={nextStep}
+                    className="btn btn-primary"
+                  >
                     Continue
                   </button>
                 )}
@@ -422,14 +486,18 @@ const AuthComponent = () => {
                       ))}
                     </select>
                     {errors.academicLevel && (
-                      <span className="field-error">{errors.academicLevel}</span>
+                      <span className="field-error">
+                        {errors.academicLevel}
+                      </span>
                     )}
                   </div>
                 </div>
 
                 <div className="form-row">
                   <div className="form-col">
-                    <label className="form-label">Education System (Optional)</label>
+                    <label className="form-label">
+                      Education System (Optional)
+                    </label>
                     <select
                       value={profile.educationSystem}
                       onChange={(e) =>
@@ -472,10 +540,18 @@ const AuthComponent = () => {
                 </div>
 
                 <div className="form-actions">
-                  <button type="button" onClick={prevStep} className="btn btn-secondary">
+                  <button
+                    type="button"
+                    onClick={prevStep}
+                    className="btn btn-secondary"
+                  >
                     Back
                   </button>
-                  <button type="submit" disabled={isLoading} className="btn btn-primary">
+                  <button
+                    type="submit"
+                    disabled={isLoading}
+                    className="btn btn-primary"
+                  >
                     {isLoading ? (
                       <>
                         <div className="loading-spinner"></div>

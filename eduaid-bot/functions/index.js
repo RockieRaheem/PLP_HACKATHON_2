@@ -1,4 +1,9 @@
-/* eslint-disable */
+/**
+ * @fileoverview Firebase Cloud Functions for EduAid Bot
+ * @format CommonJS
+ */
+
+// @ts-nocheck
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 const OpenAI = require("openai");
@@ -7,7 +12,7 @@ const cors = require("cors")({ origin: true });
 admin.initializeApp();
 
 const openai = new OpenAI({
-  apiKey: functions.config().openai.key,
+  apiKey: functions.config().openai?.key || process.env.OPENAI_API_KEY,
 });
 
 // Chat with OpenAI (Callable function for Firebase SDK)
@@ -46,6 +51,11 @@ exports.sendChatMessage = functions.https.onCall(async (data, context) => {
       temperature: 0.7,
     });
 
+    // Validate OpenAI response
+    if (!completion?.choices?.[0]?.message?.content) {
+      throw new Error("Invalid response from OpenAI");
+    }
+
     // Log the interaction for analytics
     await admin.firestore().collection("chat_logs").add({
       userId: context.auth.uid,
@@ -57,6 +67,7 @@ exports.sendChatMessage = functions.https.onCall(async (data, context) => {
     return { response: completion.choices[0].message.content };
   } catch (error) {
     console.error("OpenAI API error:", error);
+
     throw new functions.https.HttpsError(
       "internal",
       "Failed to process message"
@@ -71,8 +82,19 @@ exports.sendChatMessageHttp = functions.https.onRequest((req, res) => {
       return res.status(405).send("Method Not Allowed");
     }
     try {
-      // Optionally, verify authentication here if needed
+      // Input validation
       const { message, context: userContext, language } = req.body;
+
+      if (
+        !message ||
+        typeof message !== "string" ||
+        message.trim().length === 0
+      ) {
+        return res.status(400).json({
+          error: "Message is required and must be a non-empty string",
+        });
+      }
+
       const systemPrompt = `You are EduAid Bot, an AI tutor specifically designed for African students. 
       Your role is to provide educational support tailored to African curricula (WAEC, KCSE, Matric, etc.).
       
@@ -83,32 +105,63 @@ exports.sendChatMessageHttp = functions.https.onRequest((req, res) => {
       - Focus on practical, exam-oriented explanations
       - Be encouraging and supportive
       
-      Current context: ${userContext}
-      Response language: ${language}`;
+      Current context: ${userContext || "General tutoring"}
+      Response language: ${language || "English"}`;
+
+      // Check if OpenAI is properly configured
+      const apiKey =
+        functions.config().openai?.key || process.env.OPENAI_API_KEY;
+      if (!apiKey) {
+        console.error("OpenAI API key not configured");
+        return res.status(500).json({ error: "AI service not configured" });
+      }
 
       const completion = await openai.chat.completions.create({
         model: "gpt-3.5-turbo",
         messages: [
           { role: "system", content: systemPrompt },
-          { role: "user", content: message },
+          { role: "user", content: message.trim() },
         ],
         max_tokens: 500,
         temperature: 0.7,
       });
 
+      // Validate OpenAI response
+      if (!completion?.choices?.[0]?.message?.content) {
+        throw new Error("Invalid response from OpenAI");
+      }
+
+      const responseText = completion.choices[0].message.content;
+
       // Log the interaction for analytics
       await admin.firestore().collection("chat_logs").add({
-        message: message,
-        response: completion.choices[0].message.content,
+        message: message.trim(),
+        response: responseText,
+        context: userContext,
+        language: language,
         timestamp: admin.firestore.FieldValue.serverTimestamp(),
       });
 
       res.set("Access-Control-Allow-Origin", "*");
-      res.status(200).json({ response: completion.choices[0].message.content });
+      res.status(200).json({ response: responseText });
     } catch (error) {
       console.error("OpenAI API error:", error);
       res.set("Access-Control-Allow-Origin", "*");
-      res.status(500).json({ error: "Failed to process message" });
+
+      // Return appropriate error responses
+      if (error.message?.includes("Invalid response from OpenAI")) {
+        return res.status(502).json({ error: "AI service unavailable" });
+      }
+
+      if (error.code === "insufficient_quota") {
+        return res.status(503).json({ error: "AI service quota exceeded" });
+      }
+
+      res.status(500).json({
+        error: "Failed to process message",
+        message:
+          process.env.NODE_ENV === "development" ? error.message : undefined,
+      });
     }
   });
 });
@@ -197,8 +250,7 @@ exports.processPdfDocument = functions.https.onCall(async (data, context) => {
 
     // For demo purposes, return mock analysis
     // In production, you would use PDF parsing libraries like pdf-parse
-    const mockAnalysis =
-      "This document appears to be about mathematics concepts including algebra and geometry. Key topics identified: quadratic equations, triangular properties, and coordinate geometry.";
+    const mockAnalysis = `This document appears to be about mathematics concepts including algebra and geometry. Key topics identified: quadratic equations, triangular properties, and coordinate geometry. Source: ${fileUrl}`;
 
     return {
       extractedText: "Sample extracted text from PDF...",

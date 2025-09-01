@@ -29,8 +29,8 @@ const ChatInterface = () => {
         sender: "bot",
         timestamp: new Date(),
         id: "welcome-message",
-        type: "welcome"
-      }
+        type: "welcome",
+      },
     ]);
   }, []);
 
@@ -50,10 +50,12 @@ const ChatInterface = () => {
 
     try {
       const result = await sendMessage({ message: input });
-      
+
       setTimeout(() => {
         const botMessage = {
-          text: result.data.response || "I understand your question. Let me help you with that...",
+          text:
+            result.data.response ||
+            "I understand your question. Let me help you with that...",
           sender: "bot",
           timestamp: new Date(),
           id: Date.now() + Math.random(),
@@ -136,7 +138,9 @@ const ChatInterface = () => {
           messages.map((message) => (
             <div
               key={message.id}
-              className={`message-bubble ${message.sender} ${message.type || ''}`}
+              className={`message-bubble ${message.sender} ${
+                message.type || ""
+              }`}
             >
               {message.sender === "bot" && (
                 <div className="message-avatar">
@@ -146,9 +150,7 @@ const ChatInterface = () => {
                 </div>
               )}
               <div className="message-content">
-                <div className="message-text">
-                  {message.text}
-                </div>
+                <div className="message-text">{message.text}</div>
                 <div className="message-meta">
                   <span className="timestamp">
                     {message.timestamp.toLocaleTimeString([], {
@@ -164,7 +166,7 @@ const ChatInterface = () => {
             </div>
           ))
         )}
-        
+
         {/* Typing Indicator */}
         {isTyping && (
           <div className="message-bubble bot typing">
