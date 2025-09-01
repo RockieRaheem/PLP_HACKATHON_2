@@ -9,7 +9,7 @@ import AuthComponent from "./components/Auth/Login";
 import ModernChatInterface from "./components/Chat/ModernChatInterface";
 import ModernStudyMaterials from "./components/StudyMaterials/ModernStudyMaterials";
 import ModernStudyPlanner from "./components/StudyPlanner/ModernStudyPlanner";
-import ProgressDashboard from "./components/Progress/ProgressDashboard";
+import ModernAnalytics from "./components/Analytics/ModernAnalytics";
 import PaymentGateway from "./components/Payment/PaymentGateway";
 
 function App() {
@@ -113,7 +113,7 @@ function App() {
       case "planner":
         return <ModernStudyPlanner />;
       case "progress":
-        return <ProgressDashboard userId={user.uid} />;
+        return <ModernAnalytics userId={user.uid} />;
       case "premium":
         return <PaymentGateway />;
       default:

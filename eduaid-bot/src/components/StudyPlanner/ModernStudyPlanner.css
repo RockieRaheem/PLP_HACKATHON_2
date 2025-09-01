@@ -70,7 +70,8 @@
   flex-direction: column;
   height: 100%;
   background: var(--background-secondary);
-  font-family: "Google Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-family: "Google Sans", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, sans-serif;
 }
 
 /* Header Section */
@@ -104,7 +105,11 @@
 .title-icon {
   width: 64px;
   height: 64px;
-  background: linear-gradient(135deg, var(--primary-orange) 0%, var(--primary-green) 100%);
+  background: linear-gradient(
+    135deg,
+    var(--primary-orange) 0%,
+    var(--primary-green) 100%
+  );
   border-radius: var(--radius-xl);
   display: flex;
   align-items: center;
@@ -210,7 +215,11 @@
 .action-icon {
   width: 48px;
   height: 48px;
-  background: linear-gradient(135deg, var(--action-color), var(--action-color)88);
+  background: linear-gradient(
+    135deg,
+    var(--action-color),
+    var(--action-color) 88
+  );
   border-radius: var(--radius-lg);
   display: flex;
   align-items: center;

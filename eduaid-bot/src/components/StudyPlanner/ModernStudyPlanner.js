@@ -16,7 +16,7 @@ const ModernStudyPlanner = () => {
     const savedPlan = localStorage.getItem("studyPlan");
     const savedGoals = localStorage.getItem("studyGoals");
     const savedProgress = localStorage.getItem("weeklyProgress");
-    
+
     if (savedPlan) setStudyPlan(JSON.parse(savedPlan));
     if (savedGoals) setStudyGoals(JSON.parse(savedGoals));
     if (savedProgress) setWeeklyProgress(JSON.parse(savedProgress));
@@ -64,8 +64,8 @@ const ModernStudyPlanner = () => {
   const getDaysOfWeek = (weekOffset = 0) => {
     const today = new Date();
     const startOfWeek = new Date(today);
-    startOfWeek.setDate(today.getDate() - today.getDay() + (weekOffset * 7));
-    
+    startOfWeek.setDate(today.getDate() - today.getDay() + weekOffset * 7);
+
     const days = [];
     for (let i = 0; i < 7; i++) {
       const day = new Date(startOfWeek);
@@ -79,16 +79,16 @@ const ModernStudyPlanner = () => {
     const weekDays = getDaysOfWeek(selectedWeek);
     const startDate = weekDays[0];
     const endDate = weekDays[6];
-    
-    return studyPlan.filter(task => {
+
+    return studyPlan.filter((task) => {
       const taskDate = new Date(task.date);
       return taskDate >= startDate && taskDate <= endDate;
     });
   };
 
   const getTasksForDay = (date) => {
-    const dateStr = date.toISOString().split('T')[0];
-    return studyPlan.filter(task => task.date === dateStr);
+    const dateStr = date.toISOString().split("T")[0];
+    return studyPlan.filter((task) => task.date === dateStr);
   };
 
   const addNewTask = (taskData) => {
@@ -99,13 +99,13 @@ const ModernStudyPlanner = () => {
       createdAt: new Date().toISOString(),
       timeSpent: 0,
     };
-    setStudyPlan(prev => [...prev, newTask]);
+    setStudyPlan((prev) => [...prev, newTask]);
     setShowAddTaskModal(false);
   };
 
   const toggleTaskCompletion = (taskId) => {
-    setStudyPlan(prev => 
-      prev.map(task => 
+    setStudyPlan((prev) =>
+      prev.map((task) =>
         task.id === taskId ? { ...task, completed: !task.completed } : task
       )
     );
@@ -113,46 +113,47 @@ const ModernStudyPlanner = () => {
 
   const deleteTask = (taskId) => {
     if (window.confirm("Are you sure you want to delete this task?")) {
-      setStudyPlan(prev => prev.filter(task => task.id !== taskId));
+      setStudyPlan((prev) => prev.filter((task) => task.id !== taskId));
     }
   };
 
   const getSubjectIcon = (subjectId) => {
-    const subject = subjects.find(s => s.id === subjectId);
+    const subject = subjects.find((s) => s.id === subjectId);
     return subject ? subject.icon : "📚";
   };
 
   const getSubjectColor = (subjectId) => {
-    const subject = subjects.find(s => s.id === subjectId);
+    const subject = subjects.find((s) => s.id === subjectId);
     return subject ? subject.color : "#FF7A00";
   };
 
   const getTaskTypeIcon = (typeId) => {
-    const type = taskTypes.find(t => t.id === typeId);
+    const type = taskTypes.find((t) => t.id === typeId);
     return type ? type.icon : "📝";
   };
 
   const getPriorityColor = (priority) => {
-    const priorityObj = priorityLevels.find(p => p.id === priority);
+    const priorityObj = priorityLevels.find((p) => p.id === priority);
     return priorityObj ? priorityObj.color : "#f39c12";
   };
 
   const calculateWeekProgress = () => {
     const weekTasks = getCurrentWeekTasks();
     if (weekTasks.length === 0) return 0;
-    const completedTasks = weekTasks.filter(task => task.completed).length;
+    const completedTasks = weekTasks.filter((task) => task.completed).length;
     return Math.round((completedTasks / weekTasks.length) * 100);
   };
 
   const getUpcomingExams = () => {
     const today = new Date();
     const nextWeek = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
-    
+
     return studyPlan
-      .filter(task => 
-        task.type === "exam" && 
-        new Date(task.date) >= today && 
-        new Date(task.date) <= nextWeek
+      .filter(
+        (task) =>
+          task.type === "exam" &&
+          new Date(task.date) >= today &&
+          new Date(task.date) <= nextWeek
       )
       .sort((a, b) => new Date(a.date) - new Date(b.date));
   };
@@ -163,52 +164,52 @@ const ModernStudyPlanner = () => {
       title: "Add Study Task",
       description: "Create a new study session",
       action: () => setShowAddTaskModal(true),
-      color: "#FF7A00"
+      color: "#FF7A00",
     },
     {
       icon: "🎯",
       title: "Set Goals",
       description: "Define your study objectives",
       action: () => {},
-      color: "#00A86B"
+      color: "#00A86B",
     },
     {
       icon: "📊",
       title: "View Analytics",
       description: "Track your progress",
       action: () => {},
-      color: "#0066CC"
+      color: "#0066CC",
     },
     {
       icon: "⏰",
       title: "Study Timer",
       description: "Focus with Pomodoro technique",
       action: () => {},
-      color: "#8e44ad"
-    }
+      color: "#8e44ad",
+    },
   ];
 
   const studyTips = [
     {
       icon: "💡",
       title: "Active Recall",
-      tip: "Test yourself frequently instead of just re-reading notes"
+      tip: "Test yourself frequently instead of just re-reading notes",
     },
     {
       icon: "🔄",
       title: "Spaced Repetition",
-      tip: "Review material at increasing intervals for better retention"
+      tip: "Review material at increasing intervals for better retention",
     },
     {
       icon: "🎯",
       title: "Focused Sessions",
-      tip: "Use 25-minute focused study blocks with 5-minute breaks"
+      tip: "Use 25-minute focused study blocks with 5-minute breaks",
     },
     {
       icon: "📝",
       title: "Summary Writing",
-      tip: "Write brief summaries after each study session"
-    }
+      tip: "Write brief summaries after each study session",
+    },
   ];
 
   return (
@@ -221,11 +222,13 @@ const ModernStudyPlanner = () => {
               <div className="title-icon">📅</div>
               <div>
                 <h1>Study Planner</h1>
-                <p>Organize your learning journey and achieve your academic goals</p>
+                <p>
+                  Organize your learning journey and achieve your academic goals
+                </p>
               </div>
             </div>
             <div className="header-actions">
-              <button 
+              <button
                 className="add-task-btn primary"
                 onClick={() => setShowAddTaskModal(true)}
               >
@@ -270,7 +273,7 @@ const ModernStudyPlanner = () => {
           {/* Quick Actions */}
           <div className="quick-actions">
             {quickActions.map((action, index) => (
-              <div 
+              <div
                 key={index}
                 className="quick-action-card"
                 onClick={action.action}
@@ -291,18 +294,22 @@ const ModernStudyPlanner = () => {
       <div className="planner-controls">
         <div className="controls-left">
           <div className="week-navigation">
-            <button 
+            <button
               className="nav-btn"
               onClick={() => setSelectedWeek(selectedWeek - 1)}
             >
               ‹ Previous Week
             </button>
             <div className="current-week">
-              {selectedWeek === 0 ? "This Week" : 
-               selectedWeek > 0 ? `${selectedWeek} Week${selectedWeek > 1 ? 's' : ''} Ahead` :
-               `${Math.abs(selectedWeek)} Week${Math.abs(selectedWeek) > 1 ? 's' : ''} Ago`}
+              {selectedWeek === 0
+                ? "This Week"
+                : selectedWeek > 0
+                ? `${selectedWeek} Week${selectedWeek > 1 ? "s" : ""} Ahead`
+                : `${Math.abs(selectedWeek)} Week${
+                    Math.abs(selectedWeek) > 1 ? "s" : ""
+                  } Ago`}
             </div>
-            <button 
+            <button
               className="nav-btn"
               onClick={() => setSelectedWeek(selectedWeek + 1)}
             >
@@ -311,13 +318,13 @@ const ModernStudyPlanner = () => {
           </div>
 
           <div className="subject-filter">
-            <select 
-              value={selectedSubject} 
+            <select
+              value={selectedSubject}
               onChange={(e) => setSelectedSubject(e.target.value)}
               className="subject-select"
             >
               <option value="all">All Subjects</option>
-              {subjects.map(subject => (
+              {subjects.map((subject) => (
                 <option key={subject.id} value={subject.id}>
                   {subject.icon} {subject.name}
                 </option>
@@ -328,19 +335,19 @@ const ModernStudyPlanner = () => {
 
         <div className="controls-right">
           <div className="view-toggle">
-            <button 
+            <button
               className={`view-btn ${viewMode === "calendar" ? "active" : ""}`}
               onClick={() => setViewMode("calendar")}
             >
               📅
             </button>
-            <button 
+            <button
               className={`view-btn ${viewMode === "list" ? "active" : ""}`}
               onClick={() => setViewMode("list")}
             >
               📋
             </button>
-            <button 
+            <button
               className={`view-btn ${viewMode === "kanban" ? "active" : ""}`}
               onClick={() => setViewMode("kanban")}
             >
@@ -359,29 +366,39 @@ const ModernStudyPlanner = () => {
               <div className="calendar-grid">
                 {getDaysOfWeek(selectedWeek).map((day, index) => {
                   const dayTasks = getTasksForDay(day);
-                  const isToday = day.toDateString() === currentDate.toDateString();
-                  
+                  const isToday =
+                    day.toDateString() === currentDate.toDateString();
+
                   return (
-                    <div key={index} className={`calendar-day ${isToday ? "today" : ""}`}>
+                    <div
+                      key={index}
+                      className={`calendar-day ${isToday ? "today" : ""}`}
+                    >
                       <div className="day-header">
                         <div className="day-name">
-                          {day.toLocaleDateString('en-US', { weekday: 'short' })}
+                          {day.toLocaleDateString("en-US", {
+                            weekday: "short",
+                          })}
                         </div>
-                        <div className="day-number">
-                          {day.getDate()}
-                        </div>
+                        <div className="day-number">{day.getDate()}</div>
                       </div>
                       <div className="day-tasks">
-                        {dayTasks.map(task => (
-                          <div 
-                            key={task.id} 
-                            className={`task-item ${task.completed ? "completed" : ""}`}
-                            style={{ "--task-color": getSubjectColor(task.subject) }}
+                        {dayTasks.map((task) => (
+                          <div
+                            key={task.id}
+                            className={`task-item ${
+                              task.completed ? "completed" : ""
+                            }`}
+                            style={{
+                              "--task-color": getSubjectColor(task.subject),
+                            }}
                           >
                             <div className="task-header">
-                              <span className="task-icon">{getSubjectIcon(task.subject)}</span>
+                              <span className="task-icon">
+                                {getSubjectIcon(task.subject)}
+                              </span>
                               <span className="task-title">{task.title}</span>
-                              <button 
+                              <button
                                 className="task-complete-btn"
                                 onClick={() => toggleTaskCompletion(task.id)}
                               >
@@ -390,7 +407,9 @@ const ModernStudyPlanner = () => {
                             </div>
                             <div className="task-meta">
                               <span className="task-time">{task.time}</span>
-                              <span className="task-type">{getTaskTypeIcon(task.type)}</span>
+                              <span className="task-type">
+                                {getTaskTypeIcon(task.type)}
+                              </span>
                             </div>
                           </div>
                         ))}
@@ -413,7 +432,7 @@ const ModernStudyPlanner = () => {
                   <div className="empty-icon">📋</div>
                   <h3>No tasks scheduled</h3>
                   <p>Add your first study task to get started</p>
-                  <button 
+                  <button
                     className="add-task-btn primary"
                     onClick={() => setShowAddTaskModal(true)}
                   >
@@ -425,57 +444,73 @@ const ModernStudyPlanner = () => {
                 <div className="tasks-list">
                   {getCurrentWeekTasks()
                     .sort((a, b) => new Date(a.date) - new Date(b.date))
-                    .map(task => (
-                    <div 
-                      key={task.id} 
-                      className={`task-card ${task.completed ? "completed" : ""}`}
-                    >
-                      <div className="task-main">
-                        <div className="task-checkbox">
-                          <button 
-                            className="checkbox-btn"
-                            onClick={() => toggleTaskCompletion(task.id)}
-                          >
-                            {task.completed ? "✓" : "○"}
-                          </button>
-                        </div>
-                        <div className="task-details">
-                          <div className="task-header-row">
-                            <h4 className="task-title">{task.title}</h4>
-                            <div className="task-priority">
-                              <span 
-                                className="priority-indicator"
-                                style={{ backgroundColor: getPriorityColor(task.priority) }}
-                              ></span>
+                    .map((task) => (
+                      <div
+                        key={task.id}
+                        className={`task-card ${
+                          task.completed ? "completed" : ""
+                        }`}
+                      >
+                        <div className="task-main">
+                          <div className="task-checkbox">
+                            <button
+                              className="checkbox-btn"
+                              onClick={() => toggleTaskCompletion(task.id)}
+                            >
+                              {task.completed ? "✓" : "○"}
+                            </button>
+                          </div>
+                          <div className="task-details">
+                            <div className="task-header-row">
+                              <h4 className="task-title">{task.title}</h4>
+                              <div className="task-priority">
+                                <span
+                                  className="priority-indicator"
+                                  style={{
+                                    backgroundColor: getPriorityColor(
+                                      task.priority
+                                    ),
+                                  }}
+                                ></span>
+                              </div>
                             </div>
+                            <div className="task-meta-row">
+                              <span className="task-subject">
+                                {getSubjectIcon(task.subject)}{" "}
+                                {
+                                  subjects.find((s) => s.id === task.subject)
+                                    ?.name
+                                }
+                              </span>
+                              <span className="task-type">
+                                {getTaskTypeIcon(task.type)}{" "}
+                                {
+                                  taskTypes.find((t) => t.id === task.type)
+                                    ?.name
+                                }
+                              </span>
+                              <span className="task-date">
+                                📅 {new Date(task.date).toLocaleDateString()}
+                              </span>
+                              <span className="task-time">⏰ {task.time}</span>
+                            </div>
+                            {task.description && (
+                              <p className="task-description">
+                                {task.description}
+                              </p>
+                            )}
                           </div>
-                          <div className="task-meta-row">
-                            <span className="task-subject">
-                              {getSubjectIcon(task.subject)} {subjects.find(s => s.id === task.subject)?.name}
-                            </span>
-                            <span className="task-type">
-                              {getTaskTypeIcon(task.type)} {taskTypes.find(t => t.id === task.type)?.name}
-                            </span>
-                            <span className="task-date">
-                              📅 {new Date(task.date).toLocaleDateString()}
-                            </span>
-                            <span className="task-time">⏰ {task.time}</span>
+                          <div className="task-actions">
+                            <button
+                              className="action-btn"
+                              onClick={() => deleteTask(task.id)}
+                            >
+                              🗑️
+                            </button>
                           </div>
-                          {task.description && (
-                            <p className="task-description">{task.description}</p>
-                          )}
-                        </div>
-                        <div className="task-actions">
-                          <button 
-                            className="action-btn"
-                            onClick={() => deleteTask(task.id)}
-                          >
-                            🗑️
-                          </button>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
                 </div>
               )}
             </div>
@@ -489,29 +524,35 @@ const ModernStudyPlanner = () => {
                   <div className="column-header">
                     <h3>📋 To Do</h3>
                     <span className="task-count">
-                      {getCurrentWeekTasks().filter(t => !t.completed).length}
+                      {getCurrentWeekTasks().filter((t) => !t.completed).length}
                     </span>
                   </div>
                   <div className="column-tasks">
                     {getCurrentWeekTasks()
-                      .filter(task => !task.completed)
-                      .map(task => (
+                      .filter((task) => !task.completed)
+                      .map((task) => (
                         <div key={task.id} className="kanban-task">
                           <div className="task-header">
                             <span className="task-subject">
                               {getSubjectIcon(task.subject)}
                             </span>
-                            <span 
+                            <span
                               className="priority-dot"
-                              style={{ backgroundColor: getPriorityColor(task.priority) }}
+                              style={{
+                                backgroundColor: getPriorityColor(
+                                  task.priority
+                                ),
+                              }}
                             ></span>
                           </div>
                           <h4 className="task-title">{task.title}</h4>
                           <div className="task-meta">
-                            <span>📅 {new Date(task.date).toLocaleDateString()}</span>
+                            <span>
+                              📅 {new Date(task.date).toLocaleDateString()}
+                            </span>
                             <span>⏰ {task.time}</span>
                           </div>
-                          <button 
+                          <button
                             className="complete-btn"
                             onClick={() => toggleTaskCompletion(task.id)}
                           >
@@ -526,13 +567,13 @@ const ModernStudyPlanner = () => {
                   <div className="column-header">
                     <h3>✅ Completed</h3>
                     <span className="task-count">
-                      {getCurrentWeekTasks().filter(t => t.completed).length}
+                      {getCurrentWeekTasks().filter((t) => t.completed).length}
                     </span>
                   </div>
                   <div className="column-tasks">
                     {getCurrentWeekTasks()
-                      .filter(task => task.completed)
-                      .map(task => (
+                      .filter((task) => task.completed)
+                      .map((task) => (
                         <div key={task.id} className="kanban-task completed">
                           <div className="task-header">
                             <span className="task-subject">
@@ -542,7 +583,9 @@ const ModernStudyPlanner = () => {
                           </div>
                           <h4 className="task-title">{task.title}</h4>
                           <div className="task-meta">
-                            <span>📅 {new Date(task.date).toLocaleDateString()}</span>
+                            <span>
+                              📅 {new Date(task.date).toLocaleDateString()}
+                            </span>
                             <span>⏰ {task.time}</span>
                           </div>
                         </div>
@@ -563,10 +606,11 @@ const ModernStudyPlanner = () => {
               <p className="no-data">No upcoming exams</p>
             ) : (
               <div className="exam-list">
-                {getUpcomingExams().map(exam => (
+                {getUpcomingExams().map((exam) => (
                   <div key={exam.id} className="exam-item">
                     <div className="exam-subject">
-                      {getSubjectIcon(exam.subject)} {subjects.find(s => s.id === exam.subject)?.name}
+                      {getSubjectIcon(exam.subject)}{" "}
+                      {subjects.find((s) => s.id === exam.subject)?.name}
                     </div>
                     <div className="exam-date">
                       {new Date(exam.date).toLocaleDateString()}
@@ -610,14 +654,20 @@ const ModernStudyPlanner = () => {
 };
 
 // Add Task Modal Component
-const AddTaskModal = ({ subjects, taskTypes, priorityLevels, onAddTask, onClose }) => {
+const AddTaskModal = ({
+  subjects,
+  taskTypes,
+  priorityLevels,
+  onAddTask,
+  onClose,
+}) => {
   const [formData, setFormData] = useState({
     title: "",
     description: "",
     subject: "mathematics",
     type: "homework",
     priority: "medium",
-    date: new Date().toISOString().split('T')[0],
+    date: new Date().toISOString().split("T")[0],
     time: "09:00",
     duration: "60",
   });
@@ -632,7 +682,7 @@ const AddTaskModal = ({ subjects, taskTypes, priorityLevels, onAddTask, onClose 
         subject: "mathematics",
         type: "homework",
         priority: "medium",
-        date: new Date().toISOString().split('T')[0],
+        date: new Date().toISOString().split("T")[0],
         time: "09:00",
         duration: "60",
       });
@@ -640,7 +690,7 @@ const AddTaskModal = ({ subjects, taskTypes, priorityLevels, onAddTask, onClose 
   };
 
   const handleChange = (field, value) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
   return (
@@ -648,9 +698,11 @@ const AddTaskModal = ({ subjects, taskTypes, priorityLevels, onAddTask, onClose 
       <div className="add-task-modal" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
           <h3>Add New Study Task</h3>
-          <button className="close-btn" onClick={onClose}>✕</button>
+          <button className="close-btn" onClick={onClose}>
+            ✕
+          </button>
         </div>
-        
+
         <form onSubmit={handleSubmit} className="modal-content">
           <div className="form-group">
             <label>Task Title *</label>
@@ -680,7 +732,7 @@ const AddTaskModal = ({ subjects, taskTypes, priorityLevels, onAddTask, onClose 
                 value={formData.subject}
                 onChange={(e) => handleChange("subject", e.target.value)}
               >
-                {subjects.map(subject => (
+                {subjects.map((subject) => (
                   <option key={subject.id} value={subject.id}>
                     {subject.icon} {subject.name}
                   </option>
@@ -694,7 +746,7 @@ const AddTaskModal = ({ subjects, taskTypes, priorityLevels, onAddTask, onClose 
                 value={formData.type}
                 onChange={(e) => handleChange("type", e.target.value)}
               >
-                {taskTypes.map(type => (
+                {taskTypes.map((type) => (
                   <option key={type.id} value={type.id}>
                     {type.icon} {type.name}
                   </option>
@@ -710,7 +762,7 @@ const AddTaskModal = ({ subjects, taskTypes, priorityLevels, onAddTask, onClose 
                 value={formData.priority}
                 onChange={(e) => handleChange("priority", e.target.value)}
               >
-                {priorityLevels.map(priority => (
+                {priorityLevels.map((priority) => (
                   <option key={priority.id} value={priority.id}>
                     {priority.icon} {priority.name}
                   </option>
