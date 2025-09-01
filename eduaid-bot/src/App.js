@@ -8,7 +8,7 @@ import "./ChatGPTSidebar.css";
 import AuthComponent from "./components/Auth/Login";
 import ModernChatInterface from "./components/Chat/ModernChatInterface";
 import ModernStudyMaterials from "./components/StudyMaterials/ModernStudyMaterials";
-import StudyPlanner from "./components/StudyPlanner/StudyPlanner";
+import ModernStudyPlanner from "./components/StudyPlanner/ModernStudyPlanner";
 import ProgressDashboard from "./components/Progress/ProgressDashboard";
 import PaymentGateway from "./components/Payment/PaymentGateway";
 
@@ -111,7 +111,7 @@ function App() {
       case "upload":
         return <ModernStudyMaterials />;
       case "planner":
-        return <StudyPlanner />;
+        return <ModernStudyPlanner />;
       case "progress":
         return <ProgressDashboard userId={user.uid} />;
       case "premium":
