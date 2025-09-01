@@ -6,7 +6,7 @@ import "./ChatGPTSidebar.css";
 
 // Components
 import AuthComponent from "./components/Auth/Login";
-import ChatInterface from "./components/Chat/ChatInterface";
+import ModernChatInterface from "./components/Chat/ModernChatInterface";
 import PdfUploader from "./components/FileUpload/PdfUploader";
 import StudyPlanner from "./components/StudyPlanner/StudyPlanner";
 import ProgressDashboard from "./components/Progress/ProgressDashboard";
@@ -107,7 +107,7 @@ function App() {
   const renderActiveComponent = () => {
     switch (activeTab) {
       case "chat":
-        return <ChatInterface />;
+        return <ModernChatInterface />;
       case "upload":
         return <PdfUploader />;
       case "planner":
@@ -117,7 +117,7 @@ function App() {
       case "premium":
         return <PaymentGateway />;
       default:
-        return <ChatInterface />;
+        return <ModernChatInterface />;
     }
   };
 
