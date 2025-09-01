@@ -7,7 +7,7 @@ import "./ChatGPTSidebar.css";
 // Components
 import AuthComponent from "./components/Auth/Login";
 import ModernChatInterface from "./components/Chat/ModernChatInterface";
-import PdfUploader from "./components/FileUpload/PdfUploader";
+import ModernStudyMaterials from "./components/StudyMaterials/ModernStudyMaterials";
 import StudyPlanner from "./components/StudyPlanner/StudyPlanner";
 import ProgressDashboard from "./components/Progress/ProgressDashboard";
 import PaymentGateway from "./components/Payment/PaymentGateway";
@@ -109,7 +109,7 @@ function App() {
       case "chat":
         return <ModernChatInterface />;
       case "upload":
-        return <PdfUploader />;
+        return <ModernStudyMaterials />;
       case "planner":
         return <StudyPlanner />;
       case "progress":
