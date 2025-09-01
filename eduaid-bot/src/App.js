@@ -10,7 +10,7 @@ import ModernChatInterface from "./components/Chat/ModernChatInterface";
 import ModernStudyMaterials from "./components/StudyMaterials/ModernStudyMaterials";
 import ModernStudyPlanner from "./components/StudyPlanner/ModernStudyPlanner";
 import ModernAnalytics from "./components/Analytics/ModernAnalytics";
-import PaymentGateway from "./components/Payment/PaymentGateway";
+import ModernPremium from "./components/Premium/ModernPremium";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -115,7 +115,7 @@ function App() {
       case "progress":
         return <ModernAnalytics userId={user.uid} />;
       case "premium":
-        return <PaymentGateway />;
+        return <ModernPremium userId={user.uid} />;
       default:
         return <ModernChatInterface />;
     }
