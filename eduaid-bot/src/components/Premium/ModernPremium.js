@@ -2,12 +2,10 @@ import React, { useState, useEffect } from "react";
 import "./ModernPremium.css";
 
 const ModernPremium = ({ userId }) => {
-  const [selectedPlan, setSelectedPlan] = useState("premium");
   const [billingCycle, setBillingCycle] = useState("monthly");
   const [currentPlan, setCurrentPlan] = useState("free");
   const [isProcessing, setIsProcessing] = useState(false);
   const [showComparison, setShowComparison] = useState(false);
-  const [testimonialIndex, setTestimonialIndex] = useState(0);
 
   // Load user's current subscription status
   useEffect(() => {
@@ -23,14 +21,6 @@ const ModernPremium = ({ userId }) => {
       loadUserSubscription();
     }
   }, [userId]);
-
-  // Cycle through testimonials
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setTestimonialIndex((prev) => (prev + 1) % testimonials.length);
-    }, 5000);
-    return () => clearInterval(interval);
-  }, []);
 
   const plans = [
     {
@@ -93,67 +83,6 @@ const ModernPremium = ({ userId }) => {
         "Custom AI study assistant",
       ],
       limitations: [],
-    },
-  ];
-
-  const features = [
-    {
-      icon: "🤖",
-      title: "AI-Powered Learning",
-      description:
-        "Get instant answers and explanations from our advanced AI tutor",
-    },
-    {
-      icon: "📚",
-      title: "Smart Study Materials",
-      description: "AI-organized content that adapts to your learning style",
-    },
-    {
-      icon: "📊",
-      title: "Progress Analytics",
-      description: "Track your learning journey with detailed insights",
-    },
-    {
-      icon: "🎯",
-      title: "Personalized Plans",
-      description: "Custom study schedules based on your goals and pace",
-    },
-    {
-      icon: "📱",
-      title: "Mobile Learning",
-      description: "Study anywhere with our responsive mobile platform",
-    },
-    {
-      icon: "👥",
-      title: "Community Support",
-      description: "Connect with fellow learners and study groups",
-    },
-  ];
-
-  const testimonials = [
-    {
-      name: "Sarah Wanjiku",
-      role: "University of Nairobi Student",
-      content:
-        "EduAid helped me improve my grades by 40%. The AI tutor explains concepts so clearly!",
-      rating: 5,
-      image: "👩‍🎓",
-    },
-    {
-      name: "David Mwangi",
-      role: "High School Student",
-      content:
-        "The study planner is amazing. I never miss assignments anymore and my stress is way down.",
-      rating: 5,
-      image: "👨‍🎓",
-    },
-    {
-      name: "Grace Akinyi",
-      role: "Medical Student",
-      content:
-        "PDF analysis saved me hours of study time. It highlights exactly what I need to focus on.",
-      rating: 5,
-      image: "👩‍⚕️",
     },
   ];
 
@@ -257,16 +186,15 @@ const ModernPremium = ({ userId }) => {
       </div>
 
       <div className="premium-content">
-        {/* Plans Section */}
-        <div className="plans-section">
-          <div className="plans-grid">
+        {/* Plans Section - Full Width */}
+        <div className="plans-section-full">
+          <div className="plans-grid-expanded">
             {plans.map((plan) => (
               <div
                 key={plan.id}
                 className={`plan-card ${plan.popular ? "popular" : ""} ${
                   currentPlan === plan.id ? "current" : ""
                 }`}
-                onClick={() => setSelectedPlan(plan.id)}
               >
                 {plan.popular && (
                   <div className="popular-badge">Most Popular</div>
@@ -408,85 +336,6 @@ const ModernPremium = ({ userId }) => {
               </div>
             </div>
           )}
-        </div>
-
-        <div className="premium-sidebar">
-          {/* Features Highlight */}
-          <div className="sidebar-section">
-            <h3>Why Choose Premium?</h3>
-            <div className="features-list">
-              {features.map((feature, index) => (
-                <div key={index} className="feature-item">
-                  <div className="feature-icon">{feature.icon}</div>
-                  <div className="feature-content">
-                    <h4>{feature.title}</h4>
-                    <p>{feature.description}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Testimonials */}
-          <div className="sidebar-section">
-            <h3>Student Success Stories</h3>
-            <div className="testimonial-card">
-              <div className="testimonial-content">
-                <div className="testimonial-header">
-                  <div className="student-avatar">
-                    {testimonials[testimonialIndex].image}
-                  </div>
-                  <div className="student-info">
-                    <h4>{testimonials[testimonialIndex].name}</h4>
-                    <p>{testimonials[testimonialIndex].role}</p>
-                  </div>
-                </div>
-                <div className="testimonial-text">
-                  "{testimonials[testimonialIndex].content}"
-                </div>
-                <div className="testimonial-rating">
-                  {"⭐".repeat(testimonials[testimonialIndex].rating)}
-                </div>
-              </div>
-
-              <div className="testimonial-dots">
-                {testimonials.map((_, index) => (
-                  <div
-                    key={index}
-                    className={`dot ${
-                      index === testimonialIndex ? "active" : ""
-                    }`}
-                    onClick={() => setTestimonialIndex(index)}
-                  ></div>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Money Back Guarantee */}
-          <div className="sidebar-section">
-            <div className="guarantee-card">
-              <div className="guarantee-icon">🛡️</div>
-              <h3>30-Day Money Back Guarantee</h3>
-              <p>
-                Not satisfied? Get a full refund within 30 days, no questions
-                asked.
-              </p>
-            </div>
-          </div>
-
-          {/* Contact Support */}
-          <div className="sidebar-section">
-            <div className="support-card">
-              <div className="support-icon">💬</div>
-              <h3>Need Help Choosing?</h3>
-              <p>
-                Our education specialists are here to help you find the perfect
-                plan.
-              </p>
-              <button className="contact-btn">Chat with Support</button>
-            </div>
-          </div>
         </div>
       </div>
 

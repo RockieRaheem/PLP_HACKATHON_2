@@ -128,7 +128,8 @@
 .page-title p {
   margin: 0;
   font-size: var(--text-base);
-  color: var(--text-secondary);
+  color: #2c3e50;
+  font-weight: 600;
 }
 
 .header-actions {
