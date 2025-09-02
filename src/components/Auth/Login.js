@@ -178,34 +178,63 @@ const AuthComponent = () => {
         try {
           await signInWithEmailAndPassword(auth, email, password);
         } catch (error) {
-          // If sign-in fails, check if user exists with different auth method
+          console.error("Email sign-in error:", error);
+
+          // Handle specific Firebase auth errors
           if (
             error.code === "auth/invalid-credential" ||
             error.code === "auth/user-not-found"
           ) {
-            const signInMethods = await fetchSignInMethodsForEmail(auth, email);
+            try {
+              const signInMethods = await fetchSignInMethodsForEmail(
+                auth,
+                email
+              );
 
-            if (signInMethods.length > 0) {
-              // User exists with different auth method (likely Google)
-              if (signInMethods.includes("google.com")) {
-                setErrors({
-                  general:
-                    "This email is associated with Google sign-in. Please use 'Continue with Google' or create a new account with a different email.",
-                });
+              if (signInMethods.length > 0) {
+                // User exists with different auth method (likely Google)
+                if (signInMethods.includes("google.com")) {
+                  setErrors({
+                    general:
+                      "This email is associated with Google sign-in. Please use 'Continue with Google' or create a new account with a different email.",
+                  });
+                } else {
+                  setErrors({
+                    general:
+                      "Invalid email or password. Please check your credentials or try signing in with Google.",
+                  });
+                }
               } else {
                 setErrors({
                   general:
-                    "Invalid email or password. Please check your credentials or try signing in with Google.",
+                    "No account found with this email. Please create a new account or check your email address.",
                 });
               }
-            } else {
+            } catch (fetchError) {
+              console.error("Error checking sign-in methods:", fetchError);
               setErrors({
                 general:
-                  "No account found with this email. Please create a new account or check your email address.",
+                  "Invalid email or password. Please check your credentials.",
               });
             }
+          } else if (error.code === "auth/recaptcha-not-enabled") {
+            setErrors({
+              general:
+                "Please try again. If the issue persists, try signing in with Google.",
+            });
+          } else if (
+            error.message &&
+            error.message.includes("_getRecaptchaConfig")
+          ) {
+            setErrors({
+              general:
+                "Authentication is loading. Please wait a moment and try again.",
+            });
           } else {
-            setErrors({ general: error.message });
+            setErrors({
+              general:
+                "Sign-in failed. Please try again or use Google sign-in.",
+            });
           }
         }
       } else {
@@ -253,8 +282,20 @@ const AuthComponent = () => {
 
   const handleGoogleSignIn = async () => {
     setIsLoading(true);
+    setErrors({});
+
     try {
+      // Ensure provider is properly configured
+      if (!provider) {
+        throw new Error("Google Auth provider not properly configured");
+      }
+
       const result = await signInWithPopup(auth, provider);
+
+      if (!result || !result.user) {
+        throw new Error("No user data received from Google");
+      }
+
       const user = result.user;
 
       // Check if user document exists
@@ -295,7 +336,27 @@ const AuthComponent = () => {
       }
     } catch (error) {
       console.error("Google sign-in error:", error);
-      setErrors({ general: error.message });
+
+      let errorMessage = "Failed to sign in with Google. Please try again.";
+
+      // Handle specific error cases
+      if (error.code === "auth/popup-closed-by-user") {
+        errorMessage = "Sign-in was cancelled. Please try again.";
+      } else if (error.code === "auth/popup-blocked") {
+        errorMessage =
+          "Pop-up was blocked by your browser. Please enable pop-ups and try again.";
+      } else if (error.code === "auth/network-request-failed") {
+        errorMessage =
+          "Network error. Please check your connection and try again.";
+      } else if (error.code === "auth/configuration-not-found") {
+        errorMessage =
+          "Authentication not properly configured. Please contact support.";
+      } else if (error.message && error.message.includes("create")) {
+        errorMessage =
+          "Authentication service is initializing. Please wait a moment and try again.";
+      }
+
+      setErrors({ general: errorMessage });
     } finally {
       setIsLoading(false);
     }
