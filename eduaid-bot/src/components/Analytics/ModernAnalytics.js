@@ -4,7 +4,6 @@ import "./ModernAnalytics.css";
 const ModernAnalytics = ({ userId }) => {
   const [analyticsData, setAnalyticsData] = useState({});
   const [timeRange, setTimeRange] = useState("week"); // week, month, year
-  const [selectedMetric, setSelectedMetric] = useState("overview");
   const [showGoalsModal, setShowGoalsModal] = useState(false);
 
   // Load saved analytics data from localStorage
@@ -179,11 +178,6 @@ const ModernAnalytics = ({ userId }) => {
     return subjects.find((s) => s.id === subjectId);
   };
 
-  const formatTime = (hours) => {
-    if (hours < 1) return `${Math.round(hours * 60)}m`;
-    return `${hours.toFixed(1)}h`;
-  };
-
   const getTrendIcon = (trend) => {
     return trend === "up" ? "📈" : trend === "down" ? "📉" : "➡️";
   };
@@ -202,37 +196,6 @@ const ModernAnalytics = ({ userId }) => {
         return "#FF7A00";
     }
   };
-
-  const quickActions = [
-    {
-      icon: "📊",
-      title: "Export Report",
-      description: "Download detailed analytics",
-      action: () => {},
-      color: "#FF7A00",
-    },
-    {
-      icon: "🎯",
-      title: "Set Goals",
-      description: "Define new study targets",
-      action: () => setShowGoalsModal(true),
-      color: "#00A86B",
-    },
-    {
-      icon: "🔄",
-      title: "Compare Periods",
-      description: "Analyze performance trends",
-      action: () => {},
-      color: "#0066CC",
-    },
-    {
-      icon: "📱",
-      title: "Mobile Summary",
-      description: "Get insights on the go",
-      action: () => {},
-      color: "#8e44ad",
-    },
-  ];
 
   if (!analyticsData.studyMetrics) {
     return (
@@ -285,62 +248,6 @@ const ModernAnalytics = ({ userId }) => {
               </div>
             </div>
           </div>
-
-          {/* Key Metrics */}
-          <div className="key-metrics">
-            <div className="metric-card highlight">
-              <div className="metric-icon">⏰</div>
-              <div className="metric-content">
-                <h3>{analyticsData.studyMetrics.totalStudyTime}h</h3>
-                <p>Total Study Time</p>
-                <span className="metric-change positive">
-                  +12% from last month
-                </span>
-              </div>
-            </div>
-            <div className="metric-card">
-              <div className="metric-icon">🎯</div>
-              <div className="metric-content">
-                <h3>{analyticsData.studyMetrics.accuracy}%</h3>
-                <p>Overall Accuracy</p>
-                <span className="metric-change positive">+3.2% this month</span>
-              </div>
-            </div>
-            <div className="metric-card">
-              <div className="metric-icon">🔥</div>
-              <div className="metric-content">
-                <h3>{analyticsData.studyMetrics.streakDays}</h3>
-                <p>Study Streak (Days)</p>
-                <span className="metric-change neutral">Current streak</span>
-              </div>
-            </div>
-            <div className="metric-card">
-              <div className="metric-icon">📚</div>
-              <div className="metric-content">
-                <h3>{analyticsData.studyMetrics.sessionsCompleted}</h3>
-                <p>Sessions Completed</p>
-                <span className="metric-change positive">+8 this week</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Quick Actions */}
-          <div className="quick-actions">
-            {quickActions.map((action, index) => (
-              <div
-                key={index}
-                className="quick-action-card"
-                onClick={action.action}
-                style={{ "--action-color": action.color }}
-              >
-                <div className="action-icon">{action.icon}</div>
-                <div className="action-content">
-                  <h4>{action.title}</h4>
-                  <p>{action.description}</p>
-                </div>
-              </div>
-            ))}
-          </div>
         </div>
       </div>
 
@@ -350,38 +257,197 @@ const ModernAnalytics = ({ userId }) => {
           {/* Weekly Performance Chart */}
           <div className="chart-section">
             <div className="section-header">
-              <h3>📈 Weekly Performance</h3>
+              <div className="header-title">
+                <h3>📈 Weekly Performance Dashboard</h3>
+                <p className="section-subtitle">
+                  Track your study progress and accuracy trends
+                </p>
+              </div>
               <div className="chart-controls">
-                <button className="chart-btn active">Study Hours</button>
-                <button className="chart-btn">Accuracy</button>
-                <button className="chart-btn">Sessions</button>
+                <button className="chart-btn active" data-metric="hours">
+                  <span className="btn-icon">⏰</span>
+                  <span className="btn-text">Study Hours</span>
+                </button>
+                <button className="chart-btn" data-metric="accuracy">
+                  <span className="btn-icon">🎯</span>
+                  <span className="btn-text">Accuracy</span>
+                </button>
+                <button className="chart-btn" data-metric="sessions">
+                  <span className="btn-icon">📚</span>
+                  <span className="btn-text">Sessions</span>
+                </button>
               </div>
             </div>
+
+            {/* Weekly Summary Cards */}
+            <div className="weekly-summary">
+              <div className="summary-card highlight">
+                <div className="summary-icon">⚡</div>
+                <div className="summary-content">
+                  <h4>19.6h</h4>
+                  <p>Total Study Time</p>
+                  <span className="trend-indicator positive">
+                    +2.3h from last week
+                  </span>
+                </div>
+              </div>
+              <div className="summary-card">
+                <div className="summary-icon">🎯</div>
+                <div className="summary-content">
+                  <h4>84.7%</h4>
+                  <p>Average Accuracy</p>
+                  <span className="trend-indicator positive">
+                    +1.8% improvement
+                  </span>
+                </div>
+              </div>
+              <div className="summary-card">
+                <div className="summary-icon">📊</div>
+                <div className="summary-content">
+                  <h4>23</h4>
+                  <p>Study Sessions</p>
+                  <span className="trend-indicator neutral">
+                    Same as last week
+                  </span>
+                </div>
+              </div>
+              <div className="summary-card">
+                <div className="summary-icon">🔥</div>
+                <div className="summary-content">
+                  <h4>5/7</h4>
+                  <p>Active Days</p>
+                  <span className="trend-indicator positive">
+                    Consistent streak
+                  </span>
+                </div>
+              </div>
+            </div>
+
             <div className="performance-chart">
-              <div className="chart-grid">
+              <div className="chart-header">
+                <h4>Daily Breakdown</h4>
+                <div className="chart-legend">
+                  <div className="legend-item">
+                    <div className="legend-color excellent"></div>
+                    <span>Excellent (90-100%)</span>
+                  </div>
+                  <div className="legend-item">
+                    <div className="legend-color good"></div>
+                    <span>Good (80-89%)</span>
+                  </div>
+                  <div className="legend-item">
+                    <div className="legend-color average"></div>
+                    <span>Average (70-79%)</span>
+                  </div>
+                  <div className="legend-item">
+                    <div className="legend-color below-average"></div>
+                    <span>Needs Work (&lt;70%)</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="chart-grid-enhanced">
                 {analyticsData.weeklyData.map((day, index) => (
-                  <div key={index} className="chart-day">
-                    <div className="day-stats">
-                      <div className="stat-value">{day.hours}h</div>
-                      <div className="stat-label">{day.accuracy}%</div>
+                  <div key={index} className="chart-day-enhanced">
+                    <div className="day-header">
+                      <span className="day-name">{day.day}</span>
+                      <span className="day-date">
+                        {new Date(
+                          Date.now() - (6 - index) * 24 * 60 * 60 * 1000
+                        ).getDate()}
+                      </span>
                     </div>
-                    <div className="chart-bar-container">
-                      <div
-                        className="chart-bar"
-                        style={{
-                          height: `${(day.hours / 5) * 100}%`,
-                          backgroundColor:
-                            day.hours > 3
-                              ? "#00A86B"
-                              : day.hours > 2
-                              ? "#FF7A00"
-                              : "#f39c12",
-                        }}
-                      ></div>
+
+                    <div className="metrics-display">
+                      <div className="primary-metric">
+                        <span className="metric-value">{day.hours}h</span>
+                        <span className="metric-sessions">
+                          {day.sessions} sessions
+                        </span>
+                      </div>
+
+                      <div className="chart-bar-container-enhanced">
+                        <div
+                          className="chart-bar-enhanced"
+                          style={{
+                            height: `${
+                              day.accuracy >= 90
+                                ? 85 + (day.accuracy - 90) * 1.5 // 85-100% height for excellent
+                                : day.accuracy >= 80
+                                ? 60 + (day.accuracy - 80) * 2.5 // 60-85% height for good
+                                : day.accuracy >= 70
+                                ? 35 + (day.accuracy - 70) * 2.5 // 35-60% height for average
+                                : 20 + (day.accuracy / 70) * 15 // 20-35% height for below average
+                            }%`,
+                            background:
+                              day.accuracy >= 90
+                                ? "linear-gradient(135deg, #00A86B 0%, #27ae60 100%)"
+                                : day.accuracy >= 80
+                                ? "linear-gradient(135deg, #FF7A00 0%, #f39c12 100%)"
+                                : day.accuracy >= 70
+                                ? "linear-gradient(135deg, #f39c12 0%, #e67e22 100%)"
+                                : "linear-gradient(135deg, #e74c3c 0%, #c0392b 100%)",
+                          }}
+                        >
+                          <div className="bar-glow"></div>
+                        </div>
+                      </div>
+
+                      <div className="accuracy-badge">
+                        <span
+                          className={`accuracy-score ${
+                            day.accuracy >= 90
+                              ? "excellent"
+                              : day.accuracy >= 80
+                              ? "good"
+                              : day.accuracy >= 70
+                              ? "average"
+                              : "below-average"
+                          }`}
+                        >
+                          {day.accuracy}%
+                        </span>
+                      </div>
                     </div>
-                    <div className="day-label">{day.day}</div>
+
+                    <div className="day-insights">
+                      {day.hours >= 4 && (
+                        <div className="insight-tag productive">
+                          🚀 Productive
+                        </div>
+                      )}
+                      {day.accuracy >= 90 && (
+                        <div className="insight-tag accurate">🎯 Accurate</div>
+                      )}
+                      {day.hours < 2 && (
+                        <div className="insight-tag light">💡 Light study</div>
+                      )}
+                    </div>
                   </div>
                 ))}
+              </div>
+
+              <div className="chart-footer">
+                <div className="performance-insights">
+                  <div className="insight-item">
+                    <span className="insight-icon">📈</span>
+                    <span className="insight-text">
+                      Best day: Thursday (4.1h, 76% accuracy)
+                    </span>
+                  </div>
+                  <div className="insight-item">
+                    <span className="insight-icon">🎯</span>
+                    <span className="insight-text">
+                      Highest accuracy: Saturday (93%)
+                    </span>
+                  </div>
+                  <div className="insight-item">
+                    <span className="insight-icon">💡</span>
+                    <span className="insight-text">
+                      Recommended: Focus on consistency during weekdays
+                    </span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
