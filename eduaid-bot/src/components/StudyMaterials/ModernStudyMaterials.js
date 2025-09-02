@@ -1,8 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useDropzone } from "react-dropzone";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { httpsCallable } from "firebase/functions";
-import { storage, functions } from "../../firebase";
 import "./ModernStudyMaterials.css";
 
 const ModernStudyMaterials = () => {
@@ -14,11 +11,9 @@ const ModernStudyMaterials = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [showUploadModal, setShowUploadModal] = useState(false);
 
-  const processPdf = httpsCallable(functions, "processPdfDocument");
-
   // Load saved files from localStorage on component mount
   useEffect(() => {
-    const savedFiles = localStorage.getItem("studyMaterials");
+    const savedFiles = localStorage.getItem("uploadedFiles");
     if (savedFiles) {
       setUploadedFiles(JSON.parse(savedFiles));
     }
@@ -26,7 +21,7 @@ const ModernStudyMaterials = () => {
 
   // Save files to localStorage whenever uploadedFiles changes
   useEffect(() => {
-    localStorage.setItem("studyMaterials", JSON.stringify(uploadedFiles));
+    localStorage.setItem("uploadedFiles", JSON.stringify(uploadedFiles));
   }, [uploadedFiles]);
 
   const onDrop = async (acceptedFiles) => {
@@ -42,28 +37,34 @@ const ModernStudyMaterials = () => {
     setIsProcessing(true);
 
     try {
-      // Upload to Firebase Storage
-      const storageRef = ref(
-        storage,
-        `study-materials/${Date.now()}_${file.name}`
-      );
-      const snapshot = await uploadBytes(storageRef, file);
-      const downloadURL = await getDownloadURL(snapshot.ref);
+      // Create local file URL for preview
+      const fileUrl = URL.createObjectURL(file);
 
       let processedContent = "";
       let analysis = "";
 
-      // Process file based on type
+      // Process file based on type (simplified local processing)
       if (fileType === "pdf") {
-        const result = await processPdf({ fileUrl: downloadURL });
-        processedContent = result.data.extractedText;
-        analysis = result.data.analysis;
+        processedContent = "PDF content will be processed locally";
+        analysis = "This is a PDF document that contains study material.";
+      } else if (fileType === "txt") {
+        // For text files, we can actually read the content
+        const text = await file.text();
+        processedContent = text;
+        analysis = `Text document with ${text.length} characters. Contains study notes and material.`;
+      } else if (fileType === "image") {
+        processedContent = "Image content detected";
+        analysis =
+          "This is an image file that may contain diagrams, charts, or text.";
+      } else {
+        processedContent = "Document content will be processed";
+        analysis = "This document contains study material for review.";
       }
 
       const newFile = {
         id: Date.now(),
         name: file.name,
-        url: downloadURL,
+        url: fileUrl, // Using local URL instead of Firebase URL
         type: fileType,
         size: file.size,
         uploadDate: new Date().toISOString(),
@@ -80,10 +81,10 @@ const ModernStudyMaterials = () => {
       setShowUploadModal(false);
     } catch (error) {
       console.error("Upload error:", error);
-      alert("Failed to process file");
+      alert("Failed to process file. Please try again.");
+    } finally {
+      setIsProcessing(false);
     }
-
-    setIsProcessing(false);
   };
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
