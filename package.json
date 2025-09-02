@@ -3,8 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "build": "cd eduaid-bot && npm install && npm run build",
-    "start": "cd eduaid-bot && npm start"
+    "build": "cd eduaid-bot && npm ci && npm run build",
+    "start": "cd eduaid-bot && npm start",
+    "vercel-build": "cd eduaid-bot && npm ci && npm run build"
   },
   "dependencies": {},
   "devDependencies": {}
