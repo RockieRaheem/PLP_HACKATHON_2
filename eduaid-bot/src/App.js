@@ -23,9 +23,6 @@ function App() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [chatHistory] = useState([
     { id: 1, title: "Getting Started with EduAid", timestamp: "2 hours ago" },
-    { id: 2, title: "Mathematics: Calculus Help", timestamp: "1 day ago" },
-    { id: 3, title: "Study Plan Creation", timestamp: "3 days ago" },
-    { id: 4, title: "African History Research", timestamp: "1 week ago" },
   ]);
 
   useEffect(() => {
@@ -144,24 +141,10 @@ function App() {
       <aside className={`chatgpt-sidebar ${sidebarOpen ? "sidebar-open" : ""}`}>
         {/* Sidebar Header */}
         <div className="sidebar-header">
-          <button className="new-chat-btn" onClick={() => setActiveTab("chat")}>
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M12 5V19M5 12H19"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-            New Chat
-          </button>
+          <div className="system-branding">
+            <h2 className="system-name">EduAid</h2>
+            <p className="system-description">Your AI Study Companion</p>
+          </div>
 
           {/* Mobile Close Button */}
           <button
@@ -225,6 +208,29 @@ function App() {
                 </button>
               ))}
             </div>
+
+            {/* New Chat Button */}
+            <button
+              className="new-chat-btn"
+              onClick={() => setActiveTab("chat")}
+            >
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M12 5V19M5 12H19"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+              New Chat
+            </button>
           </div>
 
           {/* Study Tools Section */}
