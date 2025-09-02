@@ -4,8 +4,11 @@ import {
   createUserWithEmailAndPassword,
   signInWithPopup,
   GoogleAuthProvider,
+  fetchSignInMethodsForEmail,
+  linkWithCredential,
+  EmailAuthProvider,
 } from "firebase/auth";
-import { doc, setDoc } from "firebase/firestore";
+import { doc, setDoc, getDoc } from "firebase/firestore";
 import { auth, db } from "../../firebase";
 import "./ModernAuth.css";
 
@@ -27,20 +30,65 @@ const AuthComponent = () => {
     academicLevel: "",
   });
 
+  // Google Auth Provider
+  const provider = new GoogleAuthProvider();
+
   // African countries with flags
   const africaCountries = [
-    "🇩🇿 Algeria", "🇦🇴 Angola", "🇧🇯 Benin", "🇧🇼 Botswana", "🇧🇫 Burkina Faso",
-    "🇧🇮 Burundi", "🇨🇲 Cameroon", "🇨🇻 Cape Verde", "🇨🇫 Central African Republic",
-    "🇹🇩 Chad", "🇰🇲 Comoros", "🇨🇩 Democratic Republic of Congo", "🇨🇬 Republic of Congo",
-    "🇨🇮 Côte d'Ivoire", "🇩🇯 Djibouti", "🇪🇬 Egypt", "🇬🇶 Equatorial Guinea",
-    "🇪🇷 Eritrea", "🇪🇹 Ethiopia", "🇬🇦 Gabon", "🇬🇲 Gambia", "🇬🇭 Ghana",
-    "🇬🇳 Guinea", "🇬🇼 Guinea-Bissau", "🇰🇪 Kenya", "🇱🇸 Lesotho", "🇱🇷 Liberia",
-    "🇱🇾 Libya", "🇲🇬 Madagascar", "🇲🇼 Malawi", "🇲🇱 Mali", "🇲🇷 Mauritania",
-    "🇲🇺 Mauritius", "🇲🇦 Morocco", "🇲🇿 Mozambique", "🇳🇦 Namibia", "🇳🇪 Niger",
-    "🇳🇬 Nigeria", "🇷🇼 Rwanda", "🇸🇹 São Tomé and Príncipe", "🇸🇳 Senegal",
-    "🇸🇨 Seychelles", "🇸🇱 Sierra Leone", "🇸🇴 Somalia", "🇿🇦 South Africa",
-    "🇸🇸 South Sudan", "🇸🇩 Sudan", "🇸🇿 Eswatini", "🇹🇿 Tanzania", "🇹🇬 Togo",
-    "🇹🇳 Tunisia", "🇺🇬 Uganda", "🇿🇲 Zambia", "🇿🇼 Zimbabwe"
+    "🇩🇿 Algeria",
+    "🇦🇴 Angola",
+    "🇧🇯 Benin",
+    "🇧🇼 Botswana",
+    "🇧🇫 Burkina Faso",
+    "🇧🇮 Burundi",
+    "🇨🇲 Cameroon",
+    "🇨🇻 Cape Verde",
+    "🇨🇫 Central African Republic",
+    "🇹🇩 Chad",
+    "🇰🇲 Comoros",
+    "🇨🇩 Democratic Republic of Congo",
+    "🇨🇬 Republic of Congo",
+    "🇨🇮 Côte d'Ivoire",
+    "🇩🇯 Djibouti",
+    "🇪🇬 Egypt",
+    "🇬🇶 Equatorial Guinea",
+    "🇪🇷 Eritrea",
+    "🇪🇹 Ethiopia",
+    "🇬🇦 Gabon",
+    "🇬🇲 Gambia",
+    "🇬🇭 Ghana",
+    "🇬🇳 Guinea",
+    "🇬🇼 Guinea-Bissau",
+    "🇰🇪 Kenya",
+    "🇱🇸 Lesotho",
+    "🇱🇷 Liberia",
+    "🇱🇾 Libya",
+    "🇲🇬 Madagascar",
+    "🇲🇼 Malawi",
+    "🇲🇱 Mali",
+    "🇲🇷 Mauritania",
+    "🇲🇺 Mauritius",
+    "🇲🇦 Morocco",
+    "🇲🇿 Mozambique",
+    "🇳🇦 Namibia",
+    "🇳🇪 Niger",
+    "🇳🇬 Nigeria",
+    "🇷🇼 Rwanda",
+    "🇸🇹 São Tomé and Príncipe",
+    "🇸🇳 Senegal",
+    "🇸🇨 Seychelles",
+    "🇸🇱 Sierra Leone",
+    "🇸🇴 Somalia",
+    "🇿🇦 South Africa",
+    "🇸🇸 South Sudan",
+    "🇸🇩 Sudan",
+    "🇸🇿 Eswatini",
+    "🇹🇿 Tanzania",
+    "🇹🇬 Togo",
+    "🇹🇳 Tunisia",
+    "🇺🇬 Uganda",
+    "🇿🇲 Zambia",
+    "🇿🇼 Zimbabwe",
   ];
 
   // African education systems
@@ -56,7 +104,7 @@ const AuthComponent = () => {
     "Egyptian Thanaweya Amma",
     "Moroccan Baccalauréat",
     "Ethiopian Higher Education Entrance Examination",
-    "Algerian Baccalauréat"
+    "Algerian Baccalauréat",
   ];
 
   // Academic levels across African systems
@@ -72,14 +120,28 @@ const AuthComponent = () => {
     "University Undergraduate",
     "University Postgraduate",
     "Professional Development",
-    "Adult Education"
+    "Adult Education",
   ];
 
   // Major African languages
   const africanLanguages = [
-    "English", "French", "Arabic", "Portuguese", "Swahili", "Amharic",
-    "Yoruba", "Igbo", "Hausa", "Zulu", "Xhosa", "Afrikaans", "Twi",
-    "Kinyarwanda", "Luganda", "Oromo", "Berber"
+    "English",
+    "French",
+    "Arabic",
+    "Portuguese",
+    "Swahili",
+    "Amharic",
+    "Yoruba",
+    "Igbo",
+    "Hausa",
+    "Zulu",
+    "Xhosa",
+    "Afrikaans",
+    "Twi",
+    "Kinyarwanda",
+    "Luganda",
+    "Oromo",
+    "Berber",
   ];
 
   const validateForm = () => {
@@ -115,7 +177,39 @@ const AuthComponent = () => {
     setIsLoading(true);
     try {
       if (isLogin) {
-        await signInWithEmailAndPassword(auth, email, password);
+        try {
+          await signInWithEmailAndPassword(auth, email, password);
+        } catch (error) {
+          // If sign-in fails, check if user exists with different auth method
+          if (
+            error.code === "auth/invalid-credential" ||
+            error.code === "auth/user-not-found"
+          ) {
+            const signInMethods = await fetchSignInMethodsForEmail(auth, email);
+
+            if (signInMethods.length > 0) {
+              // User exists with different auth method (likely Google)
+              if (signInMethods.includes("google.com")) {
+                setErrors({
+                  general:
+                    "This email is associated with Google sign-in. Please use 'Continue with Google' or create a new account with a different email.",
+                });
+              } else {
+                setErrors({
+                  general:
+                    "Invalid email or password. Please check your credentials or try signing in with Google.",
+                });
+              }
+            } else {
+              setErrors({
+                general:
+                  "No account found with this email. Please create a new account or check your email address.",
+              });
+            }
+          } else {
+            setErrors({ general: error.message });
+          }
+        }
       } else {
         const userCredential = await createUserWithEmailAndPassword(
           auth,
@@ -125,6 +219,7 @@ const AuthComponent = () => {
         await setDoc(doc(db, "users", userCredential.user.uid), {
           ...profile,
           email: email,
+          provider: "email",
           createdAt: new Date(),
           lastLogin: new Date(),
           preferences: {
@@ -145,7 +240,14 @@ const AuthComponent = () => {
       }
     } catch (error) {
       console.error("Auth error:", error);
-      setErrors({ general: error.message });
+      if (error.code === "auth/email-already-in-use") {
+        setErrors({
+          general:
+            "An account with this email already exists. Please sign in instead or use a different email.",
+        });
+      } else {
+        setErrors({ general: error.message });
+      }
     } finally {
       setIsLoading(false);
     }
@@ -154,27 +256,47 @@ const AuthComponent = () => {
   const handleGoogleSignIn = async () => {
     setIsLoading(true);
     try {
-      const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(auth, provider);
+      const user = result.user;
 
-      await setDoc(
-        doc(db, "users", result.user.uid),
-        {
-          name: result.user.displayName,
-          email: result.user.email,
-          photoURL: result.user.photoURL,
+      // Check if user document exists
+      const userDoc = await getDoc(doc(db, "users", user.uid));
+      if (!userDoc.exists()) {
+        // Create user document for new Google users
+        await setDoc(doc(db, "users", user.uid), {
+          displayName: user.displayName,
+          email: user.email,
+          photoURL: user.photoURL,
           provider: "google",
           createdAt: new Date(),
           lastLogin: new Date(),
           preferences: {
             theme: "modern-light",
+            timezone: "Africa/Lagos",
+            notifications: true,
             culturalContext: "african",
+            studyReminders: true,
           },
-        },
-        { merge: true }
-      );
+          academicProfile: {
+            strengths: [],
+            weaknesses: [],
+            favoriteSubjects: [],
+            studySchedule: {},
+            achievements: [],
+          },
+        });
+      } else {
+        // Update last login for existing users
+        await setDoc(
+          doc(db, "users", user.uid),
+          {
+            lastLogin: new Date(),
+          },
+          { merge: true }
+        );
+      }
     } catch (error) {
-      console.error("Google auth error:", error);
+      console.error("Google sign-in error:", error);
       setErrors({ general: error.message });
     } finally {
       setIsLoading(false);
@@ -220,8 +342,12 @@ const AuthComponent = () => {
           <div className="flag-decoration">🌍</div>
           <div className="brand-logo">E</div>
           <h1 className="brand-title">EduAid</h1>
-          <p className="brand-subtitle">🌟 Illuminating African Minds Across the Galaxy 🌟</p>
-          <p className="brand-motto">"Elimu ni Ufunguo" (Education is the Key)</p>
+          <p className="brand-subtitle">
+            🌟 Illuminating African Minds Across the Galaxy 🌟
+          </p>
+          <p className="brand-motto">
+            "Elimu ni Ufunguo" (Education is the Key)
+          </p>
         </div>
 
         {/* Form Container */}
@@ -349,7 +475,11 @@ const AuthComponent = () => {
                     )}
                   </button>
                 ) : (
-                  <button type="button" onClick={nextStep} className="btn btn-primary">
+                  <button
+                    type="button"
+                    onClick={nextStep}
+                    className="btn btn-primary"
+                  >
                     Continue
                   </button>
                 )}
@@ -422,14 +552,18 @@ const AuthComponent = () => {
                       ))}
                     </select>
                     {errors.academicLevel && (
-                      <span className="field-error">{errors.academicLevel}</span>
+                      <span className="field-error">
+                        {errors.academicLevel}
+                      </span>
                     )}
                   </div>
                 </div>
 
                 <div className="form-row">
                   <div className="form-col">
-                    <label className="form-label">Education System (Optional)</label>
+                    <label className="form-label">
+                      Education System (Optional)
+                    </label>
                     <select
                       value={profile.educationSystem}
                       onChange={(e) =>
@@ -472,10 +606,18 @@ const AuthComponent = () => {
                 </div>
 
                 <div className="form-actions">
-                  <button type="button" onClick={prevStep} className="btn btn-secondary">
+                  <button
+                    type="button"
+                    onClick={prevStep}
+                    className="btn btn-secondary"
+                  >
                     Back
                   </button>
-                  <button type="submit" disabled={isLoading} className="btn btn-primary">
+                  <button
+                    type="submit"
+                    disabled={isLoading}
+                    className="btn btn-primary"
+                  >
                     {isLoading ? (
                       <>
                         <div className="loading-spinner"></div>
