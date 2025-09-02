@@ -406,6 +406,25 @@
   border: 1px solid #f5c6cb;
 }
 
+.message-bubble.api-limit {
+  background: linear-gradient(135deg, #f8f9ff 0%, #e8f2ff 100%);
+  color: #1a365d;
+  border: 1px solid #bee3f8;
+  padding: var(--space-6);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  box-shadow: var(--shadow-medium);
+}
+
+.message-bubble.api-limit strong {
+  color: var(--primary-orange);
+  font-weight: 600;
+}
+
+.message-bubble.api-limit .emoji {
+  font-size: 1.2em;
+}
+
 .message-text {
   white-space: pre-wrap;
 }
