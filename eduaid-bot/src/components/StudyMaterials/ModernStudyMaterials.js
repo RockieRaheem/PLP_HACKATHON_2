@@ -224,44 +224,13 @@ const ModernStudyMaterials = () => {
   };
 
   const categories = [
-    "all",
+    "All Files",
     "Mathematics",
     "Sciences",
     "Languages",
     "Social Studies",
     "Exams",
     "General",
-  ];
-
-  const quickActions = [
-    {
-      icon: "📤",
-      title: "Upload Materials",
-      description: "Add new study documents",
-      action: () => setShowUploadModal(true),
-      color: "#FF7A00",
-    },
-    {
-      icon: "🔍",
-      title: "Smart Search",
-      description: "Find materials quickly",
-      action: () => document.getElementById("search-input").focus(),
-      color: "#00A86B",
-    },
-    {
-      icon: "📊",
-      title: "Study Analytics",
-      description: "Track your progress",
-      action: () => {},
-      color: "#0066CC",
-    },
-    {
-      icon: "⭐",
-      title: "Starred Items",
-      description: "Your favorite materials",
-      action: () => setFilterCategory("starred"),
-      color: "#8e44ad",
-    },
   ];
 
   return (
@@ -286,24 +255,6 @@ const ModernStudyMaterials = () => {
                 Upload Materials
               </button>
             </div>
-          </div>
-
-          {/* Quick Actions */}
-          <div className="quick-actions">
-            {quickActions.map((action, index) => (
-              <div
-                key={index}
-                className="quick-action-card"
-                onClick={action.action}
-                style={{ "--action-color": action.color }}
-              >
-                <div className="action-icon">{action.icon}</div>
-                <div className="action-content">
-                  <h4>{action.title}</h4>
-                  <p>{action.description}</p>
-                </div>
-              </div>
-            ))}
           </div>
         </div>
       </div>
