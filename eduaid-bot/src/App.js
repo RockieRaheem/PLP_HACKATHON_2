@@ -140,11 +140,16 @@ function App() {
       {/* ChatGPT-Style Sidebar */}
       <aside className={`chatgpt-sidebar ${sidebarOpen ? "sidebar-open" : ""}`}>
         {/* Sidebar Header */}
-        <div className="sidebar-header">
-          <div className="system-branding">
-            <h2 className="system-name">EduAid</h2>
-            <p className="system-description">Your AI Study Companion</p>
-          </div>
+        <div className="sidebar-header auth-header">
+          <div className="flag-decoration">🌍</div>
+          <div className="brand-logo">E</div>
+          <h1 className="brand-title">EduAid</h1>
+          <p className="brand-subtitle">
+            🌟 Illuminating African Minds Across the Galaxy 🌟
+          </p>
+          <p className="brand-motto">
+            "Elimu ni Ufunguo" (Education is the Key)
+          </p>
 
           {/* Mobile Close Button */}
           <button
