@@ -1,32 +1,299 @@
 /**
- * Import function triggers from their respective submodules:
- *
- * const {onCall} = require("firebase-functions/v2/https");
- * const {onDocumentWritten} = require("firebase-functions/v2/firestore");
- *
- * See a full list of supported triggers at https://firebase.google.com/docs/functions
+ * @fileoverview Firebase Cloud Functions for EduAid Bot
+ * @format CommonJS
  */
 
-const {setGlobalOptions} = require("firebase-functions");
-const {onRequest} = require("firebase-functions/https");
-const logger = require("firebase-functions/logger");
+// @ts-nocheck
+const functions = require("firebase-functions");
+const admin = require("firebase-admin");
+const OpenAI = require("openai");
+const cors = require("cors")({ origin: true });
 
-// For cost control, you can set the maximum number of containers that can be
-// running at the same time. This helps mitigate the impact of unexpected
-// traffic spikes by instead downgrading performance. This limit is a
-// per-function limit. You can override the limit for each function using the
-// `maxInstances` option in the function's options, e.g.
-// `onRequest({ maxInstances: 5 }, (req, res) => { ... })`.
-// NOTE: setGlobalOptions does not apply to functions using the v1 API. V1
-// functions should each use functions.runWith({ maxInstances: 10 }) instead.
-// In the v1 API, each function can only serve one request per container, so
-// this will be the maximum concurrent request count.
-setGlobalOptions({ maxInstances: 10 });
+admin.initializeApp();
 
-// Create and deploy your first functions
-// https://firebase.google.com/docs/functions/get-started
+const openai = new OpenAI({
+  apiKey: functions.config().openai?.key || process.env.OPENAI_API_KEY,
+});
 
-// exports.helloWorld = onRequest((request, response) => {
-//   logger.info("Hello logs!", {structuredData: true});
-//   response.send("Hello from Firebase!");
-// });
+// Chat with OpenAI (Callable function for Firebase SDK)
+exports.sendChatMessage = functions.https.onCall(async (data, context) => {
+  // Verify user is authenticated
+  if (!context.auth) {
+    throw new functions.https.HttpsError(
+      "unauthenticated",
+      "User must be authenticated"
+    );
+  }
+
+  try {
+    const { message, context: userContext, language } = data;
+
+    const systemPrompt = `You are EduAid Bot, an AI tutor specifically designed for African students. 
+    Your role is to provide educational support tailored to African curricula (WAEC, KCSE, Matric, etc.).
+    
+    Guidelines:
+    - Explain concepts in simple, clear language
+    - Use examples relevant to African contexts
+    - Support local languages when requested (Swahili, Yoruba, etc.)
+    - Focus on practical, exam-oriented explanations
+    - Be encouraging and supportive
+    
+    Current context: ${userContext}
+    Response language: ${language}`;
+
+    const completion = await openai.chat.completions.create({
+      model: "gpt-3.5-turbo",
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: message },
+      ],
+      max_tokens: 500,
+      temperature: 0.7,
+    });
+
+    // Validate OpenAI response
+    if (!completion?.choices?.[0]?.message?.content) {
+      throw new Error("Invalid response from OpenAI");
+    }
+
+    // Log the interaction for analytics
+    await admin.firestore().collection("chat_logs").add({
+      userId: context.auth.uid,
+      message: message,
+      response: completion.choices[0].message.content,
+      timestamp: admin.firestore.FieldValue.serverTimestamp(),
+    });
+
+    return { response: completion.choices[0].message.content };
+  } catch (error) {
+    console.error("OpenAI API error:", error);
+
+    throw new functions.https.HttpsError(
+      "internal",
+      "Failed to process message"
+    );
+  }
+});
+
+// CORS-enabled HTTP endpoint for frontend direct fetch
+exports.sendChatMessageHttp = functions.https.onRequest((req, res) => {
+  cors(req, res, async () => {
+    if (req.method !== "POST") {
+      return res.status(405).send("Method Not Allowed");
+    }
+    try {
+      // Input validation
+      const { message, context: userContext, language } = req.body;
+
+      if (
+        !message ||
+        typeof message !== "string" ||
+        message.trim().length === 0
+      ) {
+        return res.status(400).json({
+          error: "Message is required and must be a non-empty string",
+        });
+      }
+
+      const systemPrompt = `You are EduAid Bot, an AI tutor specifically designed for African students. 
+      Your role is to provide educational support tailored to African curricula (WAEC, KCSE, Matric, etc.).
+      
+      Guidelines:
+      - Explain concepts in simple, clear language
+      - Use examples relevant to African contexts
+      - Support local languages when requested (Swahili, Yoruba, etc.)
+      - Focus on practical, exam-oriented explanations
+      - Be encouraging and supportive
+      
+      Current context: ${userContext || "General tutoring"}
+      Response language: ${language || "English"}`;
+
+      // Check if OpenAI is properly configured
+      const apiKey =
+        functions.config().openai?.key || process.env.OPENAI_API_KEY;
+      if (!apiKey) {
+        console.error("OpenAI API key not configured");
+        return res.status(500).json({ error: "AI service not configured" });
+      }
+
+      const completion = await openai.chat.completions.create({
+        model: "gpt-3.5-turbo",
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: message.trim() },
+        ],
+        max_tokens: 500,
+        temperature: 0.7,
+      });
+
+      // Validate OpenAI response
+      if (!completion?.choices?.[0]?.message?.content) {
+        throw new Error("Invalid response from OpenAI");
+      }
+
+      const responseText = completion.choices[0].message.content;
+
+      // Log the interaction for analytics
+      await admin.firestore().collection("chat_logs").add({
+        message: message.trim(),
+        response: responseText,
+        context: userContext,
+        language: language,
+        timestamp: admin.firestore.FieldValue.serverTimestamp(),
+      });
+
+      res.set("Access-Control-Allow-Origin", "*");
+      res.status(200).json({ response: responseText });
+    } catch (error) {
+      console.error("OpenAI API error:", error);
+      res.set("Access-Control-Allow-Origin", "*");
+
+      // Return appropriate error responses
+      if (error.message?.includes("Invalid response from OpenAI")) {
+        return res.status(502).json({ error: "AI service unavailable" });
+      }
+
+      if (error.code === "insufficient_quota") {
+        return res.status(503).json({ error: "AI service quota exceeded" });
+      }
+
+      res.status(500).json({
+        error: "Failed to process message",
+        message:
+          process.env.NODE_ENV === "development" ? error.message : undefined,
+      });
+    }
+  });
+});
+
+// Generate Study Plan
+exports.generateStudyPlan = functions.https.onCall(async (data, context) => {
+  if (!context.auth) {
+    throw new functions.https.HttpsError(
+      "unauthenticated",
+      "User must be authenticated"
+    );
+  }
+
+  try {
+    const { subjects, studyHoursPerDay, preferredStudyTimes } = data;
+
+    const prompt = `Create a detailed 7-day study plan for the following subjects: ${subjects
+      .map((s) => s.name)
+      .join(", ")}.
+    
+    Requirements:
+    - ${studyHoursPerDay} hours of study per day
+    - Preferred study times: ${preferredStudyTimes.join(", ")}
+    - Focus on African curriculum standards
+    - Include specific topics and time allocation
+    - Prioritize subjects with upcoming exams
+    
+    Return as a JSON array with objects containing: date, subject, topic, duration`;
+
+    const completion = await openai.chat.completions.create({
+      model: "gpt-3.5-turbo",
+      messages: [
+        {
+          role: "system",
+          content: "You are an educational planner for African students.",
+        },
+        { role: "user", content: prompt },
+      ],
+      max_tokens: 1000,
+      temperature: 0.5,
+    });
+
+    // Try to parse the JSON response, fallback to demo data if parsing fails
+    let plan;
+    try {
+      plan = JSON.parse(completion.choices[0].message.content);
+    } catch (parseError) {
+      // Fallback to demo plan
+      plan = [
+        {
+          date: "Today",
+          subject: subjects[0]?.name || "Mathematics",
+          topic: "Algebra Review",
+          duration: "2 hours",
+        },
+        {
+          date: "Tomorrow",
+          subject: subjects[0]?.name || "Mathematics",
+          topic: "Geometry Practice",
+          duration: "1.5 hours",
+        },
+      ];
+    }
+
+    return { plan };
+  } catch (error) {
+    console.error("Study plan generation error:", error);
+    throw new functions.https.HttpsError(
+      "internal",
+      "Failed to generate study plan"
+    );
+  }
+});
+
+// Process PDF Document
+exports.processPdfDocument = functions.https.onCall(async (data, context) => {
+  if (!context.auth) {
+    throw new functions.https.HttpsError(
+      "unauthenticated",
+      "User must be authenticated"
+    );
+  }
+
+  try {
+    const { fileUrl } = data;
+
+    // For demo purposes, return mock analysis
+    // In production, you would use PDF parsing libraries like pdf-parse
+    const mockAnalysis = `This document appears to be about mathematics concepts including algebra and geometry. Key topics identified: quadratic equations, triangular properties, and coordinate geometry. Source: ${fileUrl}`;
+
+    return {
+      extractedText: "Sample extracted text from PDF...",
+      analysis: mockAnalysis,
+    };
+  } catch (error) {
+    console.error("PDF processing error:", error);
+    throw new functions.https.HttpsError("internal", "Failed to process PDF");
+  }
+});
+
+// Initialize Payment with Flutterwave
+exports.initiatePayment = functions.https.onCall(async (data, context) => {
+  if (!context.auth) {
+    throw new functions.https.HttpsError(
+      "unauthenticated",
+      "User must be authenticated"
+    );
+  }
+
+  try {
+    const { planId, amount, currency } = data;
+
+    // For demo purposes, return mock payment URL
+    // In production, integrate with Flutterwave API
+    const mockPaymentUrl = `https://checkout.flutterwave.com/pay/${planId}`;
+
+    // Log payment initiation
+    await admin.firestore().collection("payment_logs").add({
+      userId: context.auth.uid,
+      planId,
+      amount,
+      currency,
+      status: "initiated",
+      timestamp: admin.firestore.FieldValue.serverTimestamp(),
+    });
+
+    return { paymentUrl: mockPaymentUrl };
+  } catch (error) {
+    console.error("Payment initiation error:", error);
+    throw new functions.https.HttpsError(
+      "internal",
+      "Failed to initiate payment"
+    );
+  }
+});

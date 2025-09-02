@@ -1,93 +1,70 @@
-# EduAid Bot - AI-Powered Educational Assistant
+# Getting Started with Create React App
 
-## Setup Instructions
+This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-### 1. Clone the Repository
+## Available Scripts
 
-```bash
-git clone https://github.com/RockieRaheem/PLP_HACKATHON_2.git
-cd PLP_HACKATHON_2/eduaid-bot
-```
+In the project directory, you can run:
 
-### 2. Environment Setup
+### `npm start`
 
-#### Frontend Environment
+Runs the app in the development mode.\
+Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 
-```bash
-cp .env.template .env
-```
+The page will reload when you make changes.\
+You may also see any lint errors in the console.
 
-Edit `.env` and replace `your_openai_api_key_here` with your actual OpenAI API key.
+### `npm test`
 
-#### Backend Environment
+Launches the test runner in the interactive watch mode.\
+See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
 
-```bash
-cd server
-cp .env.template .env
-```
+### `npm run build`
 
-Edit `server/.env` and replace `your_openai_api_key_here` with your actual OpenAI API key.
+Builds the app for production to the `build` folder.\
+It correctly bundles React in production mode and optimizes the build for the best performance.
 
-### 3. Install Dependencies
+The build is minified and the filenames include the hashes.\
+Your app is ready to be deployed!
 
-#### Frontend
+See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
-```bash
-npm install
-```
+### `npm run eject`
 
-#### Backend
+**Note: this is a one-way operation. Once you `eject`, you can't go back!**
 
-```bash
-cd server
-npm install
-```
+If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
 
-### 4. Start the Application
+Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
 
-#### Start Backend Server (Terminal 1)
+You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
 
-```bash
-cd server
-npm start
-```
+## Learn More
 
-Backend will run on http://localhost:5000
+You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
 
-#### Start Frontend (Terminal 2)
+To learn React, check out the [React documentation](https://reactjs.org/).
 
-```bash
-npm start
-```
+### Code Splitting
 
-Frontend will run on http://localhost:3000
+This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
 
-### 5. OpenAI Integration
+### Analyzing the Bundle Size
 
-This project uses **STRICT OpenAI integration** - no hardcoded responses!
+This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
 
-- All AI responses come directly from OpenAI GPT-3.5-turbo
-- When quota is exceeded, users see a friendly message explaining the situation
-- Perfect for hackathon demonstrations of real AI integration
+### Making a Progressive Web App
 
-### Features
+This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
 
-- 🤖 **Real OpenAI Integration**: Direct GPT-3.5-turbo API calls
-- 📚 **Educational Focus**: Tailored for African curricula (WAEC, KCSE, Matric)
-- 💬 **Smart Error Handling**: Friendly messages when API limits are reached
-- 🔐 **Secure Backend**: API keys protected on server-side
-- 🎓 **Multiple Modes**: Tutor, Homework Help, Exam Prep, Creative
+### Advanced Configuration
 
-### API Endpoints
+This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
 
-- `GET /api/health` - Health check
-- `POST /api/chat` - Chat with OpenAI (requires message, mode, conversationHistory)
+### Deployment
 
-### For Hackathon Judges
+This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
 
-This project demonstrates:
+### `npm run build` fails to minify
 
-- ✅ Real OpenAI API integration (not fake responses)
-- ✅ Proper error handling and user feedback
-- ✅ Secure backend architecture
-- ✅ Professional development practices
+This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
