@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useDropzone } from "react-dropzone";
 import "./ModernStudyMaterials.css";
 
-const ModernStudyMaterials = () => {
+const ModernStudyMaterials = ({ userId }) => {
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
@@ -10,19 +10,39 @@ const ModernStudyMaterials = () => {
   const [filterCategory, setFilterCategory] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [showUploadModal, setShowUploadModal] = useState(false);
+  const [dataLoaded, setDataLoaded] = useState(false);
 
   // Load saved files from localStorage on component mount
   useEffect(() => {
-    const savedFiles = localStorage.getItem("uploadedFiles");
-    if (savedFiles) {
-      setUploadedFiles(JSON.parse(savedFiles));
-    }
-  }, []);
+    if (!userId) return;
 
-  // Save files to localStorage whenever uploadedFiles changes
+    const storageKey = `uploadedFiles_${userId}`;
+    try {
+      const savedFiles = localStorage.getItem(storageKey);
+      if (savedFiles) {
+        const parsedFiles = JSON.parse(savedFiles);
+        setUploadedFiles(parsedFiles);
+        console.log(`Loaded ${parsedFiles.length} files for user ${userId}`);
+      }
+    } catch (error) {
+      console.error("Error loading files from localStorage:", error);
+    } finally {
+      setDataLoaded(true);
+    }
+  }, [userId]);
+
+  // Save files to localStorage whenever uploadedFiles changes (but only after initial load)
   useEffect(() => {
-    localStorage.setItem("uploadedFiles", JSON.stringify(uploadedFiles));
-  }, [uploadedFiles]);
+    if (!dataLoaded || !userId) return;
+
+    const storageKey = `uploadedFiles_${userId}`;
+    try {
+      localStorage.setItem(storageKey, JSON.stringify(uploadedFiles));
+      console.log(`Saved ${uploadedFiles.length} files for user ${userId}`);
+    } catch (error) {
+      console.error("Error saving files to localStorage:", error);
+    }
+  }, [uploadedFiles, dataLoaded, userId]);
 
   const onDrop = async (acceptedFiles) => {
     const file = acceptedFiles[0];
