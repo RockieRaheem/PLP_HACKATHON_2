@@ -68,7 +68,7 @@ const LandingPage = ({ onStart }) => (
               💳
             </span>
             <h3>Monetization</h3>
-            <p>Freemium model with secure African payments (IntaSend).</p>
+            <p>Freemium model with secure African payments (Flutterwave).</p>
           </div>
         </div>
       </section>

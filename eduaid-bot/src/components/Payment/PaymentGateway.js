@@ -1,10 +1,7 @@
-import React, { useState } from "react";
+import React from "react";
 import FlutterwavePayment from "./FlutterwavePayment";
 
 const PaymentGateway = () => {
-  const [selectedPlan, setSelectedPlan] = useState(null);
-  const [isProcessing, setIsProcessing] = useState(false);
-
   const plans = [
     {
       id: "basic",
@@ -30,32 +27,34 @@ const PaymentGateway = () => {
   ];
 
   const handlePaymentSuccess = (response, plan) => {
-    console.log('Payment successful:', response);
-    
+    console.log("Payment successful:", response);
+
     // Store subscription info in localStorage
     const subscriptionData = {
       planId: plan.id,
       planName: plan.name,
       amount: plan.price,
-      currency: 'KES',
+      currency: "KES",
       transactionRef: response.tx_ref,
       flutterwaveRef: response.flw_ref,
       subscribedAt: new Date().toISOString(),
-      status: 'active'
+      status: "active",
     };
-    
-    localStorage.setItem('eduaid_subscription', JSON.stringify(subscriptionData));
-    localStorage.setItem('eduaid_subscription_status', 'premium');
-    
-    alert('✅ Payment successful! Welcome to EduAid Premium!');
-    
+
+    localStorage.setItem(
+      "eduaid_subscription",
+      JSON.stringify(subscriptionData)
+    );
+    localStorage.setItem("eduaid_subscription_status", "premium");
+
+    alert("✅ Payment successful! Welcome to EduAid Premium!");
+
     // Reload to reflect premium status
     window.location.reload();
   };
 
   const handlePaymentClose = () => {
-    console.log('Payment modal closed');
-    setIsProcessing(false);
+    console.log("Payment modal closed");
   };
 
   return (
@@ -67,8 +66,11 @@ const PaymentGateway = () => {
 
       <div className="plans-grid">
         {plans.map((plan) => (
-          <div key={plan.id} className={`plan-card ${plan.id === 'premium' ? 'featured' : ''}`}>
-            {plan.id === 'premium' && <div className="badge">Most Popular</div>}
+          <div
+            key={plan.id}
+            className={`plan-card ${plan.id === "premium" ? "featured" : ""}`}
+          >
+            {plan.id === "premium" && <div className="badge">Most Popular</div>}
             <h3>{plan.name}</h3>
             <div className="price">
               <span className="currency">KES</span>
@@ -83,19 +85,22 @@ const PaymentGateway = () => {
                 </li>
               ))}
             </ul>
-            <button
-              onClick={() => handlePayment(plan)}
-              disabled={isProcessing}
-              className={`subscribe-btn ${plan.id === 'premium' ? 'premium-btn' : ''}`}
-            >
-              {isProcessing ? "⏳ Processing..." : `Choose ${plan.name}`}
-            </button>
+
+            <FlutterwavePayment
+              amount={plan.price}
+              email="user@example.com"
+              phone="254700000000"
+              name="EduAid User"
+              planId={plan.id}
+              onSuccess={(response) => handlePaymentSuccess(response, plan)}
+              onClose={handlePaymentClose}
+            />
           </div>
         ))}
       </div>
-      
+
       <div className="payment-info">
-        <p>💳 Secure payment powered by IntaSend</p>
+        <p>💳 Secure payment powered by Flutterwave</p>
         <p>🔒 Cancel anytime • 7-day money-back guarantee</p>
       </div>
     </div>

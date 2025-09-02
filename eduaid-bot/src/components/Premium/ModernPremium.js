@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import FlutterwavePayment from "../Payment/FlutterwavePayment";
 import "./ModernPremium.css";
 
 const ModernPremium = ({ userId }) => {
@@ -87,35 +88,51 @@ const ModernPremium = ({ userId }) => {
   ];
 
   const handleSubscribe = async (plan) => {
-    setIsProcessing(true);
-    try {
-      // Simulate payment processing
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-
-      // Save subscription to localStorage
-      const subscriptionData = {
-        plan: plan.id,
-        startDate: new Date().toISOString(),
-        endDate: new Date(
-          Date.now() +
-            (billingCycle === "monthly" ? 30 : 365) * 24 * 60 * 60 * 1000
-        ).toISOString(),
-        billingCycle: billingCycle,
-        amount: plan.price,
-      };
-
-      localStorage.setItem(
-        `subscription_${userId}`,
-        JSON.stringify(subscriptionData)
-      );
-      setCurrentPlan(plan.id);
-
-      // Show success message
-      alert(`Successfully subscribed to ${plan.name} plan!`);
-    } catch (error) {
-      console.error("Subscription error:", error);
-      alert("Subscription failed. Please try again.");
+    if (plan.id === "free") {
+      // Handle free plan
+      setCurrentPlan("free");
+      localStorage.removeItem(`subscription_${userId}`);
+      alert("Switched to Free plan");
+      return;
     }
+
+    // For paid plans, we'll handle this in the Flutterwave success callback
+    console.log("Initiating payment for plan:", plan.name);
+  };
+
+  const handlePaymentSuccess = (response, plan) => {
+    console.log("Payment successful:", response);
+
+    // Save subscription to localStorage
+    const subscriptionData = {
+      plan: plan.id,
+      planName: plan.name,
+      startDate: new Date().toISOString(),
+      endDate: new Date(
+        Date.now() +
+          (billingCycle === "monthly" ? 30 : 365) * 24 * 60 * 60 * 1000
+      ).toISOString(),
+      billingCycle: billingCycle,
+      amount: plan.price,
+      transactionRef: response.tx_ref,
+      flutterwaveRef: response.flw_ref,
+      status: "active",
+    };
+
+    localStorage.setItem(
+      `subscription_${userId}`,
+      JSON.stringify(subscriptionData)
+    );
+    localStorage.setItem("eduaid_subscription_status", "premium");
+    setCurrentPlan(plan.id);
+
+    // Show success message
+    alert(`🎉 Successfully subscribed to ${plan.name} plan!`);
+    window.location.reload(); // Refresh to reflect premium status
+  };
+
+  const handlePaymentClose = () => {
+    console.log("Payment modal closed");
     setIsProcessing(false);
   };
 
@@ -263,29 +280,31 @@ const ModernPremium = ({ userId }) => {
                     <button className="plan-btn current-plan-btn" disabled>
                       Current Plan
                     </button>
-                  ) : (
+                  ) : plan.id === "free" ? (
                     <button
-                      className={`plan-btn ${
-                        plan.popular ? "primary" : "secondary"
-                      }`}
+                      className="plan-btn secondary"
                       onClick={(e) => {
                         e.stopPropagation();
-                        if (plan.id === "free") {
-                          // Handle downgrade to free
-                          setCurrentPlan("free");
-                          localStorage.removeItem(`subscription_${userId}`);
-                        } else {
-                          handleSubscribe(plan);
-                        }
+                        setCurrentPlan("free");
+                        localStorage.removeItem(`subscription_${userId}`);
+                        alert("Switched to Free plan");
                       }}
                       disabled={isProcessing}
                     >
-                      {isProcessing
-                        ? "Processing..."
-                        : plan.id === "free"
-                        ? "Downgrade"
-                        : "Upgrade Now"}
+                      {isProcessing ? "Processing..." : "Downgrade"}
                     </button>
+                  ) : (
+                    <FlutterwavePayment
+                      amount={plan.price}
+                      email="user@example.com"
+                      phone="254700000000"
+                      name="EduAid User"
+                      planId={plan.id}
+                      onSuccess={(response) =>
+                        handlePaymentSuccess(response, plan)
+                      }
+                      onClose={handlePaymentClose}
+                    />
                   )}
                 </div>
               </div>

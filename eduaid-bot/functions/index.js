@@ -262,7 +262,7 @@ exports.processPdfDocument = functions.https.onCall(async (data, context) => {
   }
 });
 
-// Initialize Payment with IntaSend
+// Initialize Payment with Flutterwave
 exports.initiatePayment = functions.https.onCall(async (data, context) => {
   if (!context.auth) {
     throw new functions.https.HttpsError(
@@ -275,8 +275,8 @@ exports.initiatePayment = functions.https.onCall(async (data, context) => {
     const { planId, amount, currency } = data;
 
     // For demo purposes, return mock payment URL
-    // In production, integrate with IntaSend API
-    const mockPaymentUrl = `https://sandbox.intasend.com/checkout/${planId}`;
+    // In production, integrate with Flutterwave API
+    const mockPaymentUrl = `https://checkout.flutterwave.com/pay/${planId}`;
 
     // Log payment initiation
     await admin.firestore().collection("payment_logs").add({

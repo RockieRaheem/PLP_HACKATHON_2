@@ -14,29 +14,38 @@ exports.initiatePayment = functions.https.onCall(async (data, context) => {
     const { planId, amount, currency } = data;
     const userId = context.auth.uid;
 
-    // IntaSend API configuration
-    const intasendConfig = {
+    // Flutterwave API configuration
+    const flutterwaveConfig = {
       headers: {
-        Authorization: `Bearer ${functions.config().intasend.api_key}`,
+        Authorization: `Bearer FLWSECK_TEST-Q3d6O6dYUJX1vseBPRPWgfHrzDAl9ACs-X`,
         "Content-Type": "application/json",
       },
     };
 
-    // Create payment request
+    // Create payment request for Flutterwave
     const paymentData = {
+      tx_ref: `eduaid_${userId}_${Date.now()}`,
       amount: amount,
       currency: currency,
-      email: context.auth.token.email,
-      phone_number: context.auth.token.phone_number,
-      api_ref: `eduaid_${userId}_${Date.now()}`,
-      method: "M-PESA", // or 'CARD'
-      redirect_url: `${functions.config().app.base_url}/payment-success`,
+      redirect_url: `${
+        functions.config().app.base_url || "http://localhost:3002"
+      }/payment-success`,
+      customer: {
+        email: context.auth.token.email || "user@example.com",
+        phonenumber: context.auth.token.phone_number || "254700000000",
+        name: context.auth.token.name || "EduAid User",
+      },
+      customizations: {
+        title: "EduAid Premium Subscription",
+        description: `Payment for ${planId} plan`,
+        logo: "https://eduaid-bot.web.app/logo192.png",
+      },
     };
 
     const response = await axios.post(
-      "https://sandbox.intasend.com/api/v1/payment/mpesa-stk-push/",
+      "https://api.flutterwave.com/v3/payments",
       paymentData,
-      intasendConfig
+      flutterwaveConfig
     );
 
     // Store payment record
@@ -45,17 +54,78 @@ exports.initiatePayment = functions.https.onCall(async (data, context) => {
       planId: planId,
       amount: amount,
       currency: currency,
-      intasendId: response.data.id,
+      flutterwaveRef: response.data.data.id,
+      txRef: paymentData.tx_ref,
       status: "pending",
       createdAt: admin.firestore.FieldValue.serverTimestamp(),
     });
 
-    return { paymentUrl: response.data.payment_url };
+    return {
+      paymentUrl: response.data.data.link,
+      reference: paymentData.tx_ref,
+    };
   } catch (error) {
     console.error("Payment initiation error:", error);
     throw new functions.https.HttpsError(
       "internal",
       "Failed to initiate payment"
+    );
+  }
+});
+
+exports.verifyPayment = functions.https.onCall(async (data, context) => {
+  if (!context.auth) {
+    throw new functions.https.HttpsError(
+      "unauthenticated",
+      "User must be authenticated"
+    );
+  }
+
+  try {
+    const { transaction_id } = data;
+
+    // Flutterwave verification
+    const flutterwaveConfig = {
+      headers: {
+        Authorization: `Bearer FLWSECK_TEST-Q3d6O6dYUJX1vseBPRPWgfHrzDAl9ACs-X`,
+        "Content-Type": "application/json",
+      },
+    };
+
+    const response = await axios.get(
+      `https://api.flutterwave.com/v3/transactions/${transaction_id}/verify`,
+      flutterwaveConfig
+    );
+
+    if (
+      response.data.status === "success" &&
+      response.data.data.status === "successful"
+    ) {
+      // Update payment record
+      const paymentQuery = await admin
+        .firestore()
+        .collection("payments")
+        .where("txRef", "==", response.data.data.tx_ref)
+        .get();
+
+      if (!paymentQuery.empty) {
+        const paymentDoc = paymentQuery.docs[0];
+        await paymentDoc.ref.update({
+          status: "completed",
+          flutterwaveTransactionId: transaction_id,
+          completedAt: admin.firestore.FieldValue.serverTimestamp(),
+        });
+      }
+
+      return { verified: true, data: response.data.data };
+    } else {
+      return { verified: false, message: "Payment verification failed" };
+    }
+  } catch (error) {
+    console.error("Payment verification error:", error);
+    throw new functions.https.HttpsError(
+      "internal",
+      "Failed to verify payment"
     );
   }
 });
