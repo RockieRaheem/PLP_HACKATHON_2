@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./ModernStudyPlanner.css";
 
-const ModernStudyPlanner = () => {
+const ModernStudyPlanner = ({ userId }) => {
   const [studyPlan, setStudyPlan] = useState([]);
   const [selectedWeek, setSelectedWeek] = useState(0);
   const [viewMode, setViewMode] = useState("calendar"); // calendar, list, kanban
@@ -10,30 +10,236 @@ const ModernStudyPlanner = () => {
   const [studyGoals, setStudyGoals] = useState([]);
   const [weeklyProgress, setWeeklyProgress] = useState({});
   const [currentDate] = useState(new Date());
+  const [dataLoaded, setDataLoaded] = useState(false); // Track if initial data load is complete
 
-  // Load saved data from localStorage
+  // Make debug function available globally for testing
+  React.useEffect(() => {
+    const debugFn = () => {
+      console.log("🔍 DEBUG: Current localStorage state for user:", userId);
+      console.log("studyPlan:", localStorage.getItem(`studyPlan_${userId}`));
+      console.log("studyGoals:", localStorage.getItem(`studyGoals_${userId}`));
+      console.log(
+        "weeklyProgress:",
+        localStorage.getItem(`weeklyProgress_${userId}`)
+      );
+      console.log("Current studyPlan state:", studyPlan);
+    };
+    window.debugLocalStorage = debugFn;
+    return () => {
+      delete window.debugLocalStorage;
+    };
+  }, [studyPlan, userId]);
+
+  // Load saved data from localStorage with error handling
   useEffect(() => {
-    const savedPlan = localStorage.getItem("studyPlan");
-    const savedGoals = localStorage.getItem("studyGoals");
-    const savedProgress = localStorage.getItem("weeklyProgress");
+    if (!userId) {
+      console.log("⚠️ No userId provided, skipping localStorage load");
+      return;
+    }
 
-    if (savedPlan) setStudyPlan(JSON.parse(savedPlan));
-    if (savedGoals) setStudyGoals(JSON.parse(savedGoals));
-    if (savedProgress) setWeeklyProgress(JSON.parse(savedProgress));
-  }, []);
+    console.log(
+      "🔄 ModernStudyPlanner component mounted, loading data from localStorage for user:",
+      userId
+    );
 
-  // Save data to localStorage
+    // Migration: Check for old global localStorage data and migrate to user-specific
+    const oldGlobalPlan = localStorage.getItem("studyPlan");
+    const oldGlobalGoals = localStorage.getItem("studyGoals");
+    const oldGlobalProgress = localStorage.getItem("weeklyProgress");
+
+    if (oldGlobalPlan && !localStorage.getItem(`studyPlan_${userId}`)) {
+      console.log(
+        "🔄 Migrating old global studyPlan data to user-specific storage for user",
+        userId
+      );
+      localStorage.setItem(`studyPlan_${userId}`, oldGlobalPlan);
+      localStorage.removeItem("studyPlan");
+    }
+
+    if (oldGlobalGoals && !localStorage.getItem(`studyGoals_${userId}`)) {
+      console.log(
+        "🔄 Migrating old global studyGoals data to user-specific storage for user",
+        userId
+      );
+      localStorage.setItem(`studyGoals_${userId}`, oldGlobalGoals);
+      localStorage.removeItem("studyGoals");
+    }
+
+    if (
+      oldGlobalProgress &&
+      !localStorage.getItem(`weeklyProgress_${userId}`)
+    ) {
+      console.log(
+        "🔄 Migrating old global weeklyProgress data to user-specific storage for user",
+        userId
+      );
+      localStorage.setItem(`weeklyProgress_${userId}`, oldGlobalProgress);
+      localStorage.removeItem("weeklyProgress");
+    }
+
+    try {
+      const savedPlan = localStorage.getItem(`studyPlan_${userId}`);
+      const savedGoals = localStorage.getItem(`studyGoals_${userId}`);
+      const savedProgress = localStorage.getItem(`weeklyProgress_${userId}`);
+
+      console.log("🔍 Raw localStorage data for user", userId, ":", {
+        studyPlan: savedPlan,
+        studyGoals: savedGoals,
+        weeklyProgress: savedProgress,
+      });
+
+      if (savedPlan && savedPlan !== "[]" && savedPlan !== "null") {
+        const parsedPlan = JSON.parse(savedPlan);
+        console.log("✅ About to set studyPlan with parsed data:", parsedPlan);
+        setStudyPlan(parsedPlan);
+        console.log(
+          "✅ Loaded",
+          parsedPlan.length,
+          "tasks from localStorage for user",
+          userId,
+          ":",
+          parsedPlan
+        );
+      } else {
+        console.log(
+          "⚠️ No saved study plan found in localStorage for user",
+          userId,
+          "or it's empty. Raw value:",
+          savedPlan
+        );
+        setStudyPlan([]);
+      }
+
+      if (savedGoals && savedGoals !== "[]") {
+        const parsedGoals = JSON.parse(savedGoals);
+        setStudyGoals(parsedGoals);
+        console.log(
+          "✅ Loaded",
+          parsedGoals.length,
+          "goals from localStorage for user",
+          userId
+        );
+      } else {
+        setStudyGoals([]);
+      }
+
+      if (savedProgress && savedProgress !== "{}") {
+        const parsedProgress = JSON.parse(savedProgress);
+        setWeeklyProgress(parsedProgress);
+        console.log(
+          "✅ Loaded weekly progress from localStorage for user",
+          userId
+        );
+      } else {
+        setWeeklyProgress({});
+      }
+
+      // Mark data as loaded to prevent race conditions
+      setDataLoaded(true);
+      console.log("🏁 Initial data loading complete for user", userId);
+    } catch (error) {
+      console.error(
+        "❌ Failed to load data from localStorage for user",
+        userId,
+        ":",
+        error
+      );
+      // Reset to default state if localStorage data is corrupted
+      setStudyPlan([]);
+      setStudyGoals([]);
+      setWeeklyProgress({});
+      setDataLoaded(true); // Still mark as loaded even if there was an error
+    }
+  }, [userId]);
+
+  // Save data to localStorage with error handling and verification
   useEffect(() => {
-    localStorage.setItem("studyPlan", JSON.stringify(studyPlan));
-  }, [studyPlan]);
+    if (!userId || !dataLoaded) {
+      console.log(
+        "⚠️ No userId provided or data not loaded yet, skipping localStorage save"
+      );
+      return;
+    }
+
+    // Only save if studyPlan has been initialized (prevent saving empty array on first load)
+    if (studyPlan.length > 0 || localStorage.getItem(`studyPlan_${userId}`)) {
+      try {
+        const dataToSave = JSON.stringify(studyPlan);
+        localStorage.setItem(`studyPlan_${userId}`, dataToSave);
+        console.log(
+          "💾 Study plan saved to localStorage for user",
+          userId,
+          ":",
+          studyPlan.length,
+          "tasks:",
+          studyPlan
+        );
+
+        // Verify the save operation worked
+        setTimeout(() => {
+          const verification = localStorage.getItem(`studyPlan_${userId}`);
+          if (verification === dataToSave) {
+            console.log("✅ localStorage save verified for user", userId);
+          } else {
+            console.error(
+              "❌ localStorage save verification FAILED for user",
+              userId
+            );
+            // Try to save again
+            localStorage.setItem(`studyPlan_${userId}`, dataToSave);
+          }
+        }, 10);
+      } catch (error) {
+        console.error(
+          "❌ Failed to save study plan to localStorage for user",
+          userId,
+          ":",
+          error
+        );
+      }
+    }
+  }, [studyPlan, userId, dataLoaded]);
 
   useEffect(() => {
-    localStorage.setItem("studyGoals", JSON.stringify(studyGoals));
-  }, [studyGoals]);
+    if (!userId) return;
+
+    try {
+      localStorage.setItem(`studyGoals_${userId}`, JSON.stringify(studyGoals));
+      console.log(
+        "Study goals saved to localStorage for user",
+        userId,
+        ":",
+        studyGoals.length,
+        "goals"
+      );
+    } catch (error) {
+      console.error(
+        "Failed to save study goals to localStorage for user",
+        userId,
+        ":",
+        error
+      );
+    }
+  }, [studyGoals, userId]);
 
   useEffect(() => {
-    localStorage.setItem("weeklyProgress", JSON.stringify(weeklyProgress));
-  }, [weeklyProgress]);
+    if (!userId) return;
+
+    try {
+      localStorage.setItem(
+        `weeklyProgress_${userId}`,
+        JSON.stringify(weeklyProgress)
+      );
+      console.log("Weekly progress saved to localStorage for user", userId);
+    } catch (error) {
+      console.error(
+        "Failed to save weekly progress to localStorage for user",
+        userId,
+        ":",
+        error
+      );
+    }
+  }, [weeklyProgress, userId]);
 
   const subjects = [
     { id: "mathematics", name: "Mathematics", icon: "🧮", color: "#FF7A00" },
@@ -92,30 +298,201 @@ const ModernStudyPlanner = () => {
   };
 
   const addNewTask = (taskData) => {
+    if (!userId) {
+      console.error("❌ Cannot add task: No userId provided");
+      return;
+    }
+
     const newTask = {
       id: Date.now(),
       ...taskData,
       completed: false,
       createdAt: new Date().toISOString(),
       timeSpent: 0,
+      lastModified: new Date().toISOString(),
     };
-    setStudyPlan((prev) => [...prev, newTask]);
+
+    console.log("➕ Adding new task for user", userId, ":", newTask);
+
+    // Update state and immediately save to localStorage
+    setStudyPlan((prev) => {
+      const updatedPlan = [...prev, newTask];
+      console.log(
+        "📝 Updated study plan with",
+        updatedPlan.length,
+        "tasks for user",
+        userId,
+        ":",
+        updatedPlan
+      );
+
+      // Immediately save to localStorage to ensure persistence
+      try {
+        const dataToSave = JSON.stringify(updatedPlan);
+        localStorage.setItem(`studyPlan_${userId}`, dataToSave);
+        console.log(
+          "💾 Immediately saved to localStorage after adding task for user",
+          userId
+        );
+
+        // Double-check that the data was actually saved
+        const verification = localStorage.getItem(`studyPlan_${userId}`);
+        if (verification === dataToSave) {
+          console.log("✅ Data persistence verified!");
+        } else {
+          console.error("❌ Data persistence verification FAILED!", {
+            expected: dataToSave,
+            actual: verification,
+          });
+        }
+      } catch (error) {
+        console.error(
+          "❌ Failed to immediately save to localStorage for user",
+          userId,
+          ":",
+          error
+        );
+      }
+
+      return updatedPlan;
+    });
+
     setShowAddTaskModal(false);
+
+    // Show success message
+    console.log(
+      "✅ Task successfully created and saved to localStorage for user",
+      userId
+    );
   };
 
   const toggleTaskCompletion = (taskId) => {
-    setStudyPlan((prev) =>
-      prev.map((task) =>
-        task.id === taskId ? { ...task, completed: !task.completed } : task
-      )
+    if (!userId) {
+      console.error("❌ Cannot toggle task: No userId provided");
+      return;
+    }
+
+    console.log(
+      "🔄 Toggling task completion for task ID:",
+      taskId,
+      "for user",
+      userId
+    );
+    setStudyPlan((prev) => {
+      const updatedPlan = prev.map((task) =>
+        task.id === taskId
+          ? {
+              ...task,
+              completed: !task.completed,
+              lastModified: new Date().toISOString(),
+              completedAt: !task.completed ? new Date().toISOString() : null,
+            }
+          : task
+      );
+
+      // Immediately save to localStorage
+      try {
+        localStorage.setItem(
+          `studyPlan_${userId}`,
+          JSON.stringify(updatedPlan)
+        );
+        console.log(
+          "💾 Immediately saved task completion update to localStorage for user",
+          userId
+        );
+      } catch (error) {
+        console.error(
+          "❌ Failed to save completion update to localStorage for user",
+          userId,
+          ":",
+          error
+        );
+      }
+
+      return updatedPlan;
+    });
+    console.log(
+      "✅ Task completion status updated and saved to localStorage for user",
+      userId
     );
   };
 
   const deleteTask = (taskId) => {
+    if (!userId) {
+      console.error("❌ Cannot delete task: No userId provided");
+      return;
+    }
+
     if (window.confirm("Are you sure you want to delete this task?")) {
-      setStudyPlan((prev) => prev.filter((task) => task.id !== taskId));
+      console.log("🗑️ Deleting task with ID:", taskId, "for user", userId);
+      setStudyPlan((prev) => {
+        const filteredTasks = prev.filter((task) => task.id !== taskId);
+        console.log(
+          "📝 Updated study plan after deletion:",
+          filteredTasks.length,
+          "tasks remaining for user",
+          userId,
+          ":",
+          filteredTasks
+        );
+
+        // Immediately save to localStorage
+        try {
+          localStorage.setItem(
+            `studyPlan_${userId}`,
+            JSON.stringify(filteredTasks)
+          );
+          console.log(
+            "💾 Immediately saved deletion to localStorage for user",
+            userId
+          );
+        } catch (error) {
+          console.error(
+            "❌ Failed to save deletion to localStorage for user",
+            userId,
+            ":",
+            error
+          );
+        }
+
+        return filteredTasks;
+      });
+      console.log(
+        "✅ Task deleted and changes saved to localStorage for user",
+        userId
+      );
     }
   };
+
+  // Update existing task (for future extensibility)
+  // const updateTask = (taskId, updateData) => {
+  //   console.log("Updating task with ID:", taskId, "Data:", updateData);
+  //   setStudyPlan((prev) =>
+  //     prev.map((task) =>
+  //       task.id === taskId
+  //         ? {
+  //             ...task,
+  //             ...updateData,
+  //             lastModified: new Date().toISOString()
+  //           }
+  //         : task
+  //     )
+  //   );
+  //   console.log("✅ Task updated and changes will be saved to localStorage");
+  // };
+
+  // Clear all data (for debugging purposes)
+  // const clearAllData = () => {
+  //   if (window.confirm("Are you sure you want to clear all study data? This action cannot be undone.")) {
+  //     localStorage.removeItem(`studyPlan_${userId}`);
+  //     localStorage.removeItem(`studyGoals_${userId}`);
+  //     localStorage.removeItem(`weeklyProgress_${userId}`);
+  //     setStudyPlan([]);
+  //     setStudyGoals([]);
+  //     setWeeklyProgress({});
+  //     console.log("✅ All study data cleared for user", userId);
+  //   }
+  // };
 
   const getSubjectIcon = (subjectId) => {
     const subject = subjects.find((s) => s.id === subjectId);
@@ -587,7 +964,9 @@ const AddTaskModal = ({
   const handleSubmit = (e) => {
     e.preventDefault();
     if (formData.title.trim()) {
+      console.log("Submitting new task:", formData);
       onAddTask(formData);
+      // Reset form after successful submission
       setFormData({
         title: "",
         description: "",
@@ -598,6 +977,10 @@ const AddTaskModal = ({
         time: "09:00",
         duration: "60",
       });
+      console.log("✅ Task form submitted and reset");
+    } else {
+      console.warn("Task title is required");
+      alert("Please enter a task title");
     }
   };
 

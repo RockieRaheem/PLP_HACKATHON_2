@@ -15,7 +15,11 @@ import ModernPremium from "./components/Premium/ModernPremium";
 function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState("chat");
+  const [activeTab, setActiveTab] = useState(() => {
+    // Restore last active tab from localStorage on app load
+    const savedTab = localStorage.getItem("eduaid_activeTab");
+    return savedTab || "chat";
+  });
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [chatHistory] = useState([
     { id: 1, title: "Getting Started with EduAid", timestamp: "2 hours ago" },
@@ -32,6 +36,11 @@ function App() {
 
     return () => unsubscribe();
   }, []);
+
+  // Save activeTab to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem("eduaid_activeTab", activeTab);
+  }, [activeTab]);
 
   const handleSignOut = async () => {
     try {
@@ -111,7 +120,7 @@ function App() {
       case "upload":
         return <ModernStudyMaterials />;
       case "planner":
-        return <ModernStudyPlanner />;
+        return <ModernStudyPlanner userId={user.uid} />;
       case "progress":
         return <ModernAnalytics userId={user.uid} />;
       case "premium":
