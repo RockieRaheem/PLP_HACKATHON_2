@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import { httpsCallable } from "firebase/functions";
-import { functions } from "../../firebase";
+import FlutterwavePayment from "./FlutterwavePayment";
 
 const PaymentGateway = () => {
   const [selectedPlan, setSelectedPlan] = useState(null);
@@ -30,25 +29,32 @@ const PaymentGateway = () => {
     },
   ];
 
-  const initiatePayment = httpsCallable(functions, "initiatePayment");
+  const handlePaymentSuccess = (response, plan) => {
+    console.log('Payment successful:', response);
+    
+    // Store subscription info in localStorage
+    const subscriptionData = {
+      planId: plan.id,
+      planName: plan.name,
+      amount: plan.price,
+      currency: 'KES',
+      transactionRef: response.tx_ref,
+      flutterwaveRef: response.flw_ref,
+      subscribedAt: new Date().toISOString(),
+      status: 'active'
+    };
+    
+    localStorage.setItem('eduaid_subscription', JSON.stringify(subscriptionData));
+    localStorage.setItem('eduaid_subscription_status', 'premium');
+    
+    alert('✅ Payment successful! Welcome to EduAid Premium!');
+    
+    // Reload to reflect premium status
+    window.location.reload();
+  };
 
-  const handlePayment = async (plan) => {
-    setIsProcessing(true);
-
-    try {
-      const result = await initiatePayment({
-        planId: plan.id,
-        amount: plan.price,
-        currency: "KES",
-      });
-
-      // Redirect to IntaSend payment page
-      window.location.href = result.data.paymentUrl;
-    } catch (error) {
-      console.error("Payment error:", error);
-      alert("Payment failed. Please try again.");
-    }
-
+  const handlePaymentClose = () => {
+    console.log('Payment modal closed');
     setIsProcessing(false);
   };
 
