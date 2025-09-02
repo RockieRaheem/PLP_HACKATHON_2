@@ -65,24 +65,9 @@ const ChatInterface = () => {
       icon: "🧮",
     },
     {
-      text: "Analyze this Shakespeare quote",
-      category: "Literature",
-      icon: "📚",
-    },
-    {
       text: "Create a study plan for chemistry exam",
       category: "Study Planning",
       icon: "📅",
-    },
-    {
-      text: "Explain the causes of World War I",
-      category: "History",
-      icon: "🏛️",
-    },
-    {
-      text: "Help me write an essay introduction",
-      category: "Writing",
-      icon: "✍️",
     },
   ];
 
@@ -210,30 +195,6 @@ const ChatInterface = () => {
                     <p className="suggestion-text">{suggestion.text}</p>
                   </button>
                 ))}
-              </div>
-            </div>
-
-            <div className="features-showcase">
-              <div className="feature-item">
-                <span className="feature-icon">🌍</span>
-                <div className="feature-content">
-                  <h5>African Curriculum Focus</h5>
-                  <p>Tailored for WAEC, JAMB, and local curricula</p>
-                </div>
-              </div>
-              <div className="feature-item">
-                <span className="feature-icon">🧠</span>
-                <div className="feature-content">
-                  <h5>Smart Learning</h5>
-                  <p>Adaptive responses based on your learning style</p>
-                </div>
-              </div>
-              <div className="feature-item">
-                <span className="feature-icon">⚡</span>
-                <div className="feature-content">
-                  <h5>Instant Help</h5>
-                  <p>Get immediate explanations and solutions</p>
-                </div>
               </div>
             </div>
           </div>

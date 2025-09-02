@@ -277,7 +277,7 @@
 
 .suggestions-container {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: var(--space-4);
   margin-bottom: var(--space-8);
 }
@@ -323,50 +323,6 @@
   font-size: var(--text-sm);
   color: var(--text-primary);
   line-height: 1.5;
-}
-
-/* Features Showcase */
-.features-showcase {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: var(--space-4);
-}
-
-.feature-item {
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-  padding: var(--space-4);
-  background: var(--background-primary);
-  border: 1px solid var(--border-light);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-light);
-}
-
-.feature-icon {
-  width: 48px;
-  height: 48px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--background-accent);
-  border-radius: var(--radius-lg);
-  font-size: var(--text-xl);
-  flex-shrink: 0;
-}
-
-.feature-content h5 {
-  margin: 0 0 var(--space-1) 0;
-  font-size: var(--text-sm);
-  font-weight: 600;
-  color: var(--text-primary);
-}
-
-.feature-content p {
-  margin: 0;
-  font-size: var(--text-xs);
-  color: var(--text-secondary);
-  line-height: 1.4;
 }
 
 /* Messages List */
@@ -729,12 +685,7 @@
   }
 
   .suggestions-container {
-    grid-template-columns: 1fr;
-    gap: var(--space-3);
-  }
-
-  .features-showcase {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(3, 1fr);
     gap: var(--space-3);
   }
 
@@ -758,6 +709,11 @@
 }
 
 @media (max-width: 480px) {
+  .suggestions-container {
+    grid-template-columns: 1fr;
+    gap: var(--space-2);
+  }
+
   .mode-selector {
     gap: var(--space-1);
   }
