@@ -5,19 +5,46 @@ import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 import { getFunctions } from "firebase/functions";
 
-// Firebase Configuration
+// Firebase Configuration with fallback for production
 const firebaseConfig = {
-  apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
-  authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
-  projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
-  storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
-  appId: process.env.REACT_APP_FIREBASE_APP_ID,
-  measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID,
+  apiKey:
+    process.env.REACT_APP_FIREBASE_API_KEY ||
+    "AIzaSyB4NFQyIN_P4Zd3kmixG11Fu4waFhTL1sk",
+  authDomain:
+    process.env.REACT_APP_FIREBASE_AUTH_DOMAIN ||
+    "eduaid-bot-hackathon.firebaseapp.com",
+  projectId:
+    process.env.REACT_APP_FIREBASE_PROJECT_ID || "eduaid-bot-hackathon",
+  storageBucket:
+    process.env.REACT_APP_FIREBASE_STORAGE_BUCKET ||
+    "eduaid-bot-hackathon.firebasestorage.app",
+  messagingSenderId:
+    process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID || "116732315494",
+  appId:
+    process.env.REACT_APP_FIREBASE_APP_ID ||
+    "1:116732315494:web:cac67b9eeb10c42926eaa7",
+  measurementId:
+    process.env.REACT_APP_FIREBASE_MEASUREMENT_ID || "G-GM87QRPWYX",
 };
 
+// Debug logging for production
+console.log("Firebase Config:", {
+  apiKey: firebaseConfig.apiKey
+    ? `${firebaseConfig.apiKey.substring(0, 10)}...`
+    : "NOT_SET",
+  authDomain: firebaseConfig.authDomain,
+  projectId: firebaseConfig.projectId,
+});
+
 // Initialize Firebase
-const app = initializeApp(firebaseConfig);
+let app;
+try {
+  app = initializeApp(firebaseConfig);
+  console.log("Firebase initialized successfully");
+} catch (error) {
+  console.error("Firebase initialization error:", error);
+  throw error;
+}
 
 // Initialize Firebase Authentication and get a reference to the service
 const auth = getAuth(app);
