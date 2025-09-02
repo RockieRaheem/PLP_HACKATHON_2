@@ -199,7 +199,7 @@ function App() {
                     <span className="chat-time">{chat.timestamp}</span>
                   </div>
                   <div className="chat-actions">
-                    <button className="chat-action-btn" title="More options">
+                    <div className="chat-action-btn" title="More options">
                       <svg
                         width="16"
                         height="16"
@@ -211,7 +211,7 @@ function App() {
                         <circle cx="12" cy="5" r="1" fill="currentColor" />
                         <circle cx="12" cy="19" r="1" fill="currentColor" />
                       </svg>
-                    </button>
+                    </div>
                   </div>
                 </button>
               ))}
