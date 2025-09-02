@@ -28,8 +28,6 @@ const AuthComponent = () => {
     academicLevel: "",
   });
 
-  // Google Auth Provider (removed to avoid unused variable)
-
   // African countries with flags
   const africaCountries = [
     "🇩🇿 Algeria",
@@ -351,8 +349,6 @@ const AuthComponent = () => {
       });
 
       console.log("Attempting Google sign-in...");
-      console.log("Auth domain:", auth.app.options.authDomain);
-      console.log("Project ID:", auth.app.options.projectId);
 
       const result = await signInWithPopup(auth, googleProvider);
 
@@ -420,7 +416,7 @@ const AuthComponent = () => {
           "Authentication service temporarily unavailable. Please try again.";
       } else if (error.code === "auth/unauthorized-domain") {
         errorMessage =
-          "This domain is not authorized for Google sign-in. Please use email sign-in instead.";
+          "🔧 Google sign-in temporarily unavailable. Demo: Use email 'demo@eduaid.com' with password 'Demo123!' or create your own account below.";
       } else if (error.code === "auth/operation-not-allowed") {
         errorMessage =
           "Google sign-in is not enabled. Please use email sign-in instead.";
@@ -463,7 +459,10 @@ const AuthComponent = () => {
   };
 
   const handleForgotPassword = () => {
-    console.log("Password reset functionality to be implemented");
+    // TODO: Implement password reset functionality
+    alert(
+      "Password reset functionality will be available soon. Please contact support for now."
+    );
   };
 
   return (
