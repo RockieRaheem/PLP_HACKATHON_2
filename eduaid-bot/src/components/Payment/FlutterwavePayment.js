@@ -9,285 +9,514 @@ const FlutterwavePayment = ({
   onSuccess,
   onClose,
 }) => {
-  const [showMethods, setShowMethods] = useState(false);
+  const [paymentStep, setPaymentStep] = useState("select"); // 'select', 'card', 'mobile'
   const [isProcessing, setIsProcessing] = useState(false);
+  const [cardDetails, setCardDetails] = useState({
+    number: "",
+    cvv: "",
+    expiry_month: "",
+    expiry_year: "",
+    fullname: name || "",
+  });
+  const [mobileDetails, setMobileDetails] = useState({
+    phone_number: phone || "",
+    network: "mpesa", // Default network
+  });
 
-  // Flutterwave configuration
-  const FLUTTERWAVE_SECRET_KEY =
-    "FLWSECK_TEST-Q3d6O6dYUJX1vseBPRPWgfHrzDAl9ACs-X";
-  const FLUTTERWAVE_BASE_URL = "https://api.flutterwave.com/v3";
+  const generateReference = () =>
+    `eduaid_${planId}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
-  const generateReference = () => `eduaid_${planId}_${Date.now()}`;
-
-  const initiateBankTransfer = async () => {
+  // Professional Card Payment using Flutterwave Standard
+  const initiateCardPayment = async () => {
     setIsProcessing(true);
-    const reference = generateReference();
 
     try {
-      const transferData = {
-        action: "instant",
-        reference: reference,
-        narration: `EduAid ${planId} subscription payment`,
-        payment_instruction: {
-          source_currency: "KES",
-          amount: {
-            value: amount,
-            currency: "KES",
-          },
-        },
-        type: "bank",
-        recipient: {
-          email: email,
-          phone_number: phone,
-          name: name,
-          bank: {
-            country: "KE",
-          },
-        },
-        meta: {
-          plan_id: planId,
-          user_email: email,
-        },
+      // For demo purposes, simulate a successful payment after 2 seconds
+      console.log("🔧 Demo Mode: Simulating card payment...");
+
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+
+      const successResponse = {
+        status: "successful",
+        tx_ref: generateReference(),
+        flw_ref: `FLW_${Date.now()}`,
+        transaction_id: `TXN_${Date.now()}`,
+        amount: amount,
+        currency: "KES",
+        payment_method: "card",
+        customer: { email, phone_number: phone, name },
       };
 
-      console.log("🏦 Initiating Bank Transfer:", transferData);
-
-      const response = await fetch(`${FLUTTERWAVE_BASE_URL}/transfers`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${FLUTTERWAVE_SECRET_KEY}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(transferData),
-      });
-
-      const result = await response.json();
-      console.log("Bank Transfer Response:", result);
-
-      if (result.status === "success") {
-        const successResponse = {
-          status: "successful",
-          tx_ref: reference,
-          flw_ref: result.data.id,
-          transaction_id: result.data.id,
-          amount: amount,
-          currency: "KES",
-          payment_method: "bank_transfer",
-          customer: { email, phone_number: phone, name },
-          transfer_details: result.data,
-        };
-
-        alert(
-          "🏦 Bank transfer initiated successfully! Complete the transfer using your banking app."
-        );
-        if (onSuccess) onSuccess(successResponse);
-      } else {
-        throw new Error(result.message || "Bank transfer failed");
-      }
+      console.log("✅ Demo Card Payment Success:", successResponse);
+      alert("💳 Demo Card payment successful! Welcome to EduAid Premium!");
+      if (onSuccess) onSuccess(successResponse);
     } catch (error) {
-      console.error("Bank Transfer Error:", error);
-      alert(`Bank transfer failed: ${error.message}`);
+      console.error("Card Payment Error:", error);
+      alert(`Card payment failed: ${error.message}`);
     } finally {
       setIsProcessing(false);
     }
   };
 
-  const initiateMobileMoneyTransfer = async () => {
+  // Professional Mobile Money Payment
+  const initiateMobilePayment = async () => {
     setIsProcessing(true);
-    const reference = generateReference();
 
     try {
-      const transferData = {
-        action: "instant",
-        reference: reference,
-        narration: `EduAid ${planId} subscription - Mobile Money`,
-        payment_instruction: {
-          source_currency: "KES",
-          amount: {
-            value: amount,
-            currency: "KES",
-          },
-        },
-        type: "mobile_money",
-        recipient: {
-          email: email,
-          phone_number: phone,
-          name: name,
-          mobile_money: {
-            provider: "mpesa",
-            country: "KE",
-          },
-        },
-        meta: {
-          plan_id: planId,
-          user_email: email,
-          payment_type: "subscription",
+      // For demo purposes, simulate a successful payment after 2 seconds
+      console.log("🔧 Demo Mode: Simulating mobile money payment...");
+
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+
+      const successResponse = {
+        status: "successful",
+        tx_ref: generateReference(),
+        flw_ref: `FLW_${Date.now()}`,
+        transaction_id: `TXN_${Date.now()}`,
+        amount: amount,
+        currency: "KES",
+        payment_method: "mobile_money",
+        customer: {
+          email,
+          phone_number: mobileDetails.phone_number,
+          name,
         },
       };
 
-      console.log("📱 Initiating Mobile Money Transfer:", transferData);
-
-      const response = await fetch(`${FLUTTERWAVE_BASE_URL}/transfers`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${FLUTTERWAVE_SECRET_KEY}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(transferData),
-      });
-
-      const result = await response.json();
-      console.log("Mobile Money Response:", result);
-
-      if (result.status === "success") {
-        const successResponse = {
-          status: "successful",
-          tx_ref: reference,
-          flw_ref: result.data.id,
-          transaction_id: result.data.id,
-          amount: amount,
-          currency: "KES",
-          payment_method: "mobile_money",
-          customer: { email, phone_number: phone, name },
-          transfer_details: result.data,
-        };
-
-        alert(
-          "📱 M-Pesa payment initiated! Check your phone for the payment prompt."
-        );
-        if (onSuccess) onSuccess(successResponse);
-      } else {
-        throw new Error(result.message || "Mobile money transfer failed");
-      }
+      console.log("✅ Demo Mobile Money Success:", successResponse);
+      alert(
+        "📱 Demo Mobile money payment successful! Welcome to EduAid Premium!"
+      );
+      if (onSuccess) onSuccess(successResponse);
     } catch (error) {
-      console.error("Mobile Money Error:", error);
-      alert(`Mobile money payment failed: ${error.message}`);
+      console.error("Mobile Payment Error:", error);
+      alert(`Mobile payment failed: ${error.message}`);
     } finally {
       setIsProcessing(false);
     }
   };
 
-  const handlePaymentMethodSelect = () => {
-    setShowMethods(true);
-  };
-
-  if (!showMethods) {
+  // Payment Method Selection (Spotify-like)
+  if (paymentStep === "select") {
     return (
-      <button
-        onClick={handlePaymentMethodSelect}
-        className="flutterwave-payment-btn"
-        style={{
-          backgroundColor: "#f5a623",
-          color: "white",
-          border: "none",
-          padding: "12px 24px",
-          borderRadius: "8px",
-          fontSize: "16px",
-          fontWeight: "bold",
-          cursor: "pointer",
-          width: "100%",
-          marginTop: "16px",
-          transition: "all 0.3s ease",
-        }}
-        onMouseOver={(e) => (e.target.style.backgroundColor = "#e89611")}
-        onMouseOut={(e) => (e.target.style.backgroundColor = "#f5a623")}
-      >
-        💳 Pay KES {amount} with Flutterwave
-      </button>
+      <div className="payment-methods" style={{ marginTop: "16px" }}>
+        <h4
+          style={{
+            margin: "0 0 16px 0",
+            color: "#333",
+            fontSize: "18px",
+            fontWeight: "bold",
+          }}
+        >
+          Choose how to pay KES {amount}
+        </h4>
+
+        <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+          {/* Card Payment Option */}
+          <div
+            onClick={() => setPaymentStep("card")}
+            style={{
+              padding: "16px",
+              border: "2px solid #e0e0e0",
+              borderRadius: "12px",
+              cursor: "pointer",
+              backgroundColor: "#fff",
+              transition: "all 0.3s ease",
+              display: "flex",
+              alignItems: "center",
+              gap: "12px",
+            }}
+            onMouseOver={(e) => {
+              e.currentTarget.style.borderColor = "#1DB954";
+              e.currentTarget.style.backgroundColor = "#f8fff9";
+            }}
+            onMouseOut={(e) => {
+              e.currentTarget.style.borderColor = "#e0e0e0";
+              e.currentTarget.style.backgroundColor = "#fff";
+            }}
+          >
+            <div style={{ fontSize: "24px" }}>💳</div>
+            <div>
+              <div style={{ fontWeight: "bold", fontSize: "16px" }}>
+                Credit or Debit Card
+              </div>
+              <div style={{ color: "#666", fontSize: "14px" }}>
+                Visa, Mastercard, Verve
+              </div>
+            </div>
+          </div>
+
+          {/* Mobile Money Option */}
+          <div
+            onClick={() => setPaymentStep("mobile")}
+            style={{
+              padding: "16px",
+              border: "2px solid #e0e0e0",
+              borderRadius: "12px",
+              cursor: "pointer",
+              backgroundColor: "#fff",
+              transition: "all 0.3s ease",
+              display: "flex",
+              alignItems: "center",
+              gap: "12px",
+            }}
+            onMouseOver={(e) => {
+              e.currentTarget.style.borderColor = "#1DB954";
+              e.currentTarget.style.backgroundColor = "#f8fff9";
+            }}
+            onMouseOut={(e) => {
+              e.currentTarget.style.borderColor = "#e0e0e0";
+              e.currentTarget.style.backgroundColor = "#fff";
+            }}
+          >
+            <div style={{ fontSize: "24px" }}>📱</div>
+            <div>
+              <div style={{ fontWeight: "bold", fontSize: "16px" }}>
+                Mobile Money
+              </div>
+              <div style={{ color: "#666", fontSize: "14px" }}>
+                M-Pesa, Airtel Money, MTN
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div
+          style={{
+            marginTop: "16px",
+            padding: "12px",
+            backgroundColor: "#fff3cd",
+            borderRadius: "8px",
+            fontSize: "12px",
+            color: "#856404",
+            textAlign: "center",
+            border: "1px solid #ffeaa7",
+          }}
+        >
+          � Demo Mode: Payments will be simulated for testing purposes
+        </div>
+      </div>
     );
   }
 
-  return (
-    <div className="payment-methods" style={{ marginTop: "16px" }}>
-      <h4 style={{ margin: "0 0 12px 0", color: "#333" }}>
-        Choose Payment Method:
-      </h4>
+  // Card Payment Form (Spotify-like)
+  if (paymentStep === "card") {
+    return (
+      <div className="card-payment" style={{ marginTop: "16px" }}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            marginBottom: "20px",
+          }}
+        >
+          <button
+            onClick={() => setPaymentStep("select")}
+            style={{
+              background: "none",
+              border: "none",
+              fontSize: "18px",
+              cursor: "pointer",
+              marginRight: "12px",
+            }}
+          >
+            ←
+          </button>
+          <h4
+            style={{
+              margin: 0,
+              color: "#333",
+              fontSize: "18px",
+              fontWeight: "bold",
+            }}
+          >
+            💳 Pay with Card
+          </h4>
+        </div>
 
-      <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+        <div style={{ marginBottom: "20px" }}>
+          <div style={{ marginBottom: "12px" }}>
+            <label
+              style={{
+                display: "block",
+                marginBottom: "4px",
+                fontWeight: "bold",
+                fontSize: "14px",
+              }}
+            >
+              Card Number
+            </label>
+            <input
+              type="text"
+              placeholder="1234 5678 9012 3456"
+              value={cardDetails.number}
+              onChange={(e) =>
+                setCardDetails({ ...cardDetails, number: e.target.value })
+              }
+              style={{
+                width: "100%",
+                padding: "12px",
+                border: "2px solid #e0e0e0",
+                borderRadius: "8px",
+                fontSize: "16px",
+                boxSizing: "border-box",
+              }}
+            />
+          </div>
+
+          <div style={{ display: "flex", gap: "12px", marginBottom: "12px" }}>
+            <div style={{ flex: 1 }}>
+              <label
+                style={{
+                  display: "block",
+                  marginBottom: "4px",
+                  fontWeight: "bold",
+                  fontSize: "14px",
+                }}
+              >
+                Expiry Month
+              </label>
+              <input
+                type="text"
+                placeholder="12"
+                value={cardDetails.expiry_month}
+                onChange={(e) =>
+                  setCardDetails({
+                    ...cardDetails,
+                    expiry_month: e.target.value,
+                  })
+                }
+                style={{
+                  width: "100%",
+                  padding: "12px",
+                  border: "2px solid #e0e0e0",
+                  borderRadius: "8px",
+                  fontSize: "16px",
+                  boxSizing: "border-box",
+                }}
+              />
+            </div>
+            <div style={{ flex: 1 }}>
+              <label
+                style={{
+                  display: "block",
+                  marginBottom: "4px",
+                  fontWeight: "bold",
+                  fontSize: "14px",
+                }}
+              >
+                Expiry Year
+              </label>
+              <input
+                type="text"
+                placeholder="25"
+                value={cardDetails.expiry_year}
+                onChange={(e) =>
+                  setCardDetails({
+                    ...cardDetails,
+                    expiry_year: e.target.value,
+                  })
+                }
+                style={{
+                  width: "100%",
+                  padding: "12px",
+                  border: "2px solid #e0e0e0",
+                  borderRadius: "8px",
+                  fontSize: "16px",
+                  boxSizing: "border-box",
+                }}
+              />
+            </div>
+            <div style={{ flex: 1 }}>
+              <label
+                style={{
+                  display: "block",
+                  marginBottom: "4px",
+                  fontWeight: "bold",
+                  fontSize: "14px",
+                }}
+              >
+                CVV
+              </label>
+              <input
+                type="text"
+                placeholder="123"
+                value={cardDetails.cvv}
+                onChange={(e) =>
+                  setCardDetails({ ...cardDetails, cvv: e.target.value })
+                }
+                style={{
+                  width: "100%",
+                  padding: "12px",
+                  border: "2px solid #e0e0e0",
+                  borderRadius: "8px",
+                  fontSize: "16px",
+                  boxSizing: "border-box",
+                }}
+              />
+            </div>
+          </div>
+        </div>
+
         <button
-          onClick={initiateBankTransfer}
+          onClick={initiateCardPayment}
           disabled={isProcessing}
           style={{
-            backgroundColor: "#2196F3",
+            width: "100%",
+            padding: "16px",
+            backgroundColor: "#1DB954",
             color: "white",
             border: "none",
-            padding: "12px 16px",
-            borderRadius: "6px",
-            fontSize: "14px",
+            borderRadius: "50px",
+            fontSize: "16px",
             fontWeight: "bold",
             cursor: isProcessing ? "not-allowed" : "pointer",
             opacity: isProcessing ? 0.6 : 1,
             transition: "all 0.3s ease",
           }}
           onMouseOver={(e) =>
-            !isProcessing && (e.target.style.backgroundColor = "#1976D2")
+            !isProcessing && (e.target.style.backgroundColor = "#1ed760")
           }
           onMouseOut={(e) =>
-            !isProcessing && (e.target.style.backgroundColor = "#2196F3")
+            !isProcessing && (e.target.style.backgroundColor = "#1DB954")
           }
         >
-          {isProcessing ? "🔄 Processing..." : "🏦 Bank Transfer"}
+          {isProcessing ? "🔄 Processing..." : `Pay KES ${amount}`}
         </button>
+      </div>
+    );
+  }
+
+  // Mobile Money Form (Spotify-like)
+  if (paymentStep === "mobile") {
+    return (
+      <div className="mobile-payment" style={{ marginTop: "16px" }}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            marginBottom: "20px",
+          }}
+        >
+          <button
+            onClick={() => setPaymentStep("select")}
+            style={{
+              background: "none",
+              border: "none",
+              fontSize: "18px",
+              cursor: "pointer",
+              marginRight: "12px",
+            }}
+          >
+            ←
+          </button>
+          <h4
+            style={{
+              margin: 0,
+              color: "#333",
+              fontSize: "18px",
+              fontWeight: "bold",
+            }}
+          >
+            📱 Pay with Mobile Money
+          </h4>
+        </div>
+
+        <div style={{ marginBottom: "20px" }}>
+          <div style={{ marginBottom: "12px" }}>
+            <label
+              style={{
+                display: "block",
+                marginBottom: "4px",
+                fontWeight: "bold",
+                fontSize: "14px",
+              }}
+            >
+              Mobile Number
+            </label>
+            <input
+              type="tel"
+              placeholder="254700000000"
+              value={mobileDetails.phone_number}
+              onChange={(e) =>
+                setMobileDetails({
+                  ...mobileDetails,
+                  phone_number: e.target.value,
+                })
+              }
+              style={{
+                width: "100%",
+                padding: "12px",
+                border: "2px solid #e0e0e0",
+                borderRadius: "8px",
+                fontSize: "16px",
+                boxSizing: "border-box",
+              }}
+            />
+          </div>
+
+          <div style={{ marginBottom: "12px" }}>
+            <label
+              style={{
+                display: "block",
+                marginBottom: "4px",
+                fontWeight: "bold",
+                fontSize: "14px",
+              }}
+            >
+              Network Provider
+            </label>
+            <select
+              value={mobileDetails.network}
+              onChange={(e) =>
+                setMobileDetails({ ...mobileDetails, network: e.target.value })
+              }
+              style={{
+                width: "100%",
+                padding: "12px",
+                border: "2px solid #e0e0e0",
+                borderRadius: "8px",
+                fontSize: "16px",
+                boxSizing: "border-box",
+              }}
+            >
+              <option value="mpesa">M-Pesa (Safaricom)</option>
+              <option value="airtel">Airtel Money</option>
+              <option value="mtn">MTN Mobile Money</option>
+            </select>
+          </div>
+        </div>
 
         <button
-          onClick={initiateMobileMoneyTransfer}
+          onClick={initiateMobilePayment}
           disabled={isProcessing}
           style={{
-            backgroundColor: "#4CAF50",
+            width: "100%",
+            padding: "16px",
+            backgroundColor: "#1DB954",
             color: "white",
             border: "none",
-            padding: "12px 16px",
-            borderRadius: "6px",
-            fontSize: "14px",
+            borderRadius: "50px",
+            fontSize: "16px",
             fontWeight: "bold",
             cursor: isProcessing ? "not-allowed" : "pointer",
             opacity: isProcessing ? 0.6 : 1,
             transition: "all 0.3s ease",
           }}
           onMouseOver={(e) =>
-            !isProcessing && (e.target.style.backgroundColor = "#45a049")
+            !isProcessing && (e.target.style.backgroundColor = "#1ed760")
           }
           onMouseOut={(e) =>
-            !isProcessing && (e.target.style.backgroundColor = "#4CAF50")
+            !isProcessing && (e.target.style.backgroundColor = "#1DB954")
           }
         >
-          {isProcessing ? "🔄 Processing..." : "📱 M-Pesa Mobile Money"}
-        </button>
-
-        <button
-          onClick={() => setShowMethods(false)}
-          style={{
-            backgroundColor: "#f0f0f0",
-            color: "#666",
-            border: "1px solid #ddd",
-            padding: "8px 16px",
-            borderRadius: "6px",
-            fontSize: "12px",
-            cursor: "pointer",
-            transition: "all 0.3s ease",
-          }}
-          onMouseOver={(e) => (e.target.style.backgroundColor = "#e0e0e0")}
-          onMouseOut={(e) => (e.target.style.backgroundColor = "#f0f0f0")}
-        >
-          ← Back
+          {isProcessing ? "🔄 Processing..." : `Pay KES ${amount}`}
         </button>
       </div>
+    );
+  }
 
-      <div
-        style={{
-          marginTop: "12px",
-          padding: "8px",
-          backgroundColor: "#f8f9fa",
-          borderRadius: "4px",
-          fontSize: "12px",
-          color: "#666",
-        }}
-      >
-        💡 <strong>Sandbox Mode:</strong> Use test credentials for payments.
-        Real money will not be charged.
-      </div>
-    </div>
-  );
+  return null;
 };
 
 export default FlutterwavePayment;
