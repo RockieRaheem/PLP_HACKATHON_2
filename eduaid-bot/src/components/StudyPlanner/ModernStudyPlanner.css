@@ -1194,3 +1194,118 @@
     padding: var(--space-4);
   }
 }
+
+/* Study Tips Section */
+.study-tips-section {
+  background: var(--background-primary);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  margin-top: var(--space-6);
+  box-shadow: var(--shadow-card);
+}
+
+.study-tips-section h3 {
+  margin: 0 0 var(--space-5) 0;
+  font-size: var(--text-xl);
+  font-weight: 600;
+  color: var(--text-primary);
+  text-align: center;
+}
+
+.tips-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--space-4);
+}
+
+.tip-item {
+  background: linear-gradient(
+    135deg,
+    var(--background-secondary) 0%,
+    rgba(255, 122, 0, 0.02) 100%
+  );
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  transition: var(--transition-fast);
+  position: relative;
+  overflow: hidden;
+}
+
+.tip-item:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-medium);
+  border-color: var(--primary-orange);
+}
+
+.tip-item::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(
+    90deg,
+    var(--primary-orange) 0%,
+    var(--primary-green) 100%
+  );
+  opacity: 0;
+  transition: var(--transition-fast);
+}
+
+.tip-item:hover::before {
+  opacity: 1;
+}
+
+.tip-icon {
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(
+    135deg,
+    var(--primary-orange) 0%,
+    var(--primary-green) 100%
+  );
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--text-lg);
+  flex-shrink: 0;
+  box-shadow: var(--shadow-light);
+}
+
+.tip-content h5 {
+  margin: 0 0 var(--space-2) 0;
+  font-size: var(--text-base);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.tip-content p {
+  margin: 0;
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+/* Responsive adjustments for tips */
+@media (max-width: 768px) {
+  .tips-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-3);
+  }
+
+  .study-tips-section {
+    padding: var(--space-4);
+    margin-top: var(--space-4);
+  }
+
+  .tip-item {
+    padding: var(--space-3);
+  }
+}

@@ -137,13 +137,6 @@ const ModernStudyPlanner = () => {
     return priorityObj ? priorityObj.color : "#f39c12";
   };
 
-  const calculateWeekProgress = () => {
-    const weekTasks = getCurrentWeekTasks();
-    if (weekTasks.length === 0) return 0;
-    const completedTasks = weekTasks.filter((task) => task.completed).length;
-    return Math.round((completedTasks / weekTasks.length) * 100);
-  };
-
   const getUpcomingExams = () => {
     const today = new Date();
     const nextWeek = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
@@ -157,37 +150,6 @@ const ModernStudyPlanner = () => {
       )
       .sort((a, b) => new Date(a.date) - new Date(b.date));
   };
-
-  const quickActions = [
-    {
-      icon: "➕",
-      title: "Add Study Task",
-      description: "Create a new study session",
-      action: () => setShowAddTaskModal(true),
-      color: "#FF7A00",
-    },
-    {
-      icon: "🎯",
-      title: "Set Goals",
-      description: "Define your study objectives",
-      action: () => {},
-      color: "#00A86B",
-    },
-    {
-      icon: "📊",
-      title: "View Analytics",
-      description: "Track your progress",
-      action: () => {},
-      color: "#0066CC",
-    },
-    {
-      icon: "⏰",
-      title: "Study Timer",
-      description: "Focus with Pomodoro technique",
-      action: () => {},
-      color: "#8e44ad",
-    },
-  ];
 
   const studyTips = [
     {
@@ -236,56 +198,6 @@ const ModernStudyPlanner = () => {
                 Add Task
               </button>
             </div>
-          </div>
-
-          {/* Quick Stats */}
-          <div className="quick-stats">
-            <div className="stat-card">
-              <div className="stat-icon">📈</div>
-              <div className="stat-content">
-                <h3>{calculateWeekProgress()}%</h3>
-                <p>Week Progress</p>
-              </div>
-            </div>
-            <div className="stat-card">
-              <div className="stat-icon">📚</div>
-              <div className="stat-content">
-                <h3>{getCurrentWeekTasks().length}</h3>
-                <p>This Week's Tasks</p>
-              </div>
-            </div>
-            <div className="stat-card">
-              <div className="stat-icon">🎯</div>
-              <div className="stat-content">
-                <h3>{getUpcomingExams().length}</h3>
-                <p>Upcoming Exams</p>
-              </div>
-            </div>
-            <div className="stat-card">
-              <div className="stat-icon">⏱️</div>
-              <div className="stat-content">
-                <h3>25m</h3>
-                <p>Focus Session</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Quick Actions */}
-          <div className="quick-actions">
-            {quickActions.map((action, index) => (
-              <div
-                key={index}
-                className="quick-action-card"
-                onClick={action.action}
-                style={{ "--action-color": action.color }}
-              >
-                <div className="action-icon">{action.icon}</div>
-                <div className="action-content">
-                  <h4>{action.title}</h4>
-                  <p>{action.description}</p>
-                </div>
-              </div>
-            ))}
           </div>
         </div>
       </div>
@@ -423,6 +335,22 @@ const ModernStudyPlanner = () => {
               </div>
             </div>
           )}
+
+          {/* Study Tips Section */}
+          <div className="study-tips-section">
+            <h3>💡 Study Tips</h3>
+            <div className="tips-grid">
+              {studyTips.map((tip, index) => (
+                <div key={index} className="tip-item">
+                  <div className="tip-icon">{tip.icon}</div>
+                  <div className="tip-content">
+                    <h5>{tip.title}</h5>
+                    <p>{tip.tip}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
 
           {/* List View */}
           {viewMode === "list" && (
@@ -619,22 +547,6 @@ const ModernStudyPlanner = () => {
                 ))}
               </div>
             )}
-          </div>
-
-          {/* Study Tips */}
-          <div className="sidebar-section">
-            <h3>💡 Study Tips</h3>
-            <div className="tips-list">
-              {studyTips.map((tip, index) => (
-                <div key={index} className="tip-item">
-                  <div className="tip-icon">{tip.icon}</div>
-                  <div className="tip-content">
-                    <h5>{tip.title}</h5>
-                    <p>{tip.tip}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
           </div>
         </div>
       </div>
