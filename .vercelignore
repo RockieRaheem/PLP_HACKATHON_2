@@ -1,0 +1,39 @@
+# Dependencies
+eduaid-bot/node_modules
+functions/node_modules
+
+# Build outputs
+eduaid-bot/.next
+eduaid-bot/out
+
+# Environment variables
+eduaid-bot/.env.local
+eduaid-bot/.env.development.local
+eduaid-bot/.env.test.local
+eduaid-bot/.env.production.local
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Git
+.git
+.gitignore
+
+# IDE
+.vscode
+.idea
+
+# Misc
+.DS_Store
+*.tgz
+*.tar.gz
+
+# Firebase
+.firebase
+.firebaserc
+firebase.json
+firestore.rules
+firestore.indexes.json
+functions/

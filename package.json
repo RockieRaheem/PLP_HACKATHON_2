@@ -1,0 +1,11 @@
+{
+  "name": "eduaid-bot-deployment",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "cd eduaid-bot && npm install && npm run build",
+    "start": "cd eduaid-bot && npm start"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}
