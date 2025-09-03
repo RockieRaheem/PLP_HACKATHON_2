@@ -1,16 +1,16 @@
 /**
- * Enhanced OpenAI Service with comprehensive error handling and fallback mechanisms
- * Handles rate limits, quota exceeded, authentication, and API errors
- * Includes offline educational responses for hackathon demo purposes
+ * Professional OpenAI Service Integration
+ * Following OpenAI API Best Practices and Documentation
+ * Implements proper error handling, rate limiting, and fallback mechanisms
  */
 
-// OpenAI API configuration
+// OpenAI API configuration following best practices
 const OPENAI_API_URL = "https://api.openai.com/v1/chat/completions";
 const OPENAI_API_KEY = process.env.REACT_APP_OPENAI_API_KEY;
 
 /**
- * Enhanced OpenAI Service Class
- * Provides intelligent error handling, fallback mechanisms, and educational responses
+ * Professional OpenAI Service Class
+ * Implements OpenAI API v1 best practices with comprehensive error handling
  */
 class OpenAIService {
   constructor() {
@@ -19,158 +19,320 @@ class OpenAIService {
     this.lastError = null;
     this.fallbackMode = false;
     this.fallbackReason = null;
+    this.requestCount = 0;
+    this.lastRequestTime = 0;
 
-    // Error message templates
-    this.errorMessages = {
-      quota_exceeded:
-        "Hello, sorry we are unable to use OPENAI models because we have used up all the tokens free tier. Thanks for understanding",
-      rate_limit:
-        "Rate limit exceeded. Please wait a moment before trying again.",
-      authentication_error: "Authentication failed. Please check your API key.",
-      network_error:
-        "Network connection failed. Please check your internet connection.",
-      unknown_error: "An unexpected error occurred. Please try again later.",
+    // Rate limiting configuration
+    this.minRequestInterval = 1000; // 1 second between requests
+
+    // API configuration following OpenAI documentation
+    this.defaultConfig = {
+      model: "gpt-3.5-turbo", // Most cost-effective model
+      max_tokens: 1000,
+      temperature: 0.7,
+      top_p: 1,
+      frequency_penalty: 0,
+      presence_penalty: 0,
     };
   }
 
   /**
-   * Test OpenAI API connection
+   * Test OpenAI API connection with proper authentication
    */
   async testConnection() {
-    console.log("🔍 Testing OpenAI connection...");
+    console.log("🔍 Testing OpenAI API connection...");
 
     if (!OPENAI_API_KEY) {
-      console.warn("❌ No OpenAI API key provided");
+      console.error("❌ No OpenAI API key provided");
       this.connectionStatus = "failed";
       this.fallbackReason = "no_api_key";
       this.fallbackMode = true;
-      return { success: false, error: "No API key provided" };
+      return { success: false, error: "No API key configured" };
+    }
+
+    if (!OPENAI_API_KEY.startsWith("sk-")) {
+      console.error("❌ Invalid OpenAI API key format");
+      this.connectionStatus = "failed";
+      this.fallbackReason = "invalid_api_key";
+      this.fallbackMode = true;
+      return { success: false, error: "Invalid API key format" };
     }
 
     try {
-      const response = await fetch(OPENAI_API_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${OPENAI_API_KEY}`,
-        },
-        body: JSON.stringify({
-          model: "gpt-3.5-turbo",
-          messages: [{ role: "user", content: "Test connection" }],
-          max_tokens: 10,
-        }),
-      });
+      // Test with minimal request to validate API key and quota
+      const testPayload = {
+        model: this.defaultConfig.model,
+        messages: [
+          {
+            role: "system",
+            content: "You are a helpful educational assistant.",
+          },
+          {
+            role: "user",
+            content: "Hello",
+          },
+        ],
+        max_tokens: 10,
+        temperature: 0.1,
+      };
+
+      const response = await this.makeAPIRequest(testPayload);
 
       if (response.ok) {
-        console.log("✅ OpenAI connection successful");
+        const data = await response.json();
+        console.log("✅ OpenAI API connection successful");
+        console.log("📊 Model used:", data.model || this.defaultConfig.model);
+
         this.isConnected = true;
         this.connectionStatus = "connected";
         this.fallbackMode = false;
         this.fallbackReason = null;
-        return { success: true };
+
+        return {
+          success: true,
+          model: data.model,
+          usage: data.usage,
+        };
       } else {
-        const errorData = await response.json().catch(() => ({}));
-        console.log("🔍 Parsing OpenAI error:", errorData);
-
-        const isQuotaExceeded =
-          response.status === 429 ||
-          (errorData.error && errorData.error.code === "insufficient_quota");
-
-        if (isQuotaExceeded) {
-          console.log("❌ OpenAI service unavailable: quota_exceeded");
-          this.connectionStatus = "failed";
-          this.fallbackReason = "quota_exceeded";
-          this.fallbackMode = true;
-          console.log(
-            "🔄 Enabling educational fallback mode for quota exceeded"
-          );
-        } else {
-          console.warn("❌ OpenAI connection failed:", errorData);
-          this.connectionStatus = "failed";
-          this.fallbackMode = true;
-          this.fallbackReason = "api_error";
-        }
-
-        return { success: false, error: errorData };
+        return this.handleAPIError(response);
       }
     } catch (error) {
-      console.warn("❌ OpenAI connection failed:", error);
+      console.error("❌ OpenAI connection test failed:", error);
       this.connectionStatus = "failed";
-      this.fallbackMode = true;
       this.fallbackReason = "network_error";
-      return { success: false, error: error.message };
+      this.fallbackMode = true;
+
+      return {
+        success: false,
+        error: "Network connection failed",
+      };
     }
   }
 
   /**
-   * Send chat completion request to OpenAI
+   * Make authenticated API request with proper headers
+   */
+  async makeAPIRequest(payload) {
+    // Implement basic rate limiting
+    const now = Date.now();
+    if (now - this.lastRequestTime < this.minRequestInterval) {
+      await new Promise((resolve) =>
+        setTimeout(
+          resolve,
+          this.minRequestInterval - (now - this.lastRequestTime)
+        )
+      );
+    }
+    this.lastRequestTime = Date.now();
+    this.requestCount++;
+
+    const headers = {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${OPENAI_API_KEY}`,
+      "User-Agent": "EduAid-Bot/1.0",
+    };
+
+    console.log("🚀 Making OpenAI API request:", {
+      model: payload.model,
+      messageCount: payload.messages?.length,
+      maxTokens: payload.max_tokens,
+    });
+
+    return await fetch(OPENAI_API_URL, {
+      method: "POST",
+      headers: headers,
+      body: JSON.stringify(payload),
+    });
+  }
+
+  /**
+   * Handle API errors with detailed categorization
+   */
+  async handleAPIError(response) {
+    let errorData = {};
+    try {
+      errorData = await response.json();
+    } catch (e) {
+      console.warn("Failed to parse error response");
+    }
+
+    console.log("🔍 OpenAI API Error Details:", {
+      status: response.status,
+      statusText: response.statusText,
+      error: errorData,
+    });
+
+    this.connectionStatus = "failed";
+
+    switch (response.status) {
+      case 401:
+        this.fallbackReason = "authentication_error";
+        this.fallbackMode = true;
+        return {
+          success: false,
+          error: "Invalid API key or authentication failed",
+          code: "AUTHENTICATION_ERROR",
+        };
+
+      case 429:
+        const isQuotaExceeded =
+          errorData.error?.code === "insufficient_quota" ||
+          errorData.error?.type === "insufficient_quota" ||
+          (errorData.error?.message &&
+            errorData.error.message.toLowerCase().includes("quota"));
+
+        if (isQuotaExceeded) {
+          console.log(
+            "❌ OpenAI quota exceeded - enabling educational fallback"
+          );
+          this.fallbackReason = "quota_exceeded";
+          this.fallbackMode = true;
+          return {
+            success: false,
+            error: "OpenAI quota exceeded",
+            code: "QUOTA_EXCEEDED",
+          };
+        } else {
+          console.log("❌ OpenAI rate limit exceeded");
+          this.fallbackReason = "rate_limit";
+          this.fallbackMode = true;
+          return {
+            success: false,
+            error: "Rate limit exceeded",
+            code: "RATE_LIMITED",
+          };
+        }
+
+      case 400:
+        this.fallbackReason = "bad_request";
+        this.fallbackMode = true;
+        return {
+          success: false,
+          error: "Invalid request format",
+          code: "BAD_REQUEST",
+        };
+
+      case 500:
+      case 502:
+      case 503:
+        this.fallbackReason = "server_error";
+        this.fallbackMode = true;
+        return {
+          success: false,
+          error: "OpenAI server error",
+          code: "SERVER_ERROR",
+        };
+
+      default:
+        this.fallbackReason = "unknown_error";
+        this.fallbackMode = true;
+        return {
+          success: false,
+          error: `Unknown error: ${response.status}`,
+          code: "UNKNOWN_ERROR",
+        };
+    }
+  }
+
+  /**
+   * Professional chat completion with educational context
    */
   async chatCompletion(message, options = {}) {
     if (!OPENAI_API_KEY) {
+      console.warn("❌ No API key available for chat completion");
       return {
         success: false,
-        error: "No API key provided",
+        error: "No API key configured",
+        fallback: true,
+      };
+    }
+
+    // Check if we're in fallback mode
+    if (this.fallbackMode) {
+      console.log("📚 Using educational fallback for chat completion");
+      return {
+        success: false,
+        error: "API unavailable - using fallback",
         fallback: true,
       };
     }
 
     try {
-      const response = await fetch(OPENAI_API_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${OPENAI_API_KEY}`,
-        },
-        body: JSON.stringify({
-          model: options.model || "gpt-3.5-turbo",
-          messages: [
-            {
-              role: "system",
-              content:
-                "You are an AI tutor specializing in African education. Provide helpful, accurate, and culturally relevant educational assistance.",
-            },
-            {
-              role: "user",
-              content: message,
-            },
-          ],
-          max_tokens: options.maxTokens || 500,
-          temperature: options.temperature || 0.7,
-        }),
-      });
+      const chatPayload = {
+        model: options.model || this.defaultConfig.model,
+        messages: [
+          {
+            role: "system",
+            content: this.getSystemPrompt(options.mode || "tutor"),
+          },
+          {
+            role: "user",
+            content: message,
+          },
+        ],
+        max_tokens: options.maxTokens || this.defaultConfig.max_tokens,
+        temperature: options.temperature || this.defaultConfig.temperature,
+        top_p: this.defaultConfig.top_p,
+        frequency_penalty: this.defaultConfig.frequency_penalty,
+        presence_penalty: this.defaultConfig.presence_penalty,
+      };
 
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        const isQuotaExceeded =
-          response.status === 429 ||
-          (errorData.error && errorData.error.code === "insufficient_quota");
+      const response = await this.makeAPIRequest(chatPayload);
 
-        if (isQuotaExceeded) {
-          this.connectionStatus = "failed";
-          this.fallbackReason = "quota_exceeded";
-          this.fallbackMode = true;
-        }
+      if (response.ok) {
+        const data = await response.json();
+        console.log("✅ Chat completion successful");
 
         return {
+          success: true,
+          message: data.choices[0]?.message?.content || "No response received",
+          usage: data.usage,
+          model: data.model,
+        };
+      } else {
+        const errorResult = await this.handleAPIError(response);
+        return {
           success: false,
-          error: errorData.error?.message || `HTTP ${response.status}`,
+          error: errorResult.error,
+          code: errorResult.code,
           fallback: true,
         };
       }
-
-      const data = await response.json();
-      return {
-        success: true,
-        message: data.choices[0]?.message?.content || "No response received",
-        usage: data.usage,
-      };
     } catch (error) {
-      console.error("OpenAI API error:", error);
+      console.error("❌ Chat completion error:", error);
+      this.fallbackMode = true;
+      this.fallbackReason = "network_error";
+
       return {
         success: false,
         error: error.message,
         fallback: true,
       };
+    }
+  }
+
+  /**
+   * Get appropriate system prompt based on chat mode
+   */
+  getSystemPrompt(mode) {
+    const basePrompt =
+      "You are an AI educational assistant specializing in African education. Provide helpful, accurate, and culturally relevant educational assistance.";
+
+    switch (mode) {
+      case "tutor":
+        return `${basePrompt} Focus on explaining concepts clearly with step-by-step guidance. Use examples relevant to African contexts when possible.`;
+
+      case "homework":
+        return `${basePrompt} Help students understand their homework by breaking down problems and guiding them to solutions rather than giving direct answers.`;
+
+      case "exam":
+        return `${basePrompt} Provide exam preparation strategies, practice questions, and review materials. Focus on African educational curricula and examination formats.`;
+
+      case "creative":
+        return `${basePrompt} Assist with creative writing, essays, and literary analysis. Encourage African perspectives and storytelling traditions.`;
+
+      default:
+        return basePrompt;
     }
   }
 
@@ -217,6 +379,74 @@ I can still help you with mathematics using our educational knowledge base! Here
 • Custom practice problems
 
 Thank you for understanding! What specific math topic would you like help with? 🧮✨`;
+    }
+
+    // Science-related keywords
+    if (
+      lowerMessage.match(
+        /science|biology|chemistry|physics|experiment|molecule|atom|cell|evolution|ecosystem|photosynthesis/
+      )
+    ) {
+      return `🔬 **Science Learning Assistant**
+
+**⚠️ Service Notice:** We are currently unable to use OpenAI models because we have used up all the tokens from our free tier. We have exceeded our quota for the trial period and would need to purchase an OpenAI subscription for advanced science tutoring.
+
+**Available Science Learning Support:**
+I can still help you with science concepts using our educational knowledge base!
+
+**Study Strategies for Science:**
+• Make concept maps to connect ideas
+• Practice drawing diagrams and labeling
+• Relate scientific concepts to everyday African life
+• Use mnemonics for memorizing facts
+
+**Free Science Resources:**
+• Khan Academy Science courses
+• NASA educational materials
+• African science museums and centers
+• Local university science programs
+
+**African Science Excellence:**
+• Study indigenous knowledge systems
+• Explore African contributions to science
+• Connect global science to local environments
+• Participate in science fairs and competitions
+
+Thank you for understanding! What specific science topic would you like to explore? 🧪⚗️`;
+    }
+
+    // Programming-related keywords
+    if (
+      lowerMessage.match(
+        /programming|code|coding|python|javascript|java|html|css|algorithm|function|variable/
+      )
+    ) {
+      return `💻 **Programming Learning Assistant**
+
+**⚠️ Service Notice:** We are currently unable to use OpenAI models because we have used up all the tokens from our free tier. We have exceeded our quota for the trial period and would need to purchase an OpenAI subscription for advanced programming tutoring.
+
+**Available Programming Learning Support:**
+I can still help you with programming concepts using our educational knowledge base!
+
+**Programming Learning Resources:**
+• FreeCodeCamp (free coding bootcamp)
+• Codecademy (interactive coding lessons)
+• GitHub (code sharing and collaboration)
+• Stack Overflow (programming Q&A)
+
+**African Tech Excellence:**
+• Join African developer communities
+• Participate in local coding bootcamps
+• Contribute to open source projects
+• Build solutions for African challenges
+
+**Study Tips for Coding:**
+• Practice coding daily
+• Build real projects
+• Join coding communities
+• Read other people's code
+
+Thank you for understanding! What programming concept would you like to explore? 👨‍💻🚀`;
     }
 
     // General/Default educational response
@@ -274,14 +504,8 @@ Thank you for understanding! We're still here to help with study strategies and 
       lastError: this.lastError,
       fallbackMode: this.fallbackMode,
       fallbackReason: this.fallbackReason,
+      requestCount: this.requestCount,
     };
-  }
-
-  /**
-   * Get user-friendly error message
-   */
-  getErrorMessage(errorType) {
-    return this.errorMessages[errorType] || this.errorMessages.unknown_error;
   }
 
   /**
@@ -293,12 +517,22 @@ Thank you for understanding! We're still here to help with study strategies and 
     this.lastError = null;
     this.fallbackMode = false;
     this.fallbackReason = null;
+    this.requestCount = 0;
+    this.lastRequestTime = 0;
+  }
+
+  /**
+   * Get API usage statistics
+   */
+  getUsageStats() {
+    return {
+      requestCount: this.requestCount,
+      lastRequestTime: this.lastRequestTime,
+      apiKeyValid: OPENAI_API_KEY && OPENAI_API_KEY.startsWith("sk-"),
+    };
   }
 }
 
 // Create and export singleton instance
 const openaiService = new OpenAIService();
 export default openaiService;
-
-// Export class for testing
-export { OpenAIService };

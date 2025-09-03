@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { httpsCallable } from "firebase/functions";
-import { functions } from "../../firebase";
+import openaiService from "../../services/openaiService";
 import "./ModernChatInterface.css";
 
 const ChatInterface = () => {
@@ -9,10 +8,33 @@ const ChatInterface = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(true);
   const [chatMode, setChatMode] = useState("tutor"); // tutor, homework, exam, creative
+  const [connectionStatus, setConnectionStatus] = useState("connecting");
+  const [fallbackMode, setFallbackMode] = useState(false);
+  const [fallbackReason, setFallbackReason] = useState("");
+  const [demoMode, setDemoMode] = useState(false);
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
 
-  const sendMessage = httpsCallable(functions, "sendChatMessage");
+  // Test OpenAI connection on component mount
+  useEffect(() => {
+    const testConnection = async () => {
+      console.log("🔍 Testing OpenAI connection on startup...");
+      const result = await openaiService.testConnection();
+
+      if (result.success) {
+        setConnectionStatus("connected");
+        setFallbackMode(false);
+        setFallbackReason("");
+      } else {
+        const status = openaiService.getConnectionStatus();
+        setConnectionStatus("failed");
+        setFallbackMode(status.fallbackMode);
+        setFallbackReason(status.fallbackReason);
+      }
+    };
+
+    testConnection();
+  }, []);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -85,41 +107,131 @@ const ChatInterface = () => {
     };
     setMessages((prev) => [...prev, userMessage]);
 
-    try {
-      // Try Firebase function first
-      const result = await sendMessage({
-        message: messageText,
-        context: "african_curriculum",
-        language: "english",
-        mode: chatMode,
-      });
+    // If in demo mode, use enhanced educational fallback immediately
+    if (demoMode) {
+      console.log("🎯 Demo Mode - Using enhanced educational fallback");
+      await new Promise((resolve) => setTimeout(resolve, 1000)); // Realistic delay
 
+      const response = openaiService.getEducationalFallback(messageText);
       const botMessage = {
-        text: result.data.response,
+        text: response,
         sender: "bot",
         timestamp: new Date(),
         mode: chatMode,
+        source: "demo-fallback",
       };
       setMessages((prev) => [...prev, botMessage]);
-    } catch (error) {
-      console.error("Chat error:", error);
+      setInput("");
+      setIsLoading(false);
+      return;
+    }
 
-      // Professional message showing OpenAI integration but credit limitations
-      const professionalMessage = `🤖 **EduAid AI Assistant**
+    // If fallback mode is active, use educational fallback
+    if (fallbackMode) {
+      console.log("📚 Fallback Mode - Using educational response");
+      await new Promise((resolve) =>
+        setTimeout(resolve, 800 + Math.random() * 400)
+      ); // Realistic delay
 
-Hi there! I've successfully integrated OpenAI's GPT model to provide you with intelligent tutoring assistance. However, I've currently exhausted my free OpenAI API credits.
-
-**For the full AI experience:**
-To unlock unlimited AI tutoring, homework help, and personalized learning assistance, an OpenAI subscription would be needed.
-
-Thank you for testing EduAid! The technical implementation is complete and ready for scaling with proper API credits. 🎓`;
-
+      const response = openaiService.getEducationalFallback(messageText);
       const botMessage = {
-        text: professionalMessage,
+        text: response,
         sender: "bot",
         timestamp: new Date(),
         mode: chatMode,
-        isApiLimitMessage: true,
+        source: "educational-fallback",
+      };
+      setMessages((prev) => [...prev, botMessage]);
+      setInput("");
+      setIsLoading(false);
+      return;
+    }
+
+    // Try OpenAI API directly first
+    try {
+      console.log("🚀 Attempting direct OpenAI API call...");
+      const response = await openaiService.chatCompletion(messageText);
+
+      if (response.success) {
+        const botMessage = {
+          text: response.message,
+          sender: "bot",
+          timestamp: new Date(),
+          mode: chatMode,
+          source: "openai-direct",
+        };
+        setMessages((prev) => [...prev, botMessage]);
+        console.log("✅ OpenAI direct response successful");
+
+        // Update connection status if it was previously failed
+        if (connectionStatus === "failed") {
+          setConnectionStatus("connected");
+          setFallbackMode(false);
+          setFallbackReason("");
+        }
+
+        setInput("");
+        setIsLoading(false);
+        return;
+      } else {
+        console.warn("OpenAI direct call failed:", response.error);
+        throw new Error(response.error || "OpenAI API failed");
+      }
+    } catch (directError) {
+      console.warn("Direct OpenAI API failed:", directError);
+
+      // Parse the error to determine if it's quota exceeded
+      const errorMessage = directError.message || directError.toString();
+      const isQuotaExceeded =
+        errorMessage.toLowerCase().includes("quota") ||
+        errorMessage.toLowerCase().includes("insufficient_quota") ||
+        errorMessage.toLowerCase().includes("rate_limit") ||
+        errorMessage.includes("429");
+
+      if (isQuotaExceeded) {
+        console.log("🚫 Quota exceeded detected - showing specific message");
+
+        // Update states to reflect quota exceeded
+        setConnectionStatus("failed");
+        setFallbackMode(true);
+        setFallbackReason("quota_exceeded");
+
+        // Show the specific error message requested by user
+        const quotaMessage =
+          "Hello, sorry we are unable to use OPENAI models because we have used up all the tokens free tier. Thanks for understanding";
+
+        const botMessage = {
+          text: quotaMessage,
+          sender: "bot",
+          timestamp: new Date(),
+          mode: chatMode,
+          source: "quota-exceeded",
+        };
+        setMessages((prev) => [...prev, botMessage]);
+        setInput("");
+        setIsLoading(false);
+        return;
+      }
+
+      // For other errors, use educational fallback
+      console.warn("API error - using educational fallback");
+
+      // Update connection status to failed and use educational fallback
+      setConnectionStatus("failed");
+      setFallbackMode(true);
+      setFallbackReason("api_error");
+
+      // Use educational fallback as last resort
+      await new Promise((resolve) => setTimeout(resolve, 800)); // Realistic delay
+
+      const fallbackResponse =
+        openaiService.getEducationalFallback(messageText);
+      const botMessage = {
+        text: fallbackResponse,
+        sender: "bot",
+        timestamp: new Date(),
+        mode: chatMode,
+        source: "educational-fallback",
       };
       setMessages((prev) => [...prev, botMessage]);
     }
@@ -145,6 +257,49 @@ Thank you for testing EduAid! The technical implementation is complete and ready
 
   return (
     <div className="modern-chat-interface">
+      {/* Status Bar - Prominently placed at top */}
+      <div className="status-bar">
+        <div className="status-indicators">
+          <div className={`connection-badge ${connectionStatus}`}>
+            <span className="status-dot"></span>
+            <span className="status-text">
+              {connectionStatus === "connected" && "OpenAI Connected"}
+              {connectionStatus === "connecting" && "Connecting..."}
+              {connectionStatus === "failed" &&
+                (fallbackReason === "quota_exceeded"
+                  ? "Quota Exceeded"
+                  : "Connection Failed")}
+            </span>
+          </div>
+
+          {fallbackMode && (
+            <div className="fallback-badge">
+              <span className="badge-icon">📚</span>
+              <span>Using Educational Fallback</span>
+            </div>
+          )}
+
+          {demoMode && (
+            <div className="demo-badge">
+              <span className="badge-icon">🎯</span>
+              <span>Demo Mode</span>
+            </div>
+          )}
+        </div>
+
+        <div className="demo-toggle-container">
+          <label className="demo-toggle">
+            <input
+              type="checkbox"
+              checked={demoMode}
+              onChange={(e) => setDemoMode(e.target.checked)}
+            />
+            <span className="toggle-slider"></span>
+            <span className="toggle-label">Demo Mode</span>
+          </label>
+        </div>
+      </div>
+
       {/* Chat Header */}
       <div className="chat-header-modern">
         <div className="header-content">
@@ -348,22 +503,26 @@ Thank you for testing EduAid! The technical implementation is complete and ready
         )}
       </div>
 
-      {/* Input Container */}
-      <div className="input-container-modern">
-        <div className="input-wrapper">
-          <div className="input-box">
+      {/* ChatGPT-Style Input Container */}
+      <div className="chatgpt-input-container">
+        <div className="input-wrapper-chatgpt">
+          <div className="input-box-chatgpt">
             <textarea
               ref={inputRef}
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyPress={handleKeyPress}
-              placeholder={`Ask ${getCurrentModeData()?.name.toLowerCase()} anything...`}
+              placeholder={`Message ${getCurrentModeData()?.name.toLowerCase()}...`}
               disabled={isLoading}
               rows="1"
-              className="message-input"
+              className="message-input-chatgpt"
             />
-            <div className="input-actions">
-              <button className="attachment-btn" title="Attach file">
+            <div className="input-actions-chatgpt">
+              <button
+                className="attachment-btn-chatgpt"
+                title="Attach file"
+                disabled={isLoading}
+              >
                 <svg
                   width="20"
                   height="20"
@@ -383,11 +542,17 @@ Thank you for testing EduAid! The technical implementation is complete and ready
               <button
                 onClick={() => handleSendMessage()}
                 disabled={isLoading || !input.trim()}
-                className={`send-btn-modern ${input.trim() ? "active" : ""}`}
+                className={`send-btn-chatgpt ${input.trim() ? "active" : ""} ${
+                  isLoading ? "loading" : ""
+                }`}
                 title="Send message"
               >
                 {isLoading ? (
-                  <div className="loading-spinner-small"></div>
+                  <div className="loading-spinner-chatgpt">
+                    <div className="spinner-dot"></div>
+                    <div className="spinner-dot"></div>
+                    <div className="spinner-dot"></div>
+                  </div>
                 ) : (
                   <svg
                     width="20"
@@ -397,7 +562,7 @@ Thank you for testing EduAid! The technical implementation is complete and ready
                     xmlns="http://www.w3.org/2000/svg"
                   >
                     <path
-                      d="M22 2L11 13M22 2L15 22L11 13M22 2L2 9L11 13"
+                      d="M7 11L12 6L17 11M12 18V7"
                       stroke="currentColor"
                       strokeWidth="2"
                       strokeLinecap="round"
@@ -408,13 +573,10 @@ Thank you for testing EduAid! The technical implementation is complete and ready
               </button>
             </div>
           </div>
-          <div className="input-footer">
-            <span className="input-hint">
-              Press Enter to send, Shift + Enter for new line
+          <div className="input-footer-chatgpt">
+            <span className="input-hint-chatgpt">
+              EduAI can make mistakes. Consider checking important information.
             </span>
-            <div className="model-info">
-              <span className="model-badge">EduAI v2.0</span>
-            </div>
           </div>
         </div>
       </div>
