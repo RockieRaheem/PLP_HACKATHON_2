@@ -8,18 +8,6 @@
 const OPENAI_API_URL = "https://api.openai.com/v1/chat/completions";
 const OPENAI_API_KEY = process.env.REACT_APP_OPENAI_API_KEY;
 
-// Debug logging for environment variables
-console.log("🔍 Environment variable check:");
-console.log(
-  "process.env.REACT_APP_OPENAI_API_KEY exists:",
-  !!process.env.REACT_APP_OPENAI_API_KEY
-);
-console.log("OPENAI_API_KEY length:", OPENAI_API_KEY?.length || 0);
-console.log(
-  "OPENAI_API_KEY starts with sk-:",
-  OPENAI_API_KEY?.startsWith("sk-") || false
-);
-
 /**
  * Professional OpenAI Service Class
  * Implements OpenAI API v1 best practices with comprehensive error handling
