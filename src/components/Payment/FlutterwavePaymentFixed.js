@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import flutterwaveService from "../../services/enhancedFlutterwaveService";
+import flutterwaveService from "../../services/flutterwaveService";
 
 const FlutterwavePayment = ({
   amount,
@@ -10,13 +10,9 @@ const FlutterwavePayment = ({
   onSuccess,
   onClose,
 }) => {
-  const [paymentStep, setPaymentStep] = useState("select"); // 'select', 'card', 'mobile', 'processing', 'popup'
+  const [paymentStep, setPaymentStep] = useState("select"); // 'select', 'card', 'mobile', 'processing'
   const [isProcessing, setIsProcessing] = useState(false);
   const [serviceStatus, setServiceStatus] = useState(null);
-  const [paymentUrl, setPaymentUrl] = useState(null);
-  const [paymentWindow, setPaymentWindow] = useState(null);
-  const [showPaymentWaiting, setShowPaymentWaiting] = useState(false);
-  const [showInlinePayment, setShowInlinePayment] = useState(false);
   const [cardDetails, setCardDetails] = useState({
     number: "",
     cvv: "",
@@ -35,78 +31,7 @@ const FlutterwavePayment = ({
     const status = flutterwaveService.getServiceStatus();
     setServiceStatus(status);
     console.log("🔧 Flutterwave Service Status:", status);
-
-    // Listen for payment completion messages from iframe
-    const handlePaymentMessage = (event) => {
-      // Verify origin for security
-      if (event.origin !== "https://checkout.flutterwave.com") {
-        return;
-      }
-
-      console.log("📨 Payment message received:", event.data);
-
-      // Handle payment completion
-      if (event.data && event.data.status === "successful") {
-        console.log("🎉 Payment completed successfully!");
-        setShowInlinePayment(false);
-        setPaymentUrl(null);
-        setPaymentStep("select");
-        setIsProcessing(false);
-
-        if (onSuccess) {
-          onSuccess({
-            status: "successful",
-            tx_ref: event.data.tx_ref,
-            flw_ref: event.data.flw_ref,
-            transaction_id: event.data.transaction_id,
-            amount: amount,
-            currency: "KES",
-            payment_method: event.data.payment_method || "card",
-            customer: { email, name, phone },
-          });
-        }
-      } else if (event.data && event.data.status === "cancelled") {
-        console.log("❌ Payment cancelled by user");
-        setShowInlinePayment(false);
-        setPaymentUrl(null);
-        setPaymentStep("select");
-        setIsProcessing(false);
-      }
-    };
-
-    window.addEventListener("message", handlePaymentMessage);
-
-    return () => {
-      window.removeEventListener("message", handlePaymentMessage);
-    };
-  }, [amount, email, name, phone, onSuccess]);
-
-  // Open payment in centered popup window
-  const openPaymentPopup = (url) => {
-    const width = 500;
-    const height = 700;
-    const left = window.screen.width / 2 - width / 2;
-    const top = window.screen.height / 2 - height / 2;
-
-    const popup = window.open(
-      url,
-      "FlutterwavePayment",
-      `width=${width},height=${height},left=${left},top=${top},scrollbars=yes,resizable=yes`
-    );
-
-    // Monitor popup closure
-    const checkClosed = setInterval(() => {
-      if (popup.closed) {
-        clearInterval(checkClosed);
-        setShowPaymentWaiting(false);
-        setPaymentWindow(null);
-        setPaymentStep("select");
-        console.log("💳 Payment popup closed");
-      }
-    }, 1000);
-
-    return popup;
-  };
+  }, []);
 
   // Professional Card Payment using Flutterwave v4 API
   const initiateCardPayment = async () => {
@@ -150,12 +75,8 @@ const FlutterwavePayment = ({
       });
 
       if (initResponse.success) {
-        // Open payment in centered popup window
-        const popup = openPaymentPopup(initResponse.payment_link);
-        setPaymentWindow(popup);
-        setShowPaymentWaiting(true);
-        setPaymentStep("popup");
-        console.log("💳 Opening payment popup:", initResponse.payment_link);
+        // Redirect to Flutterwave payment page
+        window.open(initResponse.payment_link, "_blank");
 
         // For demo purposes, simulate success after a delay
         setTimeout(() => {
@@ -169,28 +90,14 @@ const FlutterwavePayment = ({
             payment_method: "card",
             customer: {
               email,
-              name,
-              phone,
+              phone_number: phone,
+              name: cardDetails.fullname,
             },
           };
 
-          console.log("✅ Payment success (demo):", successResponse);
-          setIsProcessing(false);
-          setPaymentStep("select");
-
-          if (onSuccess) {
-            onSuccess(successResponse);
-          }
+          console.log("✅ Card Payment Success:", successResponse);
+          if (onSuccess) onSuccess(successResponse);
         }, 3000);
-      } else if (initResponse.blocked) {
-        // Cloudflare blocking detected - enhanced service already handled UI
-        console.log("🛡️ Payment blocked by Cloudflare, user notified");
-        setIsProcessing(false);
-        setPaymentStep("select");
-      } else {
-        throw new Error(
-          initResponse.message || "Payment initialization failed"
-        );
       }
     } catch (error) {
       console.error("❌ Card Payment Error:", error);
@@ -238,15 +145,8 @@ const FlutterwavePayment = ({
       });
 
       if (initResponse.success) {
-        // Open payment in centered popup window
-        const popup = openPaymentPopup(initResponse.payment_link);
-        setPaymentWindow(popup);
-        setShowPaymentWaiting(true);
-        setPaymentStep("popup");
-        console.log(
-          "📱 Opening mobile payment popup:",
-          initResponse.payment_link
-        );
+        // Redirect to Flutterwave payment page
+        window.open(initResponse.payment_link, "_blank");
 
         // For demo purposes, simulate success after a delay
         setTimeout(() => {
@@ -268,15 +168,6 @@ const FlutterwavePayment = ({
           console.log("✅ Mobile Money Success:", successResponse);
           if (onSuccess) onSuccess(successResponse);
         }, 3000);
-      } else if (initResponse.blocked) {
-        // Cloudflare blocking detected - enhanced service already handled UI
-        console.log("🛡️ Mobile payment blocked by Cloudflare, user notified");
-        setIsProcessing(false);
-        setPaymentStep("select");
-      } else {
-        throw new Error(
-          initResponse.message || "Mobile payment initialization failed"
-        );
       }
     } catch (error) {
       console.error("❌ Mobile Payment Error:", error);
@@ -845,419 +736,6 @@ const FlutterwavePayment = ({
           }}
         >
           💡 A new tab will open for secure payment with Flutterwave
-        </div>
-      </div>
-    );
-  }
-
-  // Popup Payment Waiting View
-  if (paymentStep === "popup" && showPaymentWaiting) {
-    return (
-      <div
-        style={{
-          position: "fixed",
-          top: 0,
-          left: 0,
-          width: "100%",
-          height: "100%",
-          background: "rgba(0,0,0,0.8)",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          zIndex: 10000,
-          fontFamily: "Arial, sans-serif",
-        }}
-      >
-        <div
-          style={{
-            background: "white",
-            borderRadius: "12px",
-            padding: "40px",
-            maxWidth: "500px",
-            width: "90%",
-            textAlign: "center",
-            boxShadow: "0 20px 40px rgba(0,0,0,0.3)",
-          }}
-        >
-          {/* Header */}
-          <div style={{ marginBottom: "30px" }}>
-            <div style={{ fontSize: "48px", marginBottom: "15px" }}>💳</div>
-            <h3
-              style={{
-                margin: 0,
-                color: "#1f2937",
-                fontSize: "24px",
-                marginBottom: "10px",
-              }}
-            >
-              Complete Your Payment
-            </h3>
-            <p style={{ margin: 0, color: "#6b7280", fontSize: "16px" }}>
-              A secure payment window has opened
-            </p>
-          </div>
-
-          {/* Payment Info */}
-          <div
-            style={{
-              background: "#eff6ff",
-              padding: "20px",
-              borderRadius: "8px",
-              marginBottom: "30px",
-            }}
-          >
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                marginBottom: "10px",
-              }}
-            >
-              <span style={{ color: "#1e40af", fontWeight: "600" }}>Plan:</span>
-              <span style={{ color: "#1e40af" }}>{planId} Subscription</span>
-            </div>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                marginBottom: "10px",
-              }}
-            >
-              <span style={{ color: "#1e40af", fontWeight: "600" }}>
-                Amount:
-              </span>
-              <span
-                style={{
-                  color: "#1e40af",
-                  fontSize: "18px",
-                  fontWeight: "bold",
-                }}
-              >
-                KES {amount.toLocaleString()}
-              </span>
-            </div>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-              }}
-            >
-              <span style={{ color: "#1e40af", fontWeight: "600" }}>
-                Email:
-              </span>
-              <span style={{ color: "#1e40af" }}>{email}</span>
-            </div>
-          </div>
-
-          {/* Instructions */}
-          <div
-            style={{
-              background: "#f0fdf4",
-              padding: "20px",
-              borderRadius: "8px",
-              marginBottom: "30px",
-              textAlign: "left",
-            }}
-          >
-            <h4
-              style={{
-                margin: "0 0 15px 0",
-                color: "#166534",
-                fontSize: "16px",
-              }}
-            >
-              📋 Instructions:
-            </h4>
-            <ul
-              style={{
-                margin: 0,
-                paddingLeft: "20px",
-                color: "#166534",
-                fontSize: "14px",
-              }}
-            >
-              <li>Complete payment in the popup window</li>
-              <li>Do not close this page until payment is done</li>
-              <li>Return here after successful payment</li>
-              <li>If popup was blocked, allow popups and try again</li>
-            </ul>
-          </div>
-
-          {/* Actions */}
-          <div
-            style={{ display: "flex", gap: "15px", justifyContent: "center" }}
-          >
-            <button
-              onClick={() => {
-                if (paymentWindow && !paymentWindow.closed) {
-                  paymentWindow.focus();
-                } else {
-                  alert("Payment window was closed. Please try again.");
-                  setShowPaymentWaiting(false);
-                  setPaymentWindow(null);
-                  setPaymentStep("select");
-                }
-              }}
-              style={{
-                background: "#3b82f6",
-                color: "white",
-                border: "none",
-                borderRadius: "8px",
-                padding: "12px 24px",
-                cursor: "pointer",
-                fontSize: "14px",
-                fontWeight: "600",
-              }}
-            >
-              🔍 Focus Payment Window
-            </button>
-
-            <button
-              onClick={() => {
-                if (paymentWindow) {
-                  paymentWindow.close();
-                }
-                setShowPaymentWaiting(false);
-                setPaymentWindow(null);
-                setPaymentStep("select");
-                setIsProcessing(false);
-                if (onClose) onClose();
-              }}
-              style={{
-                background: "#6b7280",
-                color: "white",
-                border: "none",
-                borderRadius: "8px",
-                padding: "12px 24px",
-                cursor: "pointer",
-                fontSize: "14px",
-                fontWeight: "600",
-              }}
-            >
-              ✕ Cancel Payment
-            </button>
-          </div>
-
-          {/* Security Badge */}
-          <div
-            style={{
-              marginTop: "30px",
-              paddingTop: "20px",
-              borderTop: "1px solid #e5e7eb",
-            }}
-          >
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: "10px",
-              }}
-            >
-              <span style={{ color: "#10b981", fontSize: "16px" }}>🔒</span>
-              <span style={{ color: "#6b7280", fontSize: "13px" }}>
-                Secured by Flutterwave SSL encryption
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Show inline payment modal
-  if (showInlinePayment && paymentUrl) {
-    return (
-      <div
-        style={{
-          position: "fixed",
-          top: 0,
-          left: 0,
-          width: "100%",
-          height: "100%",
-          background: "rgba(0,0,0,0.8)",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          zIndex: 10000,
-          fontFamily: "Arial, sans-serif",
-        }}
-      >
-        <div
-          style={{
-            background: "white",
-            borderRadius: "12px",
-            width: "90%",
-            maxWidth: "800px",
-            height: "90%",
-            maxHeight: "700px",
-            position: "relative",
-            display: "flex",
-            flexDirection: "column",
-            overflow: "hidden",
-            boxShadow: "0 20px 40px rgba(0,0,0,0.3)",
-          }}
-        >
-          {/* Header */}
-          <div
-            style={{
-              padding: "20px",
-              borderBottom: "1px solid #e5e7eb",
-              background: "#f8f9fa",
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            <div>
-              <h3 style={{ margin: 0, color: "#1f2937", fontSize: "18px" }}>
-                💳 Complete Your Payment
-              </h3>
-              <p
-                style={{
-                  margin: "5px 0 0 0",
-                  color: "#6b7280",
-                  fontSize: "14px",
-                }}
-              >
-                Secure payment powered by Flutterwave
-              </p>
-            </div>
-            <button
-              onClick={() => {
-                setShowInlinePayment(false);
-                setPaymentUrl(null);
-                setPaymentStep("select");
-                setIsProcessing(false);
-                if (onClose) onClose();
-              }}
-              style={{
-                background: "#6b7280",
-                color: "white",
-                border: "none",
-                borderRadius: "6px",
-                padding: "8px 12px",
-                cursor: "pointer",
-                fontSize: "14px",
-              }}
-            >
-              ✕ Close
-            </button>
-          </div>
-
-          {/* Payment Amount Info */}
-          <div
-            style={{
-              padding: "15px 20px",
-              background: "#eff6ff",
-              borderBottom: "1px solid #e5e7eb",
-            }}
-          >
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-              }}
-            >
-              <span style={{ color: "#1e40af", fontWeight: "600" }}>
-                {planId} Plan - {email}
-              </span>
-              <span
-                style={{
-                  color: "#1e40af",
-                  fontSize: "18px",
-                  fontWeight: "bold",
-                }}
-              >
-                KES {amount.toLocaleString()}
-              </span>
-            </div>
-          </div>
-
-          {/* Iframe Container */}
-          <div style={{ flex: 1, position: "relative", background: "#f9fafb" }}>
-            <iframe
-              src={paymentUrl}
-              style={{
-                width: "100%",
-                height: "100%",
-                border: "none",
-                borderRadius: "0 0 12px 12px",
-              }}
-              title="Flutterwave Payment"
-              onLoad={() => {
-                console.log("✅ Payment iframe loaded successfully");
-                setIsProcessing(false);
-              }}
-              onError={(e) => {
-                console.error("❌ Payment iframe error:", e);
-                alert("Payment page failed to load. Please try again.");
-                setShowInlinePayment(false);
-                setPaymentStep("select");
-              }}
-            />
-
-            {/* Loading overlay */}
-            {isProcessing && (
-              <div
-                style={{
-                  position: "absolute",
-                  top: 0,
-                  left: 0,
-                  width: "100%",
-                  height: "100%",
-                  background: "rgba(255,255,255,0.9)",
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  flexDirection: "column",
-                }}
-              >
-                <div
-                  style={{
-                    width: "40px",
-                    height: "40px",
-                    border: "4px solid #e5e7eb",
-                    borderTop: "4px solid #3b82f6",
-                    borderRadius: "50%",
-                    animation: "spin 1s linear infinite",
-                    marginBottom: "15px",
-                  }}
-                ></div>
-                <p style={{ color: "#6b7280", fontSize: "14px" }}>
-                  Loading secure payment page...
-                </p>
-              </div>
-            )}
-          </div>
-
-          {/* Footer */}
-          <div
-            style={{
-              padding: "15px 20px",
-              background: "#f8f9fa",
-              borderTop: "1px solid #e5e7eb",
-              textAlign: "center",
-            }}
-          >
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: "10px",
-              }}
-            >
-              <span style={{ color: "#10b981", fontSize: "16px" }}>🔒</span>
-              <span style={{ color: "#6b7280", fontSize: "13px" }}>
-                Your payment is secured by SSL encryption
-              </span>
-            </div>
-          </div>
         </div>
       </div>
     );

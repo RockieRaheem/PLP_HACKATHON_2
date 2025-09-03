@@ -11,6 +11,8 @@ import ModernStudyMaterials from "./components/StudyMaterials/ModernStudyMateria
 import ModernStudyPlanner from "./components/StudyPlanner/ModernStudyPlanner";
 import ModernAnalytics from "./components/Analytics/ModernAnalytics";
 import ModernPremium from "./components/Premium/ModernPremium";
+import FlutterwaveTest from "./components/Payment/FlutterwaveTest";
+import FlutterwaveBypassPayment from "./components/Payment/FlutterwaveBypassPayment";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -98,6 +100,18 @@ function App() {
       icon: "⭐",
       description: "Unlock premium features",
     },
+    {
+      id: "flutterwave-test",
+      label: "Payment Test",
+      icon: "🔧",
+      description: "Test Flutterwave integration",
+    },
+    {
+      id: "payment-bypass",
+      label: "Payment Demo",
+      icon: "🎭",
+      description: "Cloudflare bypass payment demo",
+    },
   ];
 
   const getCurrentPageTitle = () => {
@@ -122,6 +136,10 @@ function App() {
         return <ModernAnalytics userId={user.uid} />;
       case "premium":
         return <ModernPremium userId={user.uid} />;
+      case "flutterwave-test":
+        return <FlutterwaveTest />;
+      case "payment-bypass":
+        return <FlutterwaveBypassPayment />;
       default:
         return <ModernChatInterface />;
     }
