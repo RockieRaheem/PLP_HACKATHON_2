@@ -1,13 +1,58 @@
-import React, { memo, useCallback } from "react";
+import React, { memo, useCallback, useState } from "react";
 
 const StableMpesaForm = memo(
   ({ mpesaPhone, setMpesaPhone, onBack, onPayment, amount }) => {
+    const [errors, setErrors] = useState({});
+    const [touched, setTouched] = useState({});
+
+    // Phone number validation
+    const validatePhoneNumber = (phone) => {
+      if (!phone) return "Phone number is required";
+      const cleaned = phone.replace(/\D/g, "");
+      if (cleaned.length < 10) return "Phone number must be at least 10 digits";
+      if (cleaned.length > 13) return "Phone number cannot exceed 13 digits";
+      if (!/^(\+?254|0)?[17]\d{8}$/.test(phone))
+        return "Please enter a valid Kenyan phone number";
+      return "";
+    };
+
     const handlePhoneChange = useCallback(
       (e) => {
-        setMpesaPhone(e.target.value);
+        let value = e.target.value.replace(/[^\d+]/g, "");
+
+        // Format phone number nicely
+        if (value.startsWith("0")) {
+          value = "254" + value.substring(1);
+        }
+        if (
+          !value.startsWith("+") &&
+          !value.startsWith("254") &&
+          value.length > 0
+        ) {
+          value = "+254" + value;
+        }
+        if (value.startsWith("254")) {
+          value = "+" + value;
+        }
+
+        setMpesaPhone(value);
+        if (touched.phoneNumber) {
+          setErrors((prev) => ({
+            ...prev,
+            phoneNumber: validatePhoneNumber(value),
+          }));
+        }
       },
-      [setMpesaPhone]
+      [setMpesaPhone, touched.phoneNumber]
     );
+
+    const handlePhoneBlur = useCallback(() => {
+      setTouched((prev) => ({ ...prev, phoneNumber: true }));
+      setErrors((prev) => ({
+        ...prev,
+        phoneNumber: validatePhoneNumber(mpesaPhone || ""),
+      }));
+    }, [mpesaPhone]);
 
     const handleBackClick = useCallback(() => {
       onBack();
@@ -16,6 +61,34 @@ const StableMpesaForm = memo(
     const handlePaymentClick = useCallback(() => {
       onPayment();
     }, [onPayment]);
+
+    const isFormValid = () => {
+      return mpesaPhone && !validatePhoneNumber(mpesaPhone);
+    };
+
+    // Error message component
+    const ErrorMessage = ({ error }) => {
+      if (!error) return null;
+      return (
+        <div
+          style={{
+            color: "#dc2626",
+            fontSize: "12px",
+            marginTop: "4px",
+            padding: "4px 8px",
+            backgroundColor: "#fef2f2",
+            border: "1px solid #fecaca",
+            borderRadius: "4px",
+            display: "flex",
+            alignItems: "center",
+            gap: "4px",
+          }}
+        >
+          <span>⚠️</span>
+          {error}
+        </div>
+      );
+    };
 
     return (
       <div
@@ -58,19 +131,25 @@ const StableMpesaForm = memo(
           <input
             type="tel"
             placeholder="+254700000000"
-            value={mpesaPhone}
+            value={mpesaPhone || ""}
             onChange={handlePhoneChange}
+            onBlur={handlePhoneBlur}
             autoComplete="off"
             style={{
               width: "100%",
               padding: "14px",
-              border: "2px solid #e5e7eb",
+              border: `2px solid ${
+                errors.phoneNumber && touched.phoneNumber
+                  ? "#dc2626"
+                  : "#e5e7eb"
+              }`,
               borderRadius: "10px",
               fontSize: "16px",
               transition: "all 0.3s ease",
               boxSizing: "border-box",
             }}
           />
+          <ErrorMessage error={touched.phoneNumber ? errors.phoneNumber : ""} />
           <p
             style={{
               fontSize: "12px",
@@ -131,11 +210,11 @@ const StableMpesaForm = memo(
           </button>
           <button
             onClick={handlePaymentClick}
-            disabled={!mpesaPhone}
+            disabled={!isFormValid()}
             style={{
               flex: 2,
               padding: "14px",
-              background: !mpesaPhone
+              background: !isFormValid()
                 ? "#d1d5db"
                 : "linear-gradient(135deg, #059669 0%, #047857 100%)",
               color: "white",
@@ -143,7 +222,7 @@ const StableMpesaForm = memo(
               borderRadius: "10px",
               fontSize: "16px",
               fontWeight: "600",
-              cursor: !mpesaPhone ? "not-allowed" : "pointer",
+              cursor: !isFormValid() ? "not-allowed" : "pointer",
               transition: "all 0.3s ease",
             }}
           >
