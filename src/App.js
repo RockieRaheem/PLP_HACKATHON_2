@@ -10,9 +10,10 @@ import ModernChatInterface from "./components/Chat/ModernChatInterface";
 import ModernStudyMaterials from "./components/StudyMaterials/ModernStudyMaterials";
 import ModernStudyPlanner from "./components/StudyPlanner/ModernStudyPlanner";
 import ModernAnalytics from "./components/Analytics/ModernAnalytics";
-import ModernPremium from "./components/Premium/ModernPremium";
+import EnhancedPremiumDashboard from "./components/Premium/EnhancedPremiumDashboard";
 import FlutterwaveTest from "./components/Payment/FlutterwaveTest";
 import FlutterwaveBypassPayment from "./components/Payment/FlutterwaveBypassPayment";
+import PaymentDemo from "./components/Demo/PaymentDemo";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -101,6 +102,12 @@ function App() {
       description: "Unlock premium features",
     },
     {
+      id: "payment-demo",
+      label: "🏆 Winning Payment",
+      icon: "🏆",
+      description: "Professional Flutterwave integration",
+    },
+    {
       id: "flutterwave-test",
       label: "Payment Test",
       icon: "🔧",
@@ -135,7 +142,9 @@ function App() {
       case "progress":
         return <ModernAnalytics userId={user.uid} />;
       case "premium":
-        return <ModernPremium userId={user.uid} />;
+        return <EnhancedPremiumDashboard userId={user.uid} />;
+      case "payment-demo":
+        return <PaymentDemo />;
       case "flutterwave-test":
         return <FlutterwaveTest />;
       case "payment-bypass":
