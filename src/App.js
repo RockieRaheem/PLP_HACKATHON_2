@@ -11,6 +11,7 @@ import ModernStudyMaterials from "./components/StudyMaterials/ModernStudyMateria
 import ModernStudyPlanner from "./components/StudyPlanner/ModernStudyPlanner";
 import ModernAnalytics from "./components/Analytics/ModernAnalytics";
 import EnhancedPremiumDashboard from "./components/Premium/EnhancedPremiumDashboard";
+import NavigationChatbot from "./components/NavigationHelper/NavigationChatbot";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -442,6 +443,9 @@ function App() {
 
         {/* Content Area */}
         <div className="content-container">{renderActiveComponent()}</div>
+
+        {/* Navigation Helper Chatbot */}
+        <NavigationChatbot />
       </main>
     </div>
   );
