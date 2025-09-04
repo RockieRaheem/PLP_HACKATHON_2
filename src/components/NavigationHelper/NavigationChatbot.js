@@ -611,62 +611,6 @@ I'm here to help you navigate and make the most of our educational platform. I c
     }
   }, [isOpen, messages.length]);
 
-  // Handle quick start button clicks
-  const handleQuickStart = (action) => {
-    const quickStartActions = {
-      "Getting Started": () =>
-        addBotMessage(
-          knowledgeBase.gettingStarted.response,
-          knowledgeBase.gettingStarted.quickReplies
-        ),
-      "Upload PDF": () =>
-        addBotMessage(
-          knowledgeBase.upload.response,
-          knowledgeBase.upload.quickReplies
-        ),
-      "AI Tutor Help": () =>
-        addBotMessage(
-          knowledgeBase.aiTutor.response,
-          knowledgeBase.aiTutor.quickReplies
-        ),
-      "Premium Features": () =>
-        addBotMessage(
-          knowledgeBase.premium.response,
-          knowledgeBase.premium.quickReplies
-        ),
-      "View Dashboard": () =>
-        addBotMessage(
-          knowledgeBase.dashboard.response,
-          knowledgeBase.dashboard.quickReplies
-        ),
-      "Study Planner": () =>
-        addBotMessage(
-          knowledgeBase.studyPlanner.response,
-          knowledgeBase.studyPlanner.quickReplies
-        ),
-    };
-
-    const action_function = quickStartActions[action];
-    if (action_function) {
-      // Add user message
-      setMessages((prev) => [
-        ...prev,
-        {
-          type: "user",
-          text: action,
-          timestamp: new Date(),
-        },
-      ]);
-
-      // Add bot response after delay
-      setIsTyping(true);
-      setTimeout(() => {
-        action_function();
-        setIsTyping(false);
-      }, 1500);
-    }
-  };
-
   // Handle quick reply clicks
   const handleQuickReply = (reply) => {
     setInput(reply);
