@@ -11,9 +11,6 @@ import ModernStudyMaterials from "./components/StudyMaterials/ModernStudyMateria
 import ModernStudyPlanner from "./components/StudyPlanner/ModernStudyPlanner";
 import ModernAnalytics from "./components/Analytics/ModernAnalytics";
 import EnhancedPremiumDashboard from "./components/Premium/EnhancedPremiumDashboard";
-import FlutterwaveTest from "./components/Payment/FlutterwaveTest";
-import FlutterwaveBypassPayment from "./components/Payment/FlutterwaveBypassPayment";
-import PaymentDemo from "./components/Demo/PaymentDemo";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -101,24 +98,6 @@ function App() {
       icon: "⭐",
       description: "Unlock premium features",
     },
-    {
-      id: "payment-demo",
-      label: "🏆 Winning Payment",
-      icon: "🏆",
-      description: "Professional Flutterwave integration",
-    },
-    {
-      id: "flutterwave-test",
-      label: "Payment Test",
-      icon: "🔧",
-      description: "Test Flutterwave integration",
-    },
-    {
-      id: "payment-bypass",
-      label: "Payment Demo",
-      icon: "🎭",
-      description: "Cloudflare bypass payment demo",
-    },
   ];
 
   const getCurrentPageTitle = () => {
@@ -134,23 +113,17 @@ function App() {
   const renderActiveComponent = () => {
     switch (activeTab) {
       case "chat":
-        return <ModernChatInterface />;
+        return <ModernChatInterface user={user} />;
       case "upload":
-        return <ModernStudyMaterials userId={user.uid} />;
+        return <ModernStudyMaterials user={user} />;
       case "planner":
-        return <ModernStudyPlanner userId={user.uid} />;
+        return <ModernStudyPlanner userId={user?.uid} />;
       case "progress":
-        return <ModernAnalytics userId={user.uid} />;
+        return <ModernAnalytics userId={user?.uid} />;
       case "premium":
-        return <EnhancedPremiumDashboard userId={user.uid} />;
-      case "payment-demo":
-        return <PaymentDemo />;
-      case "flutterwave-test":
-        return <FlutterwaveTest />;
-      case "payment-bypass":
-        return <FlutterwaveBypassPayment />;
+        return <EnhancedPremiumDashboard user={user} />;
       default:
-        return <ModernChatInterface />;
+        return <ModernChatInterface user={user} />;
     }
   };
 
