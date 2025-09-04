@@ -115,7 +115,7 @@ function App() {
       case "chat":
         return <ModernChatInterface user={user} />;
       case "upload":
-        return <ModernStudyMaterials user={user} />;
+        return <ModernStudyMaterials userId={user?.uid} />;
       case "planner":
         return <ModernStudyPlanner userId={user?.uid} />;
       case "progress":

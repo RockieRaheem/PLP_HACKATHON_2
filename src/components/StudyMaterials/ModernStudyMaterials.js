@@ -14,7 +14,13 @@ const ModernStudyMaterials = ({ userId }) => {
 
   // Load saved files from localStorage on component mount
   useEffect(() => {
-    if (!userId) return;
+    if (!userId) {
+      console.warn(
+        "⚠️ No userId provided to ModernStudyMaterials, skipping localStorage load"
+      );
+      setDataLoaded(true);
+      return;
+    }
 
     const storageKey = `uploadedFiles_${userId}`;
     try {
@@ -22,10 +28,12 @@ const ModernStudyMaterials = ({ userId }) => {
       if (savedFiles) {
         const parsedFiles = JSON.parse(savedFiles);
         setUploadedFiles(parsedFiles);
-        console.log(`Loaded ${parsedFiles.length} files for user ${userId}`);
+        console.log(`✅ Loaded ${parsedFiles.length} files for user ${userId}`);
+      } else {
+        console.log(`📂 No saved files found for user ${userId}`);
       }
     } catch (error) {
-      console.error("Error loading files from localStorage:", error);
+      console.error("❌ Error loading files from localStorage:", error);
     } finally {
       setDataLoaded(true);
     }
@@ -33,14 +41,21 @@ const ModernStudyMaterials = ({ userId }) => {
 
   // Save files to localStorage whenever uploadedFiles changes (but only after initial load)
   useEffect(() => {
-    if (!dataLoaded || !userId) return;
+    if (!dataLoaded) return;
+
+    if (!userId) {
+      console.warn(
+        "⚠️ No userId provided to ModernStudyMaterials, skipping localStorage save"
+      );
+      return;
+    }
 
     const storageKey = `uploadedFiles_${userId}`;
     try {
       localStorage.setItem(storageKey, JSON.stringify(uploadedFiles));
-      console.log(`Saved ${uploadedFiles.length} files for user ${userId}`);
+      console.log(`💾 Saved ${uploadedFiles.length} files for user ${userId}`);
     } catch (error) {
-      console.error("Error saving files to localStorage:", error);
+      console.error("❌ Error saving files to localStorage:", error);
     }
   }, [uploadedFiles, dataLoaded, userId]);
 
