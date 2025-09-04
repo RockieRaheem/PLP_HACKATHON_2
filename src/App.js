@@ -121,7 +121,7 @@ function App() {
       case "progress":
         return <ModernAnalytics userId={user?.uid} />;
       case "premium":
-        return <EnhancedPremiumDashboard user={user} />;
+        return <EnhancedPremiumDashboard userId={user?.uid} />;
       default:
         return <ModernChatInterface user={user} />;
     }
@@ -217,7 +217,10 @@ function App() {
             {/* New Chat Button */}
             <button
               className="new-chat-btn"
-              onClick={() => setActiveTab("chat")}
+              onClick={() => {
+                setActiveTab("chat");
+                setSidebarOpen(false);
+              }}
             >
               <svg
                 width="16"

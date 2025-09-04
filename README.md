@@ -663,7 +663,7 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 
 - **Role**: Full-Stack Developer & Project Lead
 - **GitHub**: [@RockieRaheem](https://github.com/RockieRaheem)
-- **Email**: [contact@rockieraheem.dev](mailto:contact@rockieraheem.dev)
+- **Email**: [kamwangaraheem2050@gmail.com](mailto:kamwanagaraheem2050@gmail.com)
 - **Focus**: AI Integration, Firebase Architecture, African Education Systems
 
 ### 🎯 **PLP Hackathon 2025 Team**

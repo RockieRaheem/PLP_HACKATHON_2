@@ -323,7 +323,7 @@ const EnhancedPremiumDashboard = ({ userId }) => {
                 <div
                   style={{
                     display: "grid",
-                    gridTemplateColumns: "1fr 1fr",
+                    gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
                     gap: "10px",
                   }}
                 >
@@ -692,32 +692,36 @@ const EnhancedPremiumDashboard = ({ userId }) => {
   return (
     <div
       style={{
-        minHeight: "100vh",
+        minHeight: "100%",
         background: "linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)",
-        padding: "40px 20px",
+        padding: "clamp(20px, 5vw, 40px) clamp(10px, 3vw, 20px)",
         fontFamily: "Arial, sans-serif",
+        width: "100%",
+        boxSizing: "border-box",
+        overflow: "auto",
       }}
     >
       {/* Header */}
       <div style={{ textAlign: "center", marginBottom: "50px" }}>
         <h1
           style={{
-            fontSize: "48px",
+            fontSize: "clamp(32px, 6vw, 48px)",
             fontWeight: "bold",
             background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
             backgroundClip: "text",
             WebkitBackgroundClip: "text",
             WebkitTextFillColor: "transparent",
             margin: "0 0 16px 0",
+            lineHeight: "1.2",
           }}
         >
           🚀 EduAI Premium Plans
         </h1>
         <p
           style={{
-            fontSize: "20px",
+            fontSize: "clamp(16px, 4vw, 20px)",
             color: "#6b7280",
-            margin: "0 0 30px 0",
+            margin: "0 auto 30px",
             maxWidth: "600px",
             marginLeft: "auto",
             marginRight: "auto",
@@ -729,6 +733,7 @@ const EnhancedPremiumDashboard = ({ userId }) => {
 
         {/* Billing Toggle */}
         <div
+          className="billing-toggle"
           style={{
             display: "inline-flex",
             background: "white",
@@ -837,10 +842,12 @@ const EnhancedPremiumDashboard = ({ userId }) => {
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
-          gap: "24px",
+          gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+          gap: "clamp(16px, 4vw, 24px)",
           maxWidth: "1400px",
           margin: "0 auto",
+          width: "100%",
+          boxSizing: "border-box",
         }}
       >
         {plans.map((plan, index) => (
@@ -1000,6 +1007,88 @@ const EnhancedPremiumDashboard = ({ userId }) => {
           
           .plan-card.current {
             box-shadow: 0 8px 30px rgba(74, 222, 128, 0.3) !important;
+          }
+
+          /* Mobile Responsive Styles */
+          @media (max-width: 768px) {
+            .plan-card {
+              margin: 0 4px !important;
+              max-width: 100% !important;
+            }
+            
+            .plan-card.popular {
+              transform: scale(1) !important;
+            }
+            
+            .plan-card:hover {
+              transform: translateY(-4px) scale(1) !important;
+            }
+
+            /* Ensure billing toggle is mobile-friendly */
+            .billing-toggle {
+              flex-direction: column !important;
+              width: 100% !important;
+            }
+
+            .billing-toggle button {
+              width: 100% !important;
+              margin: 2px 0 !important;
+            }
+          }
+
+          @media (max-width: 480px) {
+            .plan-card {
+              margin: 0 2px !important;
+              font-size: 14px !important;
+            }
+            
+            /* Ensure text doesn't overflow */
+            h1, h2, h3, h4, h5 {
+              word-wrap: break-word !important;
+              overflow-wrap: break-word !important;
+              hyphens: auto !important;
+            }
+            
+            /* Make buttons more touch-friendly */
+            button {
+              min-height: 48px !important;
+              touch-action: manipulation !important;
+              font-size: 14px !important;
+            }
+            
+            /* Improve spacing on small screens */
+            .plan-card > div {
+              padding: 12px !important;
+            }
+
+            /* Fix feature lists on mobile */
+            .plan-card ul, .plan-card ol {
+              padding-left: 16px !important;
+            }
+
+            .plan-card li {
+              font-size: 13px !important;
+              line-height: 1.4 !important;
+              margin-bottom: 6px !important;
+            }
+
+            /* Ensure price text fits */
+            .price-text {
+              font-size: 24px !important;
+            }
+
+            /* Fix header on mobile */
+            .premium-header {
+              padding: 16px 8px !important;
+            }
+          }
+
+          /* Force container width */
+          @media (max-width: 390px) {
+            .plan-card {
+              min-width: calc(100vw - 40px) !important;
+              max-width: calc(100vw - 40px) !important;
+            }
           }
         `}
       </style>
