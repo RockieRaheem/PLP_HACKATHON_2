@@ -3,18 +3,569 @@ import "./NavigationChatbot.css";
 
 const NavigationChatbot = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState([
-    {
-      type: "bot",
-      content:
-        "👋 Hi! I'm your EduAid-Bot Navigation Assistant. I'm here to help you understand and navigate our educational platform. How can I assist you today?",
-      timestamp: new Date(),
-    },
-  ]);
-  const [inputText, setInputText] = useState("");
+  const [messages, setMessages] = useState([]);
+  const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef(null);
+  const inputRef = useRef(null);
 
+  // Enhanced knowledge base with comprehensive coverage
+  const knowledgeBase = {
+    gettingStarted: {
+      keywords: [
+        "start",
+        "begin",
+        "get started",
+        "getting started",
+        "first time",
+        "new user",
+        "how to start",
+        "beginner",
+        "setup",
+        "initialize",
+      ],
+      response: `🚀 **Welcome to EduAid-Bot!** Here's how to get started:
+
+📚 **Upload Study Materials**: Click the "Upload PDF" button to add your documents
+🤖 **Chat with AI Tutor**: Ask questions about your materials and get instant help
+📊 **Track Progress**: Monitor your study progress in the dashboard
+📅 **Plan Studies**: Use the study planner to organize your learning
+💎 **Premium Features**: Upgrade for advanced analytics and priority support
+
+Ready to enhance your learning? Start by uploading your first PDF! 🎯`,
+      quickReplies: [
+        "Upload PDF",
+        "AI Tutor Help",
+        "View Dashboard",
+        "Study Planner",
+      ],
+    },
+
+    aiTutor: {
+      keywords: [
+        "ai tutor",
+        "tutor",
+        "chat",
+        "ask questions",
+        "help with studies",
+        "learning assistant",
+        "study help",
+        "ai help",
+        "artificial intelligence",
+      ],
+      response: `🤖 **AI Tutor - Your Personal Learning Assistant**
+
+Our AI Tutor can help you with:
+• **Answer Questions**: Ask about any topic from your uploaded materials
+• **Explain Concepts**: Get detailed explanations in simple terms
+• **Practice Problems**: Generate practice questions and solutions
+• **Study Tips**: Receive personalized study recommendations
+• **Quick Reviews**: Get summaries of complex topics
+
+💡 **Pro Tip**: The more specific your questions, the better answers you'll get! Try asking "Explain photosynthesis" or "Help me with calculus derivatives"`,
+      quickReplies: [
+        "Ask AI Question",
+        "Upload Materials",
+        "Practice Problems",
+        "Study Tips",
+      ],
+    },
+
+    upload: {
+      keywords: [
+        "upload",
+        "pdf",
+        "file",
+        "document",
+        "materials",
+        "add files",
+        "study materials",
+        "upload pdf",
+      ],
+      response: `📄 **Upload Your Study Materials**
+
+**Supported Formats**: PDF files (up to 10MB per file)
+
+**How to Upload**:
+1. Click the "Upload PDF" button
+2. Select your study materials from your device
+3. Wait for processing (usually takes 30-60 seconds)
+4. Start chatting with your AI tutor about the content!
+
+**Best Practices**:
+• Use clear, text-based PDFs for best results
+• Break large documents into smaller sections
+• Name your files descriptively
+
+Your uploaded materials are processed securely and stored safely! 🔒`,
+      quickReplies: [
+        "Upload Now",
+        "File Requirements",
+        "Security Info",
+        "AI Tutor Help",
+      ],
+    },
+
+    dashboard: {
+      keywords: [
+        "dashboard",
+        "progress",
+        "analytics",
+        "stats",
+        "statistics",
+        "performance",
+        "tracking",
+        "overview",
+      ],
+      response: `📊 **Progress Dashboard - Track Your Learning Journey**
+
+**Key Features**:
+• **Study Time**: Monitor total hours spent studying
+• **Session Analytics**: See your most productive study times
+• **Topic Progress**: Track understanding across different subjects
+• **Achievement Badges**: Unlock rewards for reaching milestones
+• **Weekly Goals**: Set and monitor learning objectives
+
+**Premium Analytics**:
+• Advanced performance insights
+• Detailed learning patterns
+• Comparative analysis
+• Custom reporting
+
+Check your dashboard regularly to stay motivated! 🎯`,
+      quickReplies: [
+        "View Dashboard",
+        "Set Goals",
+        "Premium Analytics",
+        "Study Stats",
+      ],
+    },
+
+    studyPlanner: {
+      keywords: [
+        "study planner",
+        "planner",
+        "schedule",
+        "plan studies",
+        "organize",
+        "calendar",
+        "study schedule",
+        "planning",
+      ],
+      response: `📅 **Study Planner - Organize Your Learning**
+
+**Smart Planning Features**:
+• **Auto-Schedule**: AI creates optimal study schedules
+• **Goal Setting**: Set daily, weekly, and monthly targets
+• **Deadline Tracking**: Never miss an assignment or exam
+• **Study Blocks**: Organize focused study sessions
+• **Break Reminders**: Maintain healthy study habits
+
+**Customization Options**:
+• Choose your preferred study times
+• Set study intensity levels
+• Add breaks and leisure time
+• Sync with external calendars
+
+Let the planner guide your success! 📈`,
+      quickReplies: [
+        "Create Schedule",
+        "Set Goals",
+        "View Calendar",
+        "Study Tips",
+      ],
+    },
+
+    premium: {
+      keywords: [
+        "premium",
+        "pro",
+        "upgrade",
+        "subscription",
+        "paid",
+        "pricing",
+        "premium features",
+        "pro version",
+      ],
+      response: `💎 **Premium Features - Unlock Your Full Potential**
+
+**Premium Benefits**:
+• **Unlimited AI Interactions**: No daily limits
+• **Advanced Analytics**: Detailed learning insights
+• **Priority Support**: 24/7 premium assistance
+• **Custom Study Plans**: Personalized learning paths
+• **Offline Access**: Study anywhere, anytime
+• **Export Options**: Download your progress reports
+
+**Flexible Pricing**:
+• Monthly: $9.99/month
+• Annual: $79.99/year (33% savings)
+• Student: 50% discount with valid student ID
+
+**30-Day Free Trial** - Cancel anytime! 🌟`,
+      quickReplies: [
+        "Start Free Trial",
+        "View Pricing",
+        "Student Discount",
+        "Premium Benefits",
+      ],
+    },
+
+    payment: {
+      keywords: [
+        "payment",
+        "billing",
+        "subscription",
+        "cancel",
+        "refund",
+        "card",
+        "paypal",
+        "pricing",
+        "cost",
+      ],
+      response: `💳 **Payment & Billing Information**
+
+**Accepted Payments**:
+• Credit/Debit Cards (Visa, MasterCard, Amex)
+• PayPal
+• Apple Pay
+• Google Pay
+• Bank Transfers (annual plans)
+
+**Billing Cycle**:
+• Monthly subscriptions: Billed on the same date each month
+• Annual subscriptions: Billed yearly with 33% savings
+
+**Cancellation**: Cancel anytime from your account settings
+**Refunds**: 30-day money-back guarantee for new subscribers
+
+All transactions are secured with industry-standard encryption! 🔒`,
+      quickReplies: [
+        "Payment Methods",
+        "Cancel Subscription",
+        "Billing Help",
+        "Refund Request",
+      ],
+    },
+
+    troubleshooting: {
+      keywords: [
+        "help",
+        "problem",
+        "issue",
+        "error",
+        "bug",
+        "not working",
+        "broken",
+        "trouble",
+        "support",
+        "fix",
+      ],
+      response: `🔧 **Technical Support & Troubleshooting**
+
+**Common Solutions**:
+• **Refresh the page** if features aren't loading
+• **Clear browser cache** for performance issues
+• **Check internet connection** for sync problems
+• **Update your browser** for compatibility
+
+**Still Need Help?**
+• Use the help chat in the bottom-right corner
+• Email: support@eduaid-bot.com
+• Response time: < 24 hours (< 2 hours for Premium)
+
+**Bug Reports**: We appreciate detailed bug reports to improve the platform! 🐛`,
+      quickReplies: [
+        "Report Bug",
+        "Contact Support",
+        "Clear Cache",
+        "Update Browser",
+      ],
+    },
+
+    features: {
+      keywords: [
+        "features",
+        "what can you do",
+        "capabilities",
+        "functions",
+        "tools",
+        "options",
+        "what features",
+      ],
+      response: `⚡ **EduAid-Bot Core Features**
+
+**🤖 AI-Powered Learning**:
+• Intelligent tutoring system
+• Personalized explanations
+• Practice question generation
+
+**📚 Document Processing**:
+• PDF upload and analysis
+• Text extraction and indexing
+• Multi-format support
+
+**📊 Analytics & Tracking**:
+• Study time monitoring
+• Progress visualization
+• Performance insights
+
+**📅 Smart Planning**:
+• AI-powered scheduling
+• Goal setting and tracking
+• Deadline management
+
+**🔄 Offline Capabilities**:
+• Download materials for offline study
+• Sync when reconnected
+
+Explore each feature to maximize your learning potential! 🚀`,
+      quickReplies: [
+        "AI Tutor",
+        "Upload PDF",
+        "View Analytics",
+        "Study Planner",
+      ],
+    },
+
+    offline: {
+      keywords: [
+        "offline",
+        "no internet",
+        "connection",
+        "sync",
+        "download",
+        "offline mode",
+        "internet connection",
+      ],
+      response: `📱 **Offline Learning Capabilities**
+
+**Available Offline**:
+• Previously downloaded materials
+• Cached AI responses
+• Local progress tracking
+• Basic study planner
+
+**Sync When Online**:
+• Progress automatically syncs
+• New AI interactions
+• Updated materials
+• Cloud backup
+
+**How to Prepare for Offline**:
+1. Download materials while online
+2. Cache important AI responses
+3. Set up study schedule
+
+**Pro Tip**: Premium users get enhanced offline features including extended storage! ⚡`,
+      quickReplies: [
+        "Download Materials",
+        "Sync Now",
+        "Offline Settings",
+        "Premium Offline",
+      ],
+    },
+
+    security: {
+      keywords: [
+        "security",
+        "privacy",
+        "data",
+        "safe",
+        "protection",
+        "encryption",
+        "private",
+        "secure",
+      ],
+      response: `🔒 **Security & Privacy Protection**
+
+**Data Security**:
+• End-to-end encryption for all communications
+• Secure cloud storage with military-grade encryption
+• Regular security audits and penetration testing
+• GDPR and CCPA compliant
+
+**Privacy Measures**:
+• Your documents are never shared with third parties
+• AI training doesn't use your personal content
+• Data retention policies clearly defined
+• Easy data deletion upon request
+
+**Your Control**:
+• Download your data anytime
+• Delete account and data permanently
+• Granular privacy settings
+
+Your learning materials and progress are completely secure! 🛡️`,
+      quickReplies: [
+        "Privacy Policy",
+        "Data Download",
+        "Security Settings",
+        "Delete Data",
+      ],
+    },
+  };
+
+  // Enhanced stop words list for better keyword matching
+  const stopWords = new Set([
+    "a",
+    "an",
+    "and",
+    "are",
+    "as",
+    "at",
+    "be",
+    "by",
+    "for",
+    "from",
+    "has",
+    "he",
+    "in",
+    "is",
+    "it",
+    "its",
+    "of",
+    "on",
+    "that",
+    "the",
+    "to",
+    "was",
+    "will",
+    "with",
+    "how",
+    "what",
+    "where",
+    "when",
+    "why",
+    "who",
+    "which",
+    "can",
+    "could",
+    "should",
+    "would",
+    "i",
+    "you",
+    "we",
+    "they",
+    "this",
+    "that",
+    "these",
+    "those",
+    "my",
+    "your",
+    "his",
+    "her",
+    "our",
+    "their",
+    "me",
+    "him",
+    "her",
+    "us",
+    "them",
+    "do",
+    "does",
+    "did",
+    "have",
+    "had",
+    "will",
+    "would",
+    "could",
+    "should",
+  ]);
+
+  // Intelligent response matching with scoring
+  const findBestResponse = (userInput) => {
+    const inputLower = userInput.toLowerCase();
+    const inputWords = inputLower
+      .split(/\s+/)
+      .filter((word) => !stopWords.has(word));
+
+    let bestMatch = null;
+    let highestScore = 0;
+
+    // Score each knowledge base entry
+    Object.entries(knowledgeBase).forEach(([category, data]) => {
+      let score = 0;
+
+      // Check for direct keyword matches
+      data.keywords.forEach((keyword) => {
+        if (inputLower.includes(keyword.toLowerCase())) {
+          score += keyword.split(" ").length * 2; // Multi-word keywords get higher scores
+        }
+      });
+
+      // Check for partial word matches
+      inputWords.forEach((word) => {
+        data.keywords.forEach((keyword) => {
+          if (
+            keyword.toLowerCase().includes(word) ||
+            word.includes(keyword.toLowerCase())
+          ) {
+            score += 1;
+          }
+        });
+      });
+
+      if (score > highestScore) {
+        highestScore = score;
+        bestMatch = { category, ...data };
+      }
+    });
+
+    return bestMatch;
+  };
+
+  // Enhanced default responses with contextual help
+  const getDefaultResponse = (userInput) => {
+    const responses = [
+      {
+        text: `🤔 I'd love to help you with that! Here's what I can assist you with:
+
+**🚀 Getting Started** - Learn how to use EduAid-Bot
+**📚 Upload Materials** - Add your study documents  
+**🤖 AI Tutor** - Chat with your learning assistant
+**📊 Progress Tracking** - Monitor your study journey
+**📅 Study Planning** - Organize your learning schedule
+**💎 Premium Features** - Unlock advanced capabilities
+
+Try asking me something like "How do I get started?" or "Help me upload a PDF"`,
+        quickReplies: [
+          "Getting Started",
+          "Upload PDF",
+          "AI Tutor Help",
+          "Premium Features",
+        ],
+      },
+      {
+        text: `💡 **I'm here to guide you through EduAid-Bot!**
+
+You can ask me about:
+• How to upload and use study materials
+• AI tutor capabilities and features  
+• Progress tracking and analytics
+• Study planning and scheduling
+• Premium subscription benefits
+• Technical support and troubleshooting
+
+**Example Questions**:
+"How does the AI tutor work?"
+"What are the premium features?"
+"Help me with study planning"
+
+What would you like to know more about? 🎯`,
+        quickReplies: [
+          "AI Tutor Info",
+          "Premium Benefits",
+          "Study Planning",
+          "Upload Help",
+        ],
+      },
+    ];
+
+    return responses[Math.floor(Math.random() * responses.length)];
+  };
+
+  // Scroll to bottom of messages
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
@@ -23,377 +574,188 @@ const NavigationChatbot = () => {
     scrollToBottom();
   }, [messages]);
 
-  // Knowledge base for the chatbot
-  const knowledgeBase = {
-    // System Overview
-    "about|system|eduaid|what is": {
-      response: `🎓 **About EduAid-Bot**
+  // Welcome message on first open
+  useEffect(() => {
+    if (isOpen && messages.length === 0) {
+      const welcomeMessage = {
+        type: "bot",
+        text: `👋 **Welcome to EduAid-Bot Navigation Assistant!**
 
-EduAid-Bot is an innovative educational platform developed by Kamwanga Raheem, a PLP student from Uganda, during PLP Hackathon 2 in September 2025.
+I'm here to help you navigate and make the most of our educational platform. I can guide you through:
 
-**Mission**: Solving UN SDG 4 - Quality Education through AI-powered learning assistance.
+🚀 **Getting started** with uploads and AI tutoring
+📊 **Understanding analytics** and progress tracking  
+📅 **Using the study planner** effectively
+💎 **Exploring premium features** and benefits
+🔧 **Troubleshooting** any issues you encounter
 
-**Key Features**:
-• 🤖 AI-powered tutoring and chat assistance
-• 📊 Analytics dashboard for learning progress
-• 📚 Study planner and goal tracking
-• 💎 Premium features for enhanced learning
-• 📱 Mobile-responsive design for African users
-• 💳 Integrated payment system
-• 📄 PDF document processing and learning
-
-**Developer Contact**:
-📞 Phone/WhatsApp: +256704057370
-📧 Email: kamwangaraheem2050@gmail.com`,
-      quickReplies: ["Features", "How to get started", "Premium benefits"],
-    },
-
-    // Getting Started
-    "start|begin|how to|getting started|new user": {
-      response: `🚀 **Getting Started with EduAid-Bot**
-
-**Step 1: Authentication**
-• Click "Login" or "Sign Up" in the top navigation
-• Create your account with email and password
-• Verify your account if required
-
-**Step 2: Explore the Dashboard**
-• Navigate using the sidebar menu
-• Start with the AI Tutor for immediate help
-• Check your Analytics to track progress
-
-**Step 3: Begin Learning**
-• Ask questions in the AI Tutor chat
-• Upload PDFs for document-based learning
-• Set up your study schedule in Study Planner
-
-**Step 4: Track Progress**
-• Monitor your learning analytics
-• Set and achieve learning goals
-• Upgrade to Premium for advanced features`,
-      quickReplies: ["AI Tutor", "Study Planner", "Analytics", "Premium"],
-    },
-
-    // Navigation
-    "navigation|menu|sidebar|navigate|move around": {
-      response: `🧭 **Navigation Guide**
-
-**Main Sidebar Menu**:
-• 🏠 **Dashboard** - Overview of your learning progress
-• 🤖 **AI Tutor** - Chat with our educational AI assistant
-• 📊 **Analytics** - Detailed learning analytics and insights
-• 📚 **Study Planner** - Schedule and organize your studies
-• 💎 **Premium** - Upgrade for advanced features
-• ⚙️ **Settings** - Customize your experience
-
-**Top Navigation**:
-• 🔍 Search functionality
-• 🔔 Notifications
-• 👤 Profile menu
-• 🚪 Login/Logout
-
-**Mobile Navigation**:
-• Tap the hamburger menu (☰) to open sidebar
-• Swipe gestures supported
-• "New Chat" button opens AI Tutor and closes sidebar`,
-      quickReplies: ["AI Tutor features", "Dashboard overview", "Settings"],
-    },
-
-    // AI Tutor
-    "ai tutor|chat|assistant|ask questions|help with studies": {
-      response: `🤖 **AI Tutor Features**
-
-**What can the AI Tutor do?**:
-• 📝 Answer academic questions across all subjects
-• 💡 Provide step-by-step explanations
-• 📖 Help with homework and assignments
-• 🧮 Solve mathematical problems
-• 🔬 Explain scientific concepts
-• 📚 Assist with research and writing
-• 🗣️ Support multiple languages
-
-**How to use**:
-1. Click "New Chat" to start fresh conversation
-2. Type your question in the chat input
-3. Get instant, intelligent responses
-4. Ask follow-up questions for deeper understanding
-5. Use voice input (if available)
-
-**Pro Tips**:
-• Be specific with your questions
-• Ask for examples and explanations
-• Request different difficulty levels
-• Upload documents for context-based help`,
-      quickReplies: ["Upload documents", "Study techniques", "Subject help"],
-    },
-
-    // Analytics
-    "analytics|progress|tracking|stats|performance": {
-      response: `📊 **Analytics Dashboard**
-
-**Learning Insights**:
-• 📈 **Progress Tracking** - Monitor your learning journey
-• ⏱️ **Study Time** - Track hours spent studying
-• 🎯 **Goal Achievement** - See your completed objectives
-• 📊 **Subject Performance** - Performance across different topics
-• 🔥 **Streak Counter** - Maintain daily learning habits
-• 📅 **Weekly Summary** - Overview of weekly activities
-
-**Visual Reports**:
-• Interactive charts and graphs
-• Progress over time visualization
-• Subject-wise breakdown
-• Goal completion rates
-• Study session analytics
-
-**How to improve**:
-• Set daily study goals
-• Maintain consistent study streaks
-• Focus on weak subject areas
-• Review progress regularly`,
-      quickReplies: ["Set goals", "Study streaks", "Subject performance"],
-    },
-
-    // Study Planner
-    "study planner|schedule|plan|organize|calendar": {
-      response: `📚 **Study Planner Features**
-
-**Planning Tools**:
-• 📅 **Calendar View** - Visual study schedule
-• 🎯 **Goal Setting** - Set and track learning objectives
-• ⏰ **Time Management** - Allocate study time effectively
-• 📋 **Task Lists** - Organize study tasks and assignments
-• 🔔 **Reminders** - Never miss a study session
-• 📊 **Progress Monitoring** - Track completion rates
-
-**How to create a study plan**:
-1. Access Study Planner from sidebar
-2. Set your learning goals
-3. Schedule study sessions
-4. Add specific subjects/topics
-5. Set reminder notifications
-6. Monitor and adjust as needed
-
-**Best Practices**:
-• Schedule regular study breaks
-• Balance different subjects
-• Set realistic daily goals
-• Review and update weekly`,
-      quickReplies: ["Create schedule", "Set reminders", "Study techniques"],
-    },
-
-    // Premium Features
-    "premium|upgrade|subscription|paid features|benefits": {
-      response: `💎 **Premium Features**
-
-**Exclusive Benefits**:
-• 🚀 **Unlimited AI Conversations** - No daily limits
-• 📊 **Advanced Analytics** - Detailed insights and predictions
-• 📄 **Enhanced PDF Processing** - Upload larger documents
-• 🎯 **Personalized Learning Paths** - AI-customized study plans
-• 💾 **Priority Support** - Faster response times
-• 🔒 **Advanced Security** - Enhanced data protection
-• 📱 **Offline Access** - Download content for offline study
-
-**Subscription Plans**:
-• 📦 **Basic Premium** - Essential features
-• 🏆 **Pro Premium** - All advanced features
-• 👑 **Ultimate** - Complete access + priority support
-
-**Payment Options**:
-• Mobile Money (MTN, Airtel)
-• Credit/Debit Cards
-• Bank Transfer
-• Cryptocurrency (Bitcoin, USDT)
-
-**How to upgrade**:
-1. Go to Premium section
-2. Choose your plan
-3. Select payment method
-4. Complete secure checkout`,
-      quickReplies: ["Payment methods", "Plan comparison", "Free trial"],
-    },
-
-    // Technical Support
-    "help|support|problem|issue|error|bug|not working": {
-      response: `🔧 **Technical Support**
-
-**Common Issues & Solutions**:
-
-**Login Problems**:
-• Clear browser cache and cookies
-• Check internet connection
-• Reset password if needed
-• Try different browser
-
-**Chat Not Responding**:
-• Refresh the page
-• Check internet connection
-• Clear browser cache
-• Try again in a few minutes
-
-**Mobile Issues**:
-• Ensure latest browser version
-• Close other browser tabs
-• Restart browser app
-• Check mobile data/WiFi
-
-**Payment Issues**:
-• Verify payment details
-• Check account balance
-• Try different payment method
-• Contact support if persists
-
-**Get Direct Help**:
-📞 Call/WhatsApp: +256704057370
-📧 Email: kamwangaraheem2050@gmail.com
-
-**Response Times**:
-• Premium users: Within 2 hours
-• Free users: Within 24 hours`,
-      quickReplies: ["Reset password", "Clear cache", "Contact developer"],
-    },
-
-    // Features and Capabilities
-    "features|capabilities|what can|functions": {
-      response: `⭐ **EduAid-Bot Capabilities**
-
-**Learning Features**:
-• 🤖 AI-powered tutoring across all subjects
-• 📄 PDF document analysis and Q&A
-• 🧮 Step-by-step problem solving
-• 📝 Writing and research assistance
-• 🗣️ Multi-language support
-• 📱 Mobile-optimized interface
-
-**Progress Tracking**:
-• 📊 Real-time learning analytics
-• 🎯 Goal setting and achievement
-• 📈 Performance insights
-• 🔥 Study streak tracking
-• 📅 Study schedule management
-
-**Educational Support**:
-• 🎓 K-12 to University level content
-• 🔬 STEM subjects specialization
-• 📚 Humanities and social sciences
-• 💼 Professional development
-• 🌍 African curriculum focus
-
-**Technical Features**:
-• 🔒 Secure user authentication
-• 💾 Cloud data synchronization
-• 📱 Progressive Web App (PWA)
-• 🌐 Offline functionality
-• 💳 Multiple payment gateways`,
-      quickReplies: ["Subject specialties", "Mobile features", "Security"],
-    },
-  };
-
-  const quickReplies = [
-    "Getting Started",
-    "AI Tutor",
-    "Study Planner",
-    "Premium Features",
-    "Analytics",
-    "Technical Support",
-    "About EduAid-Bot",
-  ];
-
-  const findResponse = (input) => {
-    const lowerInput = input.toLowerCase();
-
-    for (const [keywords, data] of Object.entries(knowledgeBase)) {
-      const keywordList = keywords.split("|");
-      if (keywordList.some((keyword) => lowerInput.includes(keyword))) {
-        return data;
-      }
+**Quick Start**: Try clicking one of the buttons below or ask me anything! 😊`,
+        quickReplies: [
+          "Getting Started",
+          "Upload PDF",
+          "AI Tutor Help",
+          "Premium Features",
+        ],
+        timestamp: new Date(),
+      };
+      setMessages([welcomeMessage]);
     }
+  }, [isOpen, messages.length]);
 
-    // Default response
-    return {
-      response: `🤔 I understand you're asking about "${input}". Let me help you with that!
-
-I can assist you with:
-• 🚀 Getting started with EduAid-Bot
-• 🤖 Using the AI Tutor features
-• 📊 Understanding Analytics and progress tracking
-• 📚 Setting up Study Planner
-• 💎 Premium features and upgrades
-• 🔧 Technical support and troubleshooting
-• ℹ️ General information about our system
-
-Please choose a topic or ask a more specific question!`,
-      quickReplies: [
-        "Getting Started",
-        "AI Tutor",
-        "Premium Features",
-        "Technical Support",
-      ],
+  // Handle quick start button clicks
+  const handleQuickStart = (action) => {
+    const quickStartActions = {
+      "Getting Started": () =>
+        addBotMessage(
+          knowledgeBase.gettingStarted.response,
+          knowledgeBase.gettingStarted.quickReplies
+        ),
+      "Upload PDF": () =>
+        addBotMessage(
+          knowledgeBase.upload.response,
+          knowledgeBase.upload.quickReplies
+        ),
+      "AI Tutor Help": () =>
+        addBotMessage(
+          knowledgeBase.aiTutor.response,
+          knowledgeBase.aiTutor.quickReplies
+        ),
+      "Premium Features": () =>
+        addBotMessage(
+          knowledgeBase.premium.response,
+          knowledgeBase.premium.quickReplies
+        ),
+      "View Dashboard": () =>
+        addBotMessage(
+          knowledgeBase.dashboard.response,
+          knowledgeBase.dashboard.quickReplies
+        ),
+      "Study Planner": () =>
+        addBotMessage(
+          knowledgeBase.studyPlanner.response,
+          knowledgeBase.studyPlanner.quickReplies
+        ),
     };
+
+    const action_function = quickStartActions[action];
+    if (action_function) {
+      // Add user message
+      setMessages((prev) => [
+        ...prev,
+        {
+          type: "user",
+          text: action,
+          timestamp: new Date(),
+        },
+      ]);
+
+      // Add bot response after delay
+      setIsTyping(true);
+      setTimeout(() => {
+        action_function();
+        setIsTyping(false);
+      }, 1500);
+    }
   };
 
-  const handleSendMessage = async () => {
-    if (!inputText.trim()) return;
+  // Handle quick reply clicks
+  const handleQuickReply = (reply) => {
+    setInput(reply);
+    handleSend(reply);
+  };
+
+  // Add bot message with optional quick replies
+  const addBotMessage = (text, quickReplies = []) => {
+    setMessages((prev) => [
+      ...prev,
+      {
+        type: "bot",
+        text,
+        quickReplies,
+        timestamp: new Date(),
+      },
+    ]);
+  };
+
+  // Handle sending messages
+  const handleSend = (messageText = input) => {
+    if (!messageText.trim()) return;
 
     const userMessage = {
       type: "user",
-      content: inputText,
+      text: messageText,
       timestamp: new Date(),
     };
 
     setMessages((prev) => [...prev, userMessage]);
-    setInputText("");
+    setInput("");
     setIsTyping(true);
 
-    // Simulate typing delay
+    // Simulate thinking time based on complexity
+    const thinkingTime = messageText.length > 50 ? 2000 : 1500;
+
     setTimeout(() => {
-      const response = findResponse(inputText);
-      const botMessage = {
-        type: "bot",
-        content: response.response,
-        quickReplies: response.quickReplies,
-        timestamp: new Date(),
-      };
-      setMessages((prev) => [...prev, botMessage]);
+      const bestMatch = findBestResponse(messageText);
+
+      if (bestMatch) {
+        addBotMessage(bestMatch.response, bestMatch.quickReplies || []);
+      } else {
+        const defaultResponse = getDefaultResponse(messageText);
+        addBotMessage(defaultResponse.text, defaultResponse.quickReplies);
+      }
+
       setIsTyping(false);
-    }, 1000 + Math.random() * 1000);
+    }, thinkingTime);
   };
 
-  const handleQuickReply = (reply) => {
-    setInputText(reply);
-    setTimeout(() => handleSendMessage(), 300);
-  };
-
+  // Handle key press
   const handleKeyPress = (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      handleSendMessage();
+      handleSend();
     }
+  };
+
+  // Focus input when opening
+  useEffect(() => {
+    if (isOpen && inputRef.current) {
+      setTimeout(() => inputRef.current.focus(), 300);
+    }
+  }, [isOpen]);
+
+  // Format timestamp
+  const formatTime = (date) => {
+    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   };
 
   return (
     <>
-      {/* Chat Toggle Button */}
+      {/* Enhanced Toggle Button */}
       <div
         className={`nav-chatbot-toggle ${isOpen ? "active" : ""}`}
         onClick={() => setIsOpen(!isOpen)}
       >
-        {isOpen ? "✕" : "🤖"}
+        <div className="pulse-ring"></div>
+        {isOpen ? "✕" : "💬"}
         <div className="toggle-tooltip">
-          {isOpen ? "Close Helper" : "Need Help? Ask me anything!"}
+          {isOpen ? "Close Navigation Helper" : "Open Navigation Helper"}
         </div>
       </div>
 
-      {/* Chat Window */}
+      {/* Enhanced Chat Window */}
       <div className={`nav-chatbot-window ${isOpen ? "open" : ""}`}>
-        {/* Header */}
+        {/* Professional Header */}
         <div className="nav-chatbot-header">
           <div className="header-info">
-            <div className="bot-avatar">🤖</div>
+            <div className="bot-avatar">
+              🤖
+              <div className="status-indicator"></div>
+            </div>
             <div className="bot-details">
-              <h3>Navigation Assistant</h3>
-              <span className="status">● Online</span>
+              <h3>EduAid Navigation Assistant</h3>
+              <div className="status">
+                <span>Online & Ready to Help</span>
+              </div>
             </div>
           </div>
           <button className="close-btn" onClick={() => setIsOpen(false)}>
@@ -401,70 +763,103 @@ Please choose a topic or ask a more specific question!`,
           </button>
         </div>
 
-        {/* Quick Start Options */}
-        {messages.length === 1 && (
-          <div className="quick-start-section">
-            <h4>🚀 Quick Start</h4>
-            <div className="quick-start-grid">
-              {quickReplies.map((reply, index) => (
-                <button
-                  key={index}
-                  className="quick-start-btn"
-                  onClick={() => handleQuickReply(reply)}
-                >
-                  {reply}
-                </button>
-              ))}
-            </div>
+        {/* Quick Start Section */}
+        <div className="quick-start-section">
+          <h4>🚀 Quick Navigation</h4>
+          <div className="quick-start-grid">
+            <button
+              className="quick-start-btn"
+              onClick={() => handleQuickStart("Getting Started")}
+            >
+              📚 Get Started
+            </button>
+            <button
+              className="quick-start-btn"
+              onClick={() => handleQuickStart("Upload PDF")}
+            >
+              📄 Upload PDF
+            </button>
+            <button
+              className="quick-start-btn"
+              onClick={() => handleQuickStart("AI Tutor Help")}
+            >
+              🤖 AI Tutor
+            </button>
+            <button
+              className="quick-start-btn"
+              onClick={() => handleQuickStart("Premium Features")}
+            >
+              💎 Premium
+            </button>
+            <button
+              className="quick-start-btn"
+              onClick={() => handleQuickStart("View Dashboard")}
+            >
+              📊 Dashboard
+            </button>
+            <button
+              className="quick-start-btn"
+              onClick={() => handleQuickStart("Study Planner")}
+            >
+              📅 Planner
+            </button>
           </div>
-        )}
+        </div>
 
-        {/* Messages Area */}
+        {/* Enhanced Messages Area */}
         <div className="nav-chatbot-messages">
           {messages.map((message, index) => (
             <div key={index} className={`message ${message.type}`}>
               <div className="message-content">
-                <div
-                  className="message-text"
-                  dangerouslySetInnerHTML={{
-                    __html: message.content
-                      .replace(/\n/g, "<br>")
-                      .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>"),
-                  }}
-                />
-                <div className="message-time">
-                  {message.timestamp.toLocaleTimeString([], {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
-                </div>
-              </div>
-
-              {/* Quick Replies */}
-              {message.quickReplies && (
-                <div className="quick-replies">
-                  {message.quickReplies.map((reply, idx) => (
-                    <button
-                      key={idx}
-                      className="quick-reply-btn"
-                      onClick={() => handleQuickReply(reply)}
-                    >
-                      {reply}
-                    </button>
+                <div className="message-text">
+                  {message.text.split("\n").map((line, i) => (
+                    <div key={i}>
+                      {line.startsWith("•") ? (
+                        <div className="bullet-point">{line}</div>
+                      ) : (
+                        <div
+                          dangerouslySetInnerHTML={{
+                            __html: line.replace(
+                              /\*\*(.*?)\*\*/g,
+                              "<strong>$1</strong>"
+                            ),
+                          }}
+                        />
+                      )}
+                    </div>
                   ))}
                 </div>
-              )}
+                <div className="message-time">
+                  {formatTime(message.timestamp)}
+                </div>
+                {message.quickReplies && message.quickReplies.length > 0 && (
+                  <div className="quick-replies">
+                    {message.quickReplies.map((reply, i) => (
+                      <button
+                        key={i}
+                        className="quick-reply-btn"
+                        onClick={() => handleQuickReply(reply)}
+                      >
+                        {reply}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
           ))}
 
-          {/* Typing Indicator */}
+          {/* Enhanced Typing Indicator */}
           {isTyping && (
             <div className="message bot">
               <div className="message-content">
                 <div className="typing-indicator">
-                  <span></span>
-                  <span></span>
-                  <span></span>
+                  <div className="typing-dot"></div>
+                  <div className="typing-dot"></div>
+                  <div className="typing-dot"></div>
+                </div>
+                <div className="typing-text">
+                  Navigation Assistant is thinking...
                 </div>
               </div>
             </div>
@@ -472,36 +867,42 @@ Please choose a topic or ask a more specific question!`,
           <div ref={messagesEndRef} />
         </div>
 
-        {/* Input Area */}
+        {/* Enhanced Input Area */}
         <div className="nav-chatbot-input">
           <div className="input-container">
             <textarea
-              value={inputText}
-              onChange={(e) => setInputText(e.target.value)}
+              ref={inputRef}
+              className="message-input"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
               onKeyPress={handleKeyPress}
               placeholder="Ask me anything about EduAid-Bot..."
               rows="1"
-              className="message-input"
+              disabled={isTyping}
             />
             <button
-              onClick={handleSendMessage}
               className="send-btn"
-              disabled={!inputText.trim()}
+              onClick={() => handleSend()}
+              disabled={!input.trim() || isTyping}
             >
-              📤
+              <span className="send-icon">➤</span>
             </button>
           </div>
           <div className="input-hint">
-            💡 Try: "How do I get started?", "What are premium features?", "How
-            to use AI tutor?"
+            💡 Try asking: "How do I upload PDFs?" or "What are premium
+            features?"
           </div>
         </div>
 
-        {/* Footer */}
+        {/* Enhanced Footer */}
         <div className="nav-chatbot-footer">
           <div className="developer-credit">
-            <span>Developed by Kamwanga Raheem 🇺🇬</span>
-            <span>PLP Hackathon 2 - September 2025</span>
+            <div className="developer-name">
+              EduAid-Bot Navigation Assistant
+            </div>
+            <div className="hackathon-info">
+              PLP Hackathon 2024 | Intelligent Learning Platform
+            </div>
           </div>
         </div>
       </div>
