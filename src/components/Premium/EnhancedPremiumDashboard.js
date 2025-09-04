@@ -697,8 +697,11 @@ const EnhancedPremiumDashboard = ({ userId }) => {
         padding: "clamp(20px, 5vw, 40px) clamp(10px, 3vw, 20px)",
         fontFamily: "Arial, sans-serif",
         width: "100%",
+        maxWidth: "100%",
         boxSizing: "border-box",
-        overflow: "auto",
+        overflowX: "hidden",
+        overflowY: "auto",
+        position: "relative",
       }}
     >
       {/* Header */}
