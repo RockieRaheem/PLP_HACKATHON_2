@@ -6,7 +6,7 @@ exports.initiatePayment = functions.https.onCall(async (data, context) => {
   if (!context.auth) {
     throw new functions.https.HttpsError(
       "unauthenticated",
-      "User must be authenticated"
+      "User must be authenticated",
     );
   }
 
@@ -45,7 +45,7 @@ exports.initiatePayment = functions.https.onCall(async (data, context) => {
     const response = await axios.post(
       "https://api.flutterwave.com/v3/payments",
       paymentData,
-      flutterwaveConfig
+      flutterwaveConfig,
     );
 
     // Store payment record
@@ -68,7 +68,7 @@ exports.initiatePayment = functions.https.onCall(async (data, context) => {
     console.error("Payment initiation error:", error);
     throw new functions.https.HttpsError(
       "internal",
-      "Failed to initiate payment"
+      "Failed to initiate payment",
     );
   }
 });
@@ -77,7 +77,7 @@ exports.verifyPayment = functions.https.onCall(async (data, context) => {
   if (!context.auth) {
     throw new functions.https.HttpsError(
       "unauthenticated",
-      "User must be authenticated"
+      "User must be authenticated",
     );
   }
 
@@ -94,7 +94,7 @@ exports.verifyPayment = functions.https.onCall(async (data, context) => {
 
     const response = await axios.get(
       `https://api.flutterwave.com/v3/transactions/${transaction_id}/verify`,
-      flutterwaveConfig
+      flutterwaveConfig,
     );
 
     if (
@@ -125,7 +125,7 @@ exports.verifyPayment = functions.https.onCall(async (data, context) => {
     console.error("Payment verification error:", error);
     throw new functions.https.HttpsError(
       "internal",
-      "Failed to verify payment"
+      "Failed to verify payment",
     );
   }
 });

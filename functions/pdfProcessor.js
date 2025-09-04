@@ -12,7 +12,7 @@ exports.processPdfDocument = functions.https.onCall(async (data, context) => {
   if (!context.auth) {
     throw new functions.https.HttpsError(
       "unauthenticated",
-      "User must be authenticated"
+      "User must be authenticated",
     );
   }
 

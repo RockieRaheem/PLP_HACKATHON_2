@@ -12,7 +12,9 @@ const cors = require("cors")({ origin: true });
 admin.initializeApp();
 
 const openai = new OpenAI({
-  apiKey: functions.config().openai?.key || process.env.OPENAI_API_KEY,
+  apiKey:
+    (functions.config().openai && functions.config().openai.key) ||
+    process.env.OPENAI_API_KEY,
 });
 
 // Chat with OpenAI (Callable function for Firebase SDK)
@@ -52,7 +54,13 @@ exports.sendChatMessage = functions.https.onCall(async (data, context) => {
     });
 
     // Validate OpenAI response
-    if (!completion?.choices?.[0]?.message?.content) {
+    if (
+      !completion &&
+      completion.choices &&
+      completion.choices[0] &&
+      completion.choices[0].message &&
+      completion.choices[0].message.content
+    ) {
       throw new Error("Invalid response from OpenAI");
     }
 
@@ -110,7 +118,8 @@ exports.sendChatMessageHttp = functions.https.onRequest((req, res) => {
 
       // Check if OpenAI is properly configured
       const apiKey =
-        functions.config().openai?.key || process.env.OPENAI_API_KEY;
+        (functions.config().openai && functions.config().openai.key) ||
+        process.env.OPENAI_API_KEY;
       if (!apiKey) {
         console.error("OpenAI API key not configured");
         return res.status(500).json({ error: "AI service not configured" });
@@ -127,7 +136,13 @@ exports.sendChatMessageHttp = functions.https.onRequest((req, res) => {
       });
 
       // Validate OpenAI response
-      if (!completion?.choices?.[0]?.message?.content) {
+      if (
+        !completion &&
+        completion.choices &&
+        completion.choices[0] &&
+        completion.choices[0].message &&
+        completion.choices[0].message.content
+      ) {
         throw new Error("Invalid response from OpenAI");
       }
 
@@ -149,7 +164,11 @@ exports.sendChatMessageHttp = functions.https.onRequest((req, res) => {
       res.set("Access-Control-Allow-Origin", "*");
 
       // Return appropriate error responses
-      if (error.message?.includes("Invalid response from OpenAI")) {
+      if (
+        (error.message && error.message.includes)(
+          "Invalid response from OpenAI"
+        )
+      ) {
         return res.status(502).json({ error: "AI service unavailable" });
       }
 
@@ -213,13 +232,13 @@ exports.generateStudyPlan = functions.https.onCall(async (data, context) => {
       plan = [
         {
           date: "Today",
-          subject: subjects[0]?.name || "Mathematics",
+          subject: (subjects[0] && subjects[0].name) || "Mathematics",
           topic: "Algebra Review",
           duration: "2 hours",
         },
         {
           date: "Tomorrow",
-          subject: subjects[0]?.name || "Mathematics",
+          subject: (subjects[0] && subjects[0].name) || "Mathematics",
           topic: "Geometry Practice",
           duration: "1.5 hours",
         },
