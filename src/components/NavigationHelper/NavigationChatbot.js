@@ -515,6 +515,15 @@ Your learning materials and progress are completely secure! 🛡️`,
     return bestMatch;
   };
 
+  // Handle closing chatbot and clearing chat
+  const handleClose = () => {
+    setIsOpen(false);
+    // Clear messages when closing (WhatsApp-style behavior)
+    setTimeout(() => {
+      setMessages([]);
+    }, 300); // Wait for animation to complete
+  };
+
   // Enhanced default responses with contextual help
   const getDefaultResponse = (userInput) => {
     const responses = [
@@ -730,7 +739,7 @@ I'm here to help you navigate and make the most of our educational platform. I c
 
   return (
     <>
-      {/* Enhanced Toggle Button */}
+      {/* WhatsApp-Style Toggle Button */}
       <div
         className={`nav-chatbot-toggle ${isOpen ? "active" : ""}`}
         onClick={() => setIsOpen(!isOpen)}
@@ -742,9 +751,9 @@ I'm here to help you navigate and make the most of our educational platform. I c
         </div>
       </div>
 
-      {/* Enhanced Chat Window */}
+      {/* WhatsApp-Style Chat Window */}
       <div className={`nav-chatbot-window ${isOpen ? "open" : ""}`}>
-        {/* Professional Header */}
+        {/* WhatsApp-Style Header */}
         <div className="nav-chatbot-header">
           <div className="header-info">
             <div className="bot-avatar">
@@ -752,61 +761,18 @@ I'm here to help you navigate and make the most of our educational platform. I c
               <div className="status-indicator"></div>
             </div>
             <div className="bot-details">
-              <h3>EduAid Navigation Assistant</h3>
+              <h3>EduAid Navigation Bot</h3>
               <div className="status">
                 <span>Online & Ready to Help</span>
               </div>
             </div>
           </div>
-          <button className="close-btn" onClick={() => setIsOpen(false)}>
+          <button className="close-btn" onClick={() => handleClose()}>
             ✕
           </button>
         </div>
 
-        {/* Quick Start Section */}
-        <div className="quick-start-section">
-          <h4>🚀 Quick Navigation</h4>
-          <div className="quick-start-grid">
-            <button
-              className="quick-start-btn"
-              onClick={() => handleQuickStart("Getting Started")}
-            >
-              📚 Get Started
-            </button>
-            <button
-              className="quick-start-btn"
-              onClick={() => handleQuickStart("Upload PDF")}
-            >
-              📄 Upload PDF
-            </button>
-            <button
-              className="quick-start-btn"
-              onClick={() => handleQuickStart("AI Tutor Help")}
-            >
-              🤖 AI Tutor
-            </button>
-            <button
-              className="quick-start-btn"
-              onClick={() => handleQuickStart("Premium Features")}
-            >
-              💎 Premium
-            </button>
-            <button
-              className="quick-start-btn"
-              onClick={() => handleQuickStart("View Dashboard")}
-            >
-              📊 Dashboard
-            </button>
-            <button
-              className="quick-start-btn"
-              onClick={() => handleQuickStart("Study Planner")}
-            >
-              📅 Planner
-            </button>
-          </div>
-        </div>
-
-        {/* Enhanced Messages Area */}
+        {/* WhatsApp-Style Messages Area */}
         <div className="nav-chatbot-messages">
           {messages.map((message, index) => (
             <div key={index} className={`message ${message.type}`}>
@@ -849,61 +815,40 @@ I'm here to help you navigate and make the most of our educational platform. I c
             </div>
           ))}
 
-          {/* Enhanced Typing Indicator */}
+          {/* WhatsApp-Style Typing Indicator */}
           {isTyping && (
-            <div className="message bot">
-              <div className="message-content">
-                <div className="typing-indicator">
-                  <div className="typing-dot"></div>
-                  <div className="typing-dot"></div>
-                  <div className="typing-dot"></div>
-                </div>
-                <div className="typing-text">
-                  Navigation Assistant is thinking...
-                </div>
+            <div className="typing-indicator">
+              <div className="typing-dots">
+                <div className="typing-dot"></div>
+                <div className="typing-dot"></div>
+                <div className="typing-dot"></div>
               </div>
+              <span>Navigation Assistant is thinking...</span>
             </div>
           )}
           <div ref={messagesEndRef} />
         </div>
 
-        {/* Enhanced Input Area */}
+        {/* WhatsApp-Style Input Area */}
         <div className="nav-chatbot-input">
-          <div className="input-container">
-            <textarea
+          <div className="input-wrapper">
+            <input
               ref={inputRef}
-              className="message-input"
+              type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyPress={handleKeyPress}
-              placeholder="Ask me anything about EduAid-Bot..."
-              rows="1"
+              placeholder="Type a message..."
               disabled={isTyping}
             />
-            <button
-              className="send-btn"
-              onClick={() => handleSend()}
-              disabled={!input.trim() || isTyping}
-            >
-              <span className="send-icon">➤</span>
-            </button>
           </div>
-          <div className="input-hint">
-            💡 Try asking: "How do I upload PDFs?" or "What are premium
-            features?"
-          </div>
-        </div>
-
-        {/* Enhanced Footer */}
-        <div className="nav-chatbot-footer">
-          <div className="developer-credit">
-            <div className="developer-name">
-              EduAid-Bot Navigation Assistant
-            </div>
-            <div className="hackathon-info">
-              PLP Hackathon 2024 | Intelligent Learning Platform
-            </div>
-          </div>
+          <button
+            className="send-btn"
+            onClick={() => handleSend()}
+            disabled={!input.trim() || isTyping}
+          >
+            ➤
+          </button>
         </div>
       </div>
     </>
