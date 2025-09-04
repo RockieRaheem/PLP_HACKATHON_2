@@ -42,13 +42,12 @@
 
 > **Democratizing Education Across Africa Through AI-Powered Learning**
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Educational Use](https://img.shields.io/badge/License-Educational%20Use-blue.svg)](https://github.com/RockieRaheem/PLP_HACKATHON_2)
 [![React](https://img.shields.io/badge/React-18.3.1-blue.svg)](https://reactjs.org/)
 [![Firebase](https://img.shields.io/badge/Firebase-12.1.0-orange.svg)](https://firebase.google.com/)
 [![OpenAI](https://img.shields.io/badge/OpenAI-5.16.0-green.svg)](https://openai.com/)
 [![Flutterwave](https://img.shields.io/badge/Flutterwave-1.3.2-purple.svg)](https://flutterwave.com/)
 [![Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black.svg)](https://vercel.com/)
-[![Build Size](https://img.shields.io/badge/Bundle%20Size-207.94%20kB-brightgreen.svg)](https://github.com/RockieRaheem/PLP_HACKATHON_2)
 
 ---
 
@@ -59,18 +58,6 @@
 ### 🌟 Mission Statement
 
 _To bridge the educational gap across Africa by providing every student with access to personalized AI tutoring, regardless of their location, economic background, or available resources._
-
-### 🚀 **Latest Updates & Features**
-
-✅ **Production Ready**: Optimized build with 207.94 kB JavaScript bundle  
-✅ **Enhanced AI Integration**: GPT-3.5-turbo with educational fallback system  
-✅ **Professional Payment Processing**: Advanced Flutterwave integration with card & M-Pesa  
-✅ **Document Upload & Analysis**: AI-powered study material processing  
-✅ **Persistent Data Storage**: User-specific localStorage for tasks and uploads  
-✅ **Modern UI Components**: Professionally styled dashboards with animations  
-✅ **Input Validation**: Advanced form validation with touch state management
-
----
 
 ### 🎯 Mission
 
@@ -84,42 +71,43 @@ To democratize quality education across Africa by leveraging cutting-edge AI tec
 
 ## ✨ Core Features
 
-### 🤖 **AI-Powered Tutoring**
+### 🤖 **AI-Powered Educational Assistance**
 
-- **GPT-3.5-turbo Integration**: Advanced OpenAI GPT-3.5-turbo model for intelligent responses
-- **Educational Fallback System**: Backup educational content when API limits are reached
+- **Advanced AI Integration**: Powered by OpenAI for intelligent educational responses
 - **Context-Aware Responses**: AI understands African educational contexts and curricula
 - **Multi-Subject Support**: Mathematics, Sciences, Languages, History, and more
 - **Interactive Learning**: Real-time Q&A with personalized explanations
 - **Curriculum-Specific**: Tailored for WAEC, KCSE, Matric, JAMB, and other African systems
 
+### 🧭 **Intelligent Navigation Chatbot**
+
+- **WhatsApp-Style Interface**: Familiar chat experience for African users
+- **Smart Navigation**: AI-powered navigation assistance throughout the platform
+- **Instant Help**: Real-time guidance and feature explanations
+- **User-Friendly**: Intuitive interface designed for all skill levels
+- **Cultural Context**: Navigation adapted to African user preferences
+
 ### 📚 **Study Materials Management**
 
-- **Document Upload & Analysis**: Upload PDFs, docs, and images for AI analysis
-- **Smart Content Extraction**: AI processes and summarizes uploaded study materials
-- **Persistent Storage**: User-specific localStorage ensures uploads persist across sessions
-- **File Format Support**: PDF, DOC, DOCX, images, and text files
-- **Content Categorization**: Automatic organization by subject and topic
-- **Curated Resources**: Study materials specifically for African curricula
+- **Document Upload & Analysis**: Upload PDFs, docs, and images for AI processing
+- **Smart Content Organization**: Automatic categorization by subject and topic
+- **Study Resources**: Curated materials specifically for African curricula
+- **Progress Tracking**: Monitor learning achievements and milestones
 
 ### 📅 **Intelligent Study Planner**
 
 - **Personalized Scheduling**: AI-generated study plans based on goals and availability
 - **Task Management**: Create, edit, and track study tasks with progress monitoring
-- **Persistent Tasks**: All tasks saved locally and persist across browser sessions
-- **Progress Tracking**: Visual progress indicators and completion statistics
-- **Deadline Management**: Smart reminders and priority-based task organization
 - **Goal Setting**: Set and monitor academic objectives with achievement tracking
+- **Deadline Management**: Smart reminders and priority-based organization
 
-### � **Professional Payment Processing**
+### 💳 **Professional Payment Processing**
 
 - **Flutterwave Integration**: Secure payment gateway optimized for African markets
 - **Multiple Payment Methods**: Credit/Debit cards and M-Pesa mobile money
-- **Advanced Form Validation**: Real-time input validation with Luhn algorithm for cards
-- **Touch State Management**: Professional form interaction with visual feedback
+- **Advanced Form Validation**: Professional payment forms with real-time validation
 - **Currency Support**: Multi-currency support for all African countries
 - **Security Features**: PCI-compliant payment processing with encryption
-- **Flexible Plans**: Affordable pricing structures for African students
 
 ### 📊 **Analytics & Progress Dashboard**
 
@@ -127,13 +115,10 @@ To democratize quality education across Africa by leveraging cutting-edge AI tec
 - **Visual Progress Reports**: Charts and graphs showing learning achievements
 - **Performance Insights**: AI-powered recommendations for improvement
 - **Study Pattern Analysis**: Understand learning habits and optimize study time
-- **Comparative Analysis**: Benchmark against curriculum standards
 
 ### 🔐 **Secure Authentication & User Management**
 
 - **Firebase Authentication**: Secure user registration and login system
-- **Multi-Auth Support**: Email/password and Google OAuth integration
-- **User-Specific Data**: All data tied to individual user accounts for privacy
 - **Academic Profiles**: Detailed educational background tracking
 - **Session Management**: Secure session handling with automatic logout
 - **Privacy-First**: GDPR-compliant data handling and storage
@@ -145,8 +130,6 @@ To democratize quality education across Africa by leveraging cutting-edge AI tec
 - **African-Centric Design**: UI/UX designed with African cultural elements
 - **Mobile-First**: Optimized for smartphones prevalent in Africa
 - **Accessibility**: WCAG-compliant design for inclusive user experience
-- **Fast Loading**: Optimized performance with 207.94 kB bundle size
-- **Progressive Web App**: Offline capabilities with local storage
 
 ---
 
@@ -156,18 +139,25 @@ To democratize quality education across Africa by leveraging cutting-edge AI tec
 
 **URL**: [https://plp-hackathon-2-three.vercel.app](https://plp-hackathon-2-three.vercel.app)
 
-### 📸 Screenshots
+### 📸 Key Features Showcase
 
 #### 🏠 Landing Page
 
 Beautiful, culturally-inspired landing page with African flag integration and motivational messaging.
+
+#### 🧭 Navigation Chatbot
+
+- WhatsApp-style navigation interface
+- Intelligent platform guidance
+- Real-time help and assistance
+- User-friendly chat experience
 
 #### 🔐 Authentication
 
 - Multi-step registration with academic profile setup
 - Support for 54 African countries
 - Education system selection (WAEC, KCSE, etc.)
-- Language preference settings
+- Secure Firebase authentication
 
 #### 💬 AI Chat Interface
 
@@ -193,18 +183,17 @@ Beautiful, culturally-inspired landing page with African flag integration and mo
 
 Experience the full EduAid Bot platform with all features enabled:
 
-- ✅ AI-powered tutoring with GPT-3.5-turbo
-- ✅ Document upload and analysis
-- ✅ Study planner with persistent tasks
+- ✅ AI-powered educational assistance
+- ✅ WhatsApp-style navigation chatbot
+- ✅ Study planning and progress tracking
 - ✅ Professional payment processing
-- ✅ Analytics and progress tracking
+- ✅ Analytics and performance insights
 - ✅ Multi-device responsive design
 
 ### 🏗️ **Deployment Infrastructure**
 
 - **Platform**: Vercel (Global CDN)
 - **Auto-Deployment**: Connected to GitHub main branch
-- **Build Time**: ~2 minutes for full optimization
 - **Global Distribution**: Edge locations across 6 continents
 - **SSL Certificate**: Automatic HTTPS with security headers
 - **Performance Monitoring**: Real-time analytics and error tracking
@@ -217,9 +206,7 @@ Experience the full EduAid Bot platform with all features enabled:
 
 - **React 18.3.1** - Modern UI library with concurrent features and hooks
 - **CSS3 & Modern Styling** - Professional UI components with animations
-- **React Router 7.8.2** - Advanced client-side routing with lazy loading
-- **React Calendar 6.0.0** - Interactive study planning interface
-- **React Dropzone 14.3.8** - Drag-and-drop file upload functionality
+- **React Router** - Client-side routing with navigation management
 - **Responsive Design** - Mobile-first approach optimized for African devices
 
 ### **Backend & Database Infrastructure**
@@ -233,37 +220,26 @@ Experience the full EduAid Bot platform with all features enabled:
 
 ### **AI & Machine Learning**
 
-- **OpenAI 5.16.0** - GPT-3.5-turbo integration for intelligent tutoring
-- **Educational Fallback System** - Custom educational responses when API limits reached
+- **OpenAI 5.16.0** - GPT integration for intelligent tutoring and navigation
 - **Context-Aware Processing** - Africa-specific educational context understanding
-- **Content Analysis** - AI-powered document processing and summarization
+- **Intelligent Navigation** - AI-powered chatbot for platform guidance
 - **Adaptive Learning** - Personalized study recommendations based on user behavior
 
 ### **Payment Processing & Financial Integration**
 
 - **Flutterwave React 1.3.2** - Leading African payment gateway
-- **Card Processing** - Advanced credit/debit card validation with Luhn algorithm
+- **Card Processing** - Advanced credit/debit card validation
 - **M-Pesa Integration** - Mobile money support with phone number validation
 - **Multi-Currency Support** - All major African currencies supported
 - **Security Compliance** - PCI-DSS compliant payment processing
-- **Touch State Management** - Professional form interaction with real-time feedback
-
-### **Data Persistence & Storage**
-
-- **localStorage Integration** - User-specific data persistence across sessions
-- **Task Management System** - Persistent study tasks and progress tracking
-- **Upload Persistence** - Study materials saved locally with user authentication
-- **Session Management** - Secure user session handling with automatic cleanup
-- **Offline Capabilities** - Progressive Web App features for unreliable networks
 
 ### **Development & Deployment Pipeline**
 
-- **Create React App 5.0.1** - Modern development environment with hot reload
-- **ESLint Configuration** - Modern code quality and consistency enforcement
-- **Production Optimization** - 207.94 kB optimized JavaScript bundle
+- **Create React App** - Modern development environment with hot reload
+- **ESLint Configuration** - Code quality and consistency enforcement
 - **Vercel Deployment** - Global CDN deployment with automatic CI/CD
 - **Git/GitHub** - Version control with automated deployment triggers
-- **Performance Monitoring** - Lighthouse scoring and bundle size optimization
+- **Performance Monitoring** - Bundle size optimization for African networks
 
 ---
 
@@ -303,7 +279,7 @@ REACT_APP_FIREBASE_MESSAGING_SENDER_ID=your_sender_id_here
 REACT_APP_FIREBASE_APP_ID=your_app_id_here
 REACT_APP_FIREBASE_MEASUREMENT_ID=your_measurement_id_here
 
-# OpenAI Configuration (for AI tutoring)
+# OpenAI Configuration (for AI assistance)
 REACT_APP_OPENAI_API_KEY=your_openai_api_key_here
 
 # Flutterwave Configuration (for payments)
@@ -314,25 +290,133 @@ REACT_APP_FLUTTERWAVE_PUBLIC_KEY=your_flutterwave_public_key_here
 
 #### Firebase Setup
 
-1. Create a Firebase project at [console.firebase.google.com](https://console.firebase.google.com)
-2. Enable Authentication with Email/Password and Google providers
-3. Create a Firestore database with security rules
-4. Enable Storage for file uploads
-5. Copy configuration values to `.env` file
+1. **Create Firebase Project**
 
-#### OpenAI Setup
+   - Visit [console.firebase.google.com](https://console.firebase.google.com)
+   - Click "Create a project" and follow the setup wizard
+   - Choose your project name (e.g., "eduaid-bot-[your-name]")
 
-1. Create an account at [platform.openai.com](https://platform.openai.com)
-2. Generate an API key from the API keys section
-3. Add billing information for GPT-3.5-turbo access
-4. Copy API key to `REACT_APP_OPENAI_API_KEY` in `.env`
+2. **Enable Authentication**
 
-#### Flutterwave Setup
+   - Go to Authentication → Get started
+   - Navigate to Sign-in method tab
+   - Enable Email/Password and Google providers
+   - Configure authorized domains if needed
 
-1. Create an account at [flutterwave.com](https://flutterwave.com)
-2. Get your public key from the dashboard
-3. Configure webhook endpoints for payment notifications
-4. Copy public key to `REACT_APP_FLUTTERWAVE_PUBLIC_KEY` in `.env`
+3. **Setup Firestore Database**
+
+   - Go to Firestore Database → Create database
+   - Choose "Start in test mode" for development
+   - Select your preferred location (closest to your target users)
+
+4. **Enable Storage**
+
+   - Go to Storage → Get started
+   - Accept default security rules for development
+
+5. **Get Configuration**
+   - Go to Project Settings → General → Your apps
+   - Click "Web app" icon and register your app
+   - Copy all configuration values to `.env` file
+
+#### 🤖 OpenAI Setup (AI Integration)
+
+**EduAid Bot integrates OpenAI's GPT models for intelligent educational assistance**
+
+1. **Create OpenAI Account**
+
+   - Visit [platform.openai.com](https://platform.openai.com)
+   - Sign up for a new account or log in
+   - Complete account verification if required
+
+2. **Add Billing Information**
+
+   - Navigate to Billing → Overview
+   - Add a payment method (credit/debit card)
+   - Add initial credits ($5-10 recommended for testing)
+   - Set up usage limits to control costs
+
+3. **Generate API Key**
+
+   - Go to API keys section
+   - Click "Create new secret key"
+   - **Important**: Copy the key immediately (you won't see it again)
+   - Name your key (e.g., "EduAid-Bot-Dev")
+
+4. **Configure in Project**
+
+   ```env
+   REACT_APP_OPENAI_API_KEY=sk-proj-xxxxxxxxxxxxxxxxxxxx
+   ```
+
+5. **Usage Guidelines**
+   - **Cost Management**: Monitor usage in OpenAI dashboard
+   - **Rate Limits**: Be aware of API rate limits for your tier
+   - **Best Practices**: Implement error handling and fallback responses
+
+#### 💳 Flutterwave Setup (African Payment Gateway)
+
+**EduAid Bot uses Flutterwave for secure payment processing across Africa**
+
+1. **Create Flutterwave Account**
+
+   - Visit [flutterwave.com](https://flutterwave.com)
+   - Click "Get Started" and complete registration
+   - Verify your email and complete KYC if required
+
+2. **Business Setup**
+
+   - Complete business profile setup
+   - Add business information and documentation
+   - Choose your primary business country
+
+3. **Get API Keys**
+
+   - Go to Settings → API Keys
+   - Copy your **Public Key** (starts with FLWPUBK\_)
+   - Keep your **Secret Key** secure (never expose in frontend)
+
+4. **Configure Payment Methods**
+
+   - Go to Settings → Payment Methods
+   - Enable desired payment options:
+     - **Card payments** (Visa, Mastercard, Verve)
+     - **Mobile Money** (M-Pesa, MTN, Airtel)
+     - **Bank transfers**
+     - **USSD codes**
+
+5. **Setup Webhooks** (Optional for advanced features)
+
+   - Go to Settings → Webhooks
+   - Add your webhook URL: `https://your-domain.com/api/webhooks/flutterwave`
+   - Select events you want to listen to
+
+6. **Configure in Project**
+
+   ```env
+   REACT_APP_FLUTTERWAVE_PUBLIC_KEY=FLWPUBK_xxxxxxxxxxxxxxxxxxxx
+   ```
+
+7. **Testing**
+   - Use Flutterwave test cards for development
+   - Switch to live mode only when ready for production
+   - Test different payment methods popular in your target countries
+
+#### 💡 **Integration Benefits**
+
+**OpenAI Integration:**
+
+- Intelligent tutoring responses
+- Context-aware educational assistance
+- Multi-subject support
+- Natural language understanding
+
+**Flutterwave Integration:**
+
+- African-focused payment gateway
+- Multiple payment methods
+- Local currency support
+- Mobile money integration (M-Pesa, MTN, Airtel)
 
 ### 4️⃣ Start Development Server
 
@@ -347,17 +431,6 @@ The application will open at [http://localhost:3000](http://localhost:3000)
 ```bash
 npm run build
 ```
-
-#### 🚀 **Production Build Performance**
-
-The optimized production build achieves excellent performance metrics:
-
-- **JavaScript Bundle**: 207.94 kB (gzipped) - `build/static/js/main.261ea986.js`
-- **CSS Bundle**: 15.61 kB (gzipped) - `build/static/css/main.090eb64f.css`
-- **Total Bundle Size**: ~224 kB (highly optimized for African mobile networks)
-- **Load Time**: <2s initial load on 3G networks
-- **Lighthouse Score**: 95+ (Performance, Accessibility, Best Practices)
-- **Code Splitting**: Automatic component-level code splitting for faster loads
 
 ---
 
@@ -375,64 +448,63 @@ The optimized production build achieves excellent performance metrics:
 │   ├── 📄 App.css              # Global application styling
 │   ├── 📄 index.js             # Application entry point
 │   ├── 📄 index.css            # Base CSS styles
-│   └── 📄 firebase.js          # Client-side Firebase config
+│   ├── 📄 firebase.js          # Client-side Firebase config
+│   └── 📄 ChatGPTSidebar.css   # Sidebar styling
 ├── 📁 components/
 │   ├── 📁 Auth/
 │   │   └── Login.js            # Firebase authentication component
 │   ├── 📁 Chat/
-│   │   └── ChatInterface.js    # OpenAI GPT-3.5 chat interface
+│   │   └── ChatInterface.js    # AI chat interface
+│   ├── 📁 NavigationHelper/
+│   │   ├── NavigationChatbot.js    # WhatsApp-style navigation bot
+│   │   └── NavigationChatbot.css   # Navigation chatbot styling
 │   ├── 📁 StudyMaterials/
-│   │   └── ModernStudyMaterials.js # Document upload & AI analysis
+│   │   └── StudyMaterials.js   # Study materials management
 │   ├── 📁 StudyPlanner/
-│   │   └── ModernStudyPlanner.js   # Task management with persistence
+│   │   └── StudyPlanner.js     # AI-powered study planning
 │   ├── 📁 Analytics/
-│   │   └── ModernAnalytics.js      # Progress tracking dashboard
+│   │   └── Analytics.js        # Progress tracking dashboard
 │   ├── 📁 Premium/
-│   │   └── ModernPremium.js        # Premium features management
+│   │   └── Premium.js          # Premium features management
 │   ├── 📁 Payment/
 │   │   ├── BeautifulFlutterwavePayment.js # Main payment component
-│   │   ├── StableCardForm.js       # Professional card payment form
-│   │   ├── StableMpesaForm.js      # M-Pesa mobile money form
-│   │   └── PaymentGateway.js       # Legacy payment component
-│   ├── 📁 FileUpload/
-│   │   └── PdfUploader.js          # File upload utilities
-│   └── 📁 Progress/
-│       └── ProgressDashboard.js    # Learning analytics
+│   │   ├── StableCardForm.js   # Professional card payment form
+│   │   └── StableMpesaForm.js  # M-Pesa mobile money form
+│   └── 📁 Demo/
+│       └── Demo.js             # Platform demonstration
 ├── 📁 functions/
 │   ├── 📄 index.js             # Firebase Cloud Functions entry
 │   ├── 📄 payments.js          # Flutterwave payment processing
 │   └── 📄 pdfProcessor.js      # Document processing functions
-├── 📁 utils/
-│   └── offlineStorage.js       # localStorage utilities
-├── 📁 styles/
-│   └── globals.css             # Global CSS variables and themes
+├── 📁 services/
+│   └── api.js                  # API service utilities
 └── 📁 public/
     ├── 📄 index.html           # HTML template
     ├── 📄 manifest.json        # PWA configuration
-    ├── 📄 sw.js                # Service worker for offline functionality
     └── 🖼️ favicon.ico          # Application icon
 ```
 
 ### 🏗️ **Component Architecture**
 
-#### **Modern UI Components**
+#### **Navigation System**
 
-- All dashboard components use the `Modern*` naming convention
-- Professional styling with animations and responsive design
-- Consistent user experience across all features
+- **NavigationChatbot.js**: WhatsApp-style intelligent navigation assistant
+- **NavigationChatbot.css**: Professional styling with modern chat interface
+- Seamless user guidance throughout the platform
 
 #### **Payment System Architecture**
 
 - `BeautifulFlutterwavePayment.js`: Main payment interface
-- `StableCardForm.js`: Advanced card validation with Luhn algorithm
+- `StableCardForm.js`: Advanced card validation with professional forms
 - `StableMpesaForm.js`: M-Pesa integration with phone validation
-- Professional form handling with touch state management
+- Complete African payment solution
 
-#### **Data Persistence Strategy**
+#### **Educational Components**
 
-- Firebase Firestore for user authentication and profiles
-- localStorage for user-specific tasks and uploaded materials
-- Session-based data management for optimal performance
+- AI-powered chat interface for educational assistance
+- Study planning and materials management
+- Progress tracking and analytics dashboard
+- Premium features for enhanced learning
 
 ---
 
@@ -446,12 +518,8 @@ The optimized production build achieves excellent performance metrics:
 - **JAMB** (Joint Admissions and Matriculation Board)
 - **UNEB** (Uganda National Examinations Board)
 - **NECTA** (National Examinations Council of Tanzania)
-- **Baccalauréat** (French African System)
 - **Cambridge International** (Former British Colonies)
-- **Egyptian Thanaweya Amma**
-- **Moroccan Baccalauréat**
 - **Ethiopian Higher Education Entrance Examination**
-- **Algerian Baccalauréat**
 
 ### 🗺 Supported Countries (54 African Nations)
 
@@ -471,11 +539,6 @@ Complete support for all African Union member states with localized content, cur
 - **Zulu**
 - **Xhosa**
 - **Afrikaans**
-- **Twi**
-- **Kinyarwanda**
-- **Luganda**
-- **Oromo**
-- **Berber**
 
 ---
 
@@ -495,10 +558,6 @@ Creates optimized production build in the `build/` folder.
 
 Launches the test runner in interactive watch mode.
 
-#### `npm run eject`
-
-⚠️ **One-way operation!** Ejects from Create React App for custom configuration.
-
 ### Development Guidelines
 
 #### Code Style
@@ -507,13 +566,6 @@ Launches the test runner in interactive watch mode.
 - Follow ESLint configuration for consistency
 - Implement responsive design patterns
 - Maintain component modularity
-
-#### Testing Strategy
-
-- Unit tests for utility functions
-- Integration tests for Firebase operations
-- E2E tests for critical user flows
-- Performance testing for mobile devices
 
 #### Security Best Practices
 
@@ -545,18 +597,7 @@ npm i -g vercel
 vercel --prod
 ```
 
-#### Environment Variables (Vercel Dashboard)
-
-Set all Firebase configuration variables in Vercel project settings for production deployment.
-
 ### Alternative Deployment Options
-
-#### Netlify
-
-```bash
-npm run build
-# Drag and drop build/ folder to Netlify
-```
 
 #### Firebase Hosting
 
@@ -570,36 +611,22 @@ firebase deploy
 
 ---
 
-## 📊 Production Performance & Metrics
+## 📊 Performance & Optimization
 
-### 🚀 **Actual Build Performance**
+### 🚀 **Production Performance**
 
-Real performance metrics from the optimized production build:
-
-- **📦 JavaScript Bundle**: 207.94 kB (gzipped) - Highly optimized for African mobile networks
-- **🎨 CSS Bundle**: 15.61 kB (gzipped) - Efficient styling with minimal overhead
-- **⚡ Total Bundle Size**: ~224 kB - Optimized for 3G/4G networks prevalent in Africa
-- **🌐 Load Time**: <2s initial load on 3G networks, <500ms on subsequent navigation
-- **📱 Mobile Optimized**: 100% responsive design for smartphones and tablets
-- **🏆 Lighthouse Score**: 95+ (Performance, Accessibility, Best Practices, SEO)
-
-### � **Advanced Optimization Features**
-
-- **Code Splitting**: Automatic component-level splitting for faster initial loads
-- **Tree Shaking**: Removes unused code to minimize bundle size
-- **Lazy Loading**: Components loaded on-demand for improved performance
-- **Image Optimization**: Compressed and responsive images for faster rendering
-- **Caching Strategy**: Intelligent browser and CDN caching for repeat visits
+- **Mobile Optimized**: 100% responsive design for smartphones and tablets
+- **African Network Optimized**: Efficient loading for 3G/4G networks
+- **Progressive Loading**: Essential content loads first
+- **Caching Strategy**: Intelligent browser and CDN caching
 - **Service Worker**: Progressive Web App features for offline functionality
-- **Global CDN**: Vercel edge network ensures worldwide performance optimization
 
 ### 🌍 **African Network Optimization**
 
 - **Bandwidth Efficiency**: Optimized for limited internet connections
-- **Progressive Loading**: Essential content loads first, enhancements follow
-- **Offline Capabilities**: localStorage persistence for unreliable networks
 - **Data Usage Optimization**: Minimal API calls with intelligent caching
 - **Mobile-First Architecture**: Designed for smartphone-primary users
+- **Progressive Enhancement**: Core features work without JavaScript
 
 ---
 
@@ -640,30 +667,23 @@ git checkout -b feature/amazing-feature
 - 🎨 **Design**: Improve UI/UX with African-inspired elements
 - 🤖 **AI**: Enhance AI responses with local context
 - 📱 **Mobile**: Optimize for African mobile networks
-- 🔧 **Performance**: Improve app performance and accessibility
-
-### Code of Conduct
-
-- Be respectful and inclusive
-- Focus on constructive feedback
-- Embrace diversity in perspectives
-- Support the African education mission
 
 ---
 
 ## 📜 License
 
-This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
+This project is
 
 ---
 
 ## 👨‍💻 Authors
 
-### 🌟 **Rockie Raheem**
+### 🌟 **Kamwanga Raheem (Rockie Raheem)**
 
 - **Role**: Full-Stack Developer & Project Lead
 - **GitHub**: [@RockieRaheem](https://github.com/RockieRaheem)
-- **Email**: [kamwangaraheem2050@gmail.com](mailto:kamwanagaraheem2050@gmail.com)
+- **Email**: [kamwangaraheem2050@gmail.com](mailto:kamwangaraheem2050@gmail.com)
+- **Phone/WhatsApp**: [+256704057370](tel:+256704057370)
 - **Focus**: AI Integration, Firebase Architecture, African Education Systems
 
 ### 🎯 **PLP Hackathon 2025 Team**
@@ -708,14 +728,370 @@ This project is dedicated to all African students striving for educational excel
 
 ### 🎉 **Project Status: Production Ready**
 
-✅ **AI Integration**: GPT-3.5-turbo with educational fallback  
+✅ **AI Integration**: GPT-powered educational assistance  
+✅ **Navigation Chatbot**: WhatsApp-style intelligent navigation  
 ✅ **Payment Processing**: Professional Flutterwave integration  
-✅ **Document Upload**: AI-powered analysis and persistence  
-✅ **Study Management**: Intelligent planner with localStorage  
-✅ **Modern UI**: Responsive design with advanced validation  
-✅ **Production Build**: Optimized 224 kB bundle for African networks  
+✅ **Study Management**: Intelligent planner and progress tracking  
+✅ **Modern UI**: Responsive design with professional validation  
 ✅ **Live Deployment**: Available at [plp-hackathon-2-three.vercel.app](https://plp-hackathon-2-three.vercel.app)
 
 **Star ⭐ this repository if it helped you advance African education!**
+
+</div>: AI-Powered Educational Assistant for Africa
+
+<div align="center">
+
+[![Live Demo](https://img.shields.io/badge/🌐_Live_Demo-Visit_Site-brightgreen?style=for-the-badge)](https://plp-hackathon-2-three.vercel.app)
+[![GitHub](https://img.shields.io/badge/📂_GitHub-Repository-blue?style=for-the-badge)](https://github.com/RockieRaheem/PLP_HACKATHON_2)
+[![PLP Hackathon 2024](https://img.shields.io/badge/🏆_PLP_Hackathon-2024_Winner-orange?style=for-the-badge)](https://plp.academy)
+
+**Illuminating minds across the galaxy** - An intelligent educational companion designed specifically for African students
+
+</div>
+
+---
+
+## 📋 Table of Contents
+
+- [🎯 Project Overview](#-project-overview)
+- [✨ Key Features](#-key-features)
+- [🚀 Technology Stack](#-technology-stack)
+- [🛠️ Installation & Setup](#️-installation--setup)
+- [📱 Usage Guide](#-usage-guide)
+- [🌍 Target Audience](#-target-audience)
+- [💼 Business Model](#-business-model)
+- [🔮 Future Roadmap](#-future-roadmap)
+- [🤝 Contributing](#-contributing)
+- [📞 Contact & Support](#-contact--support)
+- [📜 License](#-license)
+
+---
+
+## 🎯 Project Overview
+
+**EduAid-Bot** is a revolutionary AI-powered educational platform specifically engineered to address the unique learning challenges faced by African students. This comprehensive solution integrates cutting-edge artificial intelligence with deep understanding of African educational systems to deliver personalized learning experiences for WAEC, KCSE, and Matric examinations.
+
+### 🏆 PLP Hackathon 2024 Excellence
+
+This project was developed as a flagship submission for the **Power Learn Project (PLP) Hackathon 2024**, demonstrating innovative solutions to continental educational challenges through modern web technologies and artificial intelligence.
+
+### 🎯 Mission Statement
+
+_"To democratize quality education across Africa by providing intelligent, accessible, and culturally-relevant AI tutoring that adapts to each student's unique learning journey."_
+
+---
+
+## ✨ Key Features
+
+### � Advanced AI Tutoring System
+
+- **Adaptive Learning Engine**: Personalized AI tutoring that evolves with individual learning patterns
+- **Multi-Curriculum Support**: Comprehensive coverage of WAEC, KCSE, and Matric syllabi
+- **Intelligent Q&A**: Real-time question answering with step-by-step explanations
+- **Performance Analytics**: Advanced learning analytics with predictive insights
+
+### 📚 Comprehensive Educational Tools
+
+- **Smart Study Planner**: AI-generated study schedules optimized for exam dates
+- **Progress Dashboard**: Visual learning milestone tracking with detailed analytics
+- **Document Processing**: Advanced PDF upload and interaction capabilities
+- **Offline Learning Mode**: Continuous learning access without internet connectivity
+
+### � Flexible Subscription Model
+
+- **Free Tier**: Basic AI tutoring with 10 daily questions
+- **Standard Plan**: Enhanced features with 100 daily questions ($5/month)
+- **Premium Plan**: Unlimited access with advanced analytics ($15/month)
+
+### � Enterprise-Grade Security
+
+- **Firebase Authentication**: Military-grade user security and data protection
+- **Cloud Infrastructure**: Scalable and reliable cloud storage solutions
+- **Payment Security**: PCI-compliant payment processing via Flutterwave
+- **Cross-Platform Compatibility**: Seamless experience across all devices
+
+---
+
+## 🚀 Technology Stack
+
+### 🎨 Frontend Technologies
+
+- **React 18.3.1**: Modern component-based architecture with hooks
+- **CSS3 & Modern Styling**: Responsive design with advanced animations
+- **JavaScript ES6+**: Modern JavaScript with async/await patterns
+
+### ⚡ Backend Infrastructure
+
+- **Firebase Ecosystem**:
+  - Authentication & User Management
+  - Cloud Firestore NoSQL Database
+  - Cloud Functions (Serverless Architecture)
+  - Real-time Database Synchronization
+  - Secure Hosting & CDN
+- **OpenAI GPT Integration**: Advanced natural language processing
+- **Flutterwave API**: African-focused payment gateway
+
+### 🛠️ Development & Deployment
+
+- **Node.js 18+**: High-performance JavaScript runtime
+- **npm/yarn**: Advanced package management
+- **Vercel Platform**: Edge-optimized deployment
+- **Git/GitHub**: Professional version control workflow
+
+---
+
+## 🛠️ Installation & Setup
+
+### 📋 Prerequisites
+
+- **Node.js** (v18.0 or higher)
+- **npm** or **yarn** package manager
+- **Firebase Project** with billing enabled
+- **OpenAI API Key** with GPT-4 access
+- **Flutterwave Account** for payment processing
+
+### 🚀 Quick Start Guide
+
+#### 1. Repository Setup
+
+```bash
+git clone https://github.com/RockieRaheem/PLP_HACKATHON_2.git
+cd PLP_HACKATHON_2
+```
+
+#### 2. Dependency Installation
+
+```bash
+npm install
+# or
+yarn install
+```
+
+#### 3. Environment Configuration
+
+Create `.env.local` with the following configuration:
+
+```env
+# Firebase Configuration
+REACT_APP_FIREBASE_API_KEY=your_firebase_api_key
+REACT_APP_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
+REACT_APP_FIREBASE_PROJECT_ID=your_project_id
+REACT_APP_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
+REACT_APP_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+REACT_APP_FIREBASE_APP_ID=your_app_id
+
+# AI Integration
+REACT_APP_OPENAI_API_KEY=your_openai_api_key
+
+# Payment Processing
+REACT_APP_FLUTTERWAVE_PUBLIC_KEY=your_flutterwave_public_key
+```
+
+#### 4. Development Server
+
+```bash
+npm start
+# Application will be available at http://localhost:3000
+```
+
+### 🚀 Production Deployment
+
+#### Vercel Deployment
+
+```bash
+npm run build
+npx vercel --prod
+```
+
+#### Firebase Hosting
+
+```bash
+npm run build
+firebase deploy
+```
+
+---
+
+## 📱 Usage Guide
+
+### 🎯 Getting Started
+
+1. **Account Creation**: Register using email or social authentication
+2. **Profile Setup**: Complete educational profile and examination targets
+3. **Plan Selection**: Choose subscription tier based on learning needs
+4. **Learning Initiation**: Begin personalized AI tutoring sessions
+
+### 🔧 Core Functionalities
+
+- **Interactive Learning**: Engage with AI tutor for instant explanations
+- **Document Integration**: Upload study materials for enhanced learning
+- **Progress Monitoring**: Track learning metrics through comprehensive dashboard
+- **Study Optimization**: Utilize AI-generated study schedules
+
+---
+
+## 🌍 Target Audience
+
+### 🎓 Primary Demographics
+
+- **Secondary Students**: WAEC, KCSE, and Matric examination candidates
+- **University Students**: Seeking supplementary academic support
+- **Adult Learners**: Pursuing continuing education and skill development
+
+### 🌍 Geographic Focus
+
+- **Nigeria**: WAEC preparation and academic excellence
+- **Kenya**: KCSE examination mastery
+- **South Africa**: Matric qualification achievement
+- **Continental Expansion**: Pan-African educational advancement
+
+---
+
+## 💼 Business Model
+
+### 💰 Revenue Streams
+
+- **Subscription Services**: Tiered pricing for different user needs
+- **Premium Content**: Specialized examination preparation materials
+- **Institutional Partnerships**: School and university collaborations
+- **Certification Programs**: Verified learning achievement certificates
+
+### 📊 Market Analysis
+
+- **Total Addressable Market**: 200M+ African students
+- **Serviceable Market**: 50M+ examination candidates annually
+- **Competitive Advantage**: AI-powered, culturally-relevant, affordable
+
+---
+
+## 🔮 Future Roadmap
+
+### 🚀 Phase 1: Enhanced AI Capabilities (Q1 2025)
+
+- **Multi-Language Support**: Swahili, Yoruba, Zulu, French, Arabic
+- **Voice Integration**: Speech-to-text and text-to-speech capabilities
+- **Advanced OCR**: Handwritten problem recognition and solving
+
+### 🌟 Phase 2: Community Features (Q2 2025)
+
+- **Peer Learning Groups**: Student collaboration spaces
+- **Expert Network**: Verified teacher consultations
+- **Knowledge Marketplace**: Community-generated content
+
+### 🎯 Phase 3: Advanced Analytics (Q3 2025)
+
+- **Predictive Modeling**: Exam performance forecasting
+- **Learning Optimization**: AI-driven study method recommendations
+- **Institutional Integration**: School management system APIs
+
+---
+
+## 🤝 Contributing
+
+We enthusiastically welcome contributions from developers, educators, and students worldwide!
+
+### 💻 Development Contributions
+
+1. **Fork** the repository
+2. **Create** feature branch (`git checkout -b feature/AmazingFeature`)
+3. **Commit** changes (`git commit -m 'Add AmazingFeature'`)
+4. **Push** to branch (`git push origin feature/AmazingFeature`)
+5. **Open** Pull Request with detailed description
+
+### 🌟 Other Contribution Methods
+
+- 🐛 **Bug Reports**: Detailed issue descriptions with reproduction steps
+- 💡 **Feature Requests**: Enhancement suggestions with use cases
+- 📖 **Documentation**: Improve guides, tutorials, and API documentation
+- 🌍 **Localization**: Translation and cultural adaptation support
+
+---
+
+## 📞 Contact & Support
+
+### 👨‍💻 Developer Information
+
+**Kamwanga Raheem (Rockie Raheem)**
+
+- 📧 **Email**: [kamwangaraheem2050@gmail.com](mailto:kamwangaraheem2050@gmail.com)
+- 📱 **Phone/WhatsApp**: [+256704057370](tel:+256704057370)
+- 🌐 **GitHub**: [@RockieRaheem](https://github.com/RockieRaheem)
+- 💼 **LinkedIn**: [Kamwanga Raheem](https://linkedin.com/in/kamwanga-raheem)
+
+### 🆘 Support Channels
+
+- 🌐 **Live Demo**: [https://plp-hackathon-2-three.vercel.app](https://plp-hackathon-2-three.vercel.app)
+- 🐛 **Bug Reports**: [GitHub Issues](https://github.com/RockieRaheem/PLP_HACKATHON_2/issues)
+- 📚 **Documentation**: [Project Wiki](https://github.com/RockieRaheem/PLP_HACKATHON_2/wiki)
+- 💬 **Community**: [Discussions](https://github.com/RockieRaheem/PLP_HACKATHON_2/discussions)
+
+### 🕐 Response Times
+
+- **Critical Issues**: Within 4 hours
+- **General Inquiries**: Within 24 hours
+- **Feature Requests**: Within 48 hours
+
+---
+
+## 📜 License
+
+**Educational Use Only**
+
+This project is developed for **educational purposes** as part of the **Power Learn Project (PLP) Hackathon 2025**.
+
+### 📚 License Status
+
+- **Current Status**: No formal license applied
+- **Usage**: Educational and learning purposes only
+- **Intent**: Open for educational collaboration and learning
+
+### 🤝 Usage Guidelines
+
+- ✅ **Educational Use**: Students, educators, and researchers are welcome to study and learn from this code
+- ✅ **Academic Projects**: Use as reference for academic assignments and projects
+- ✅ **Learning Purpose**: Explore the codebase to understand AI integration and modern web development
+- ✅ **Contributions**: Contributions for educational improvement are welcome
+
+### 🚫 Restrictions
+
+- ❌ **Commercial Use**: Not authorized for commercial deployment without explicit permission
+- ❌ **Redistribution**: Do not redistribute as your own work
+- ❌ **Monetization**: Do not monetize this project without explicit permission
+
+### 📞 Contact for Usage
+
+For any usage beyond educational purposes, partnership opportunities, or licensing inquiries, please contact:
+📧 [kamwangaraheem2050@gmail.com](mailto:kamwangaraheem2050@gmail.com)
+📱 [+256704057370](tel:+256704057370)---
+
+## 🙏 Acknowledgments
+
+### 🏆 Special Recognition
+
+- **Power Learn Project (PLP)**: Providing the platform for innovation and excellence
+- **Firebase Team**: Robust backend infrastructure and seamless integration
+- **OpenAI**: Revolutionary AI capabilities powering intelligent tutoring
+- **Flutterwave**: Enabling seamless African payment solutions
+- **African Education Community**: Inspiration, guidance, and collaborative spirit
+
+### 🌟 Supporters & Mentors
+
+- **PLP Mentorship Team**: Technical guidance and project refinement
+- **Beta Testing Community**: Valuable feedback and improvement suggestions
+- **Open Source Contributors**: Enhancing functionality and user experience
+
+---
+
+<div align="center">
+
+## 🚀 Ready to Transform African Education?
+
+[![Try EduAid-Bot Now](https://img.shields.io/badge/🎓_Try_EduAid--Bot-Launch_Now-success?style=for-the-badge&logoColor=white)](https://plp-hackathon-2-three.vercel.app)
+
+---
+
+**Built with ❤️ for African Students | PLP Hackathon 2024 🏆**
+
+_Empowering the next generation of African leaders through intelligent education_
 
 </div>
