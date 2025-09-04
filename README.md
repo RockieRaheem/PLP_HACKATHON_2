@@ -38,8 +38,6 @@
 
 ## 🎯 Overview
 
-# 🌍 EduAid Bot - African Students AI Tutor 🤖
-
 > **Democratizing Education Across Africa Through AI-Powered Learning**
 
 [![Educational Use](https://img.shields.io/badge/License-Educational%20Use-blue.svg)](https://github.com/RockieRaheem/PLP_HACKATHON_2)
@@ -672,7 +670,34 @@ git checkout -b feature/amazing-feature
 
 ## 📜 License
 
-This project is
+**Educational Use Only**
+
+This project is developed for **educational purposes** as part of the **Power Learn Project (PLP) Hackathon 2025**.
+
+### 📚 License Status
+
+- **Current Status**: No formal license applied
+- **Usage**: Educational and learning purposes only
+- **Intent**: Open for educational collaboration and learning
+
+### 🤝 Usage Guidelines
+
+- ✅ **Educational Use**: Students, educators, and researchers are welcome to study and learn from this code
+- ✅ **Academic Projects**: Use as reference for academic assignments and projects
+- ✅ **Learning Purpose**: Explore the codebase to understand AI integration and modern web development
+- ✅ **Contributions**: Contributions for educational improvement are welcome
+
+### 🚫 Restrictions
+
+- ❌ **Commercial Use**: Not authorized for commercial deployment without explicit permission
+- ❌ **Redistribution**: Do not redistribute as your own work
+- ❌ **Monetization**: Do not monetize this project without explicit permission
+
+### 📞 Contact for Usage
+
+For any usage beyond educational purposes, partnership opportunities, or licensing inquiries, please contact:
+📧 [kamwangaraheem2050@gmail.com](mailto:kamwangaraheem2050@gmail.com)
+📱 [+256704057370](tel:+256704057370)
 
 ---
 
