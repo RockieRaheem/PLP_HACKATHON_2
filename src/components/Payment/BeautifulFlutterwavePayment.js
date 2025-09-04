@@ -111,8 +111,8 @@ const BeautifulFlutterwavePayment = ({
   );
 
   // Stable input handlers to prevent re-renders
-  const handleCardDetailsChange = useCallback((field, value) => {
-    setCardDetails((prev) => ({ ...prev, [field]: value }));
+  const handleCardDetailsChange = useCallback((newCardDetails) => {
+    setCardDetails(newCardDetails);
   }, []);
 
   // Reset form function

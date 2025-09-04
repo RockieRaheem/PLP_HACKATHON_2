@@ -1,478 +1,508 @@
-import React, { useCallback, memo, useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 
-const StableCardForm = memo(
-  ({ cardDetails, onCardDetailsChange, onSubmit, onBack, amount }) => {
-    const [errors, setErrors] = useState({});
-    const [touched, setTouched] = useState({});
+const StableCardForm = ({
+  cardDetails,
+  onCardDetailsChange,
+  onSubmit,
+  onBack,
+  amount,
+}) => {
+  const [errors, setErrors] = useState({});
+  const [touched, setTouched] = useState({});
+  const [isValid, setIsValid] = useState(false);
+  const cardNumberRef = useRef(null);
 
-    // Validation functions
-    const validateCardNumber = (number) => {
-      const cleaned = number.replace(/\D/g, "");
-      if (!cleaned) return "Card number is required";
-      if (cleaned.length < 13) return "Card number must be at least 13 digits";
-      if (cleaned.length > 19) return "Card number cannot exceed 19 digits";
-      if (!/^\d+$/.test(cleaned))
-        return "Card number must contain only numbers";
-      return "";
-    };
+  // Format card number with spaces
+  const formatCardNumber = (value) => {
+    const v = value.replace(/\s+/g, "").replace(/[^0-9]/gi, "");
+    const matches = v.match(/\d{4,16}/g);
+    const match = (matches && matches[0]) || "";
+    const parts = [];
 
-    const validateExpiryYear = (year) => {
-      if (!year) return "Year is required";
-      if (!/^\d+$/.test(year)) return "Year must contain only numbers";
-      if (year.length !== 2) return "Year must be 2 digits";
-      const currentYear = new Date().getFullYear() % 100;
-      const yearNum = parseInt(year);
-      if (yearNum < currentYear) return "Card has expired";
-      return "";
-    };
+    for (let i = 0, len = match.length; i < len; i += 4) {
+      parts.push(match.substring(i, i + 4));
+    }
 
-    // Simple month validation - same approach as year
-    const validateExpiryMonth = (month) => {
-      if (!month) return "Month is required";
-      if (!/^\d+$/.test(month)) return "Month must contain only numbers";
-      if (month.length !== 2) return "Month must be 2 digits";
-      const monthNum = parseInt(month);
-      if (monthNum < 1 || monthNum > 12) return "Month must be between 01-12";
-      return "";
-    };
+    if (parts.length) {
+      return parts.join(" ");
+    } else {
+      return v;
+    }
+  };
 
-    const validateCvv = (cvv) => {
-      if (!cvv) return "CVV is required";
-      if (!/^\d+$/.test(cvv)) return "CVV must contain only numbers";
-      if (cvv.length !== 3) return "CVV must be exactly 3 digits";
-      return "";
-    };
+  // Format expiry date with better deletion handling
+  const formatExpiry = (value, previousValue = "") => {
+    // Remove all non-numeric characters
+    const numericValue = value.replace(/\D/g, "");
 
-    const validatePin = (pin) => {
-      if (!pin) return "PIN is required";
-      if (!/^\d+$/.test(pin)) return "PIN must contain only numbers";
-      if (pin.length !== 4) return "PIN must be exactly 4 digits";
-      return "";
-    };
+    // If we're deleting (new value is shorter than previous)
+    if (value.length < previousValue.length) {
+      // If user deleted the slash, remove the digit before it too
+      if (
+        previousValue.includes("/") &&
+        !value.includes("/") &&
+        numericValue.length === 2
+      ) {
+        return numericValue.substring(0, 1);
+      }
+    }
 
-    // Enhanced handlers with validation
-    const handleNumberChange = useCallback(
-      (e) => {
-        const value = e.target.value.replace(/\D/g, "").slice(0, 19);
-        onCardDetailsChange("number", value);
-        if (touched.number) {
-          setErrors((prev) => ({ ...prev, number: validateCardNumber(value) }));
-        }
-      },
-      [onCardDetailsChange, touched.number]
-    );
+    // Format with slash after 2 digits
+    if (numericValue.length >= 2) {
+      return numericValue.substring(0, 2) + "/" + numericValue.substring(2, 4);
+    }
 
-    // Simple month handler - same logic as year
-    const handleExpiryMonthChange = useCallback(
-      (e) => {
-        const value = e.target.value.replace(/\D/g, "").slice(0, 2);
-        const currentExpiry = cardDetails.expiry || "/";
-        const [, year] = currentExpiry.split("/");
-        const newExpiry = `${value}/${year || ""}`;
-        onCardDetailsChange("expiry", newExpiry);
-      },
-      [onCardDetailsChange, cardDetails.expiry]
-    );
+    return numericValue;
+  };
 
-    // Simple year handler - same logic as month
-    const handleExpiryYearChange = useCallback(
-      (e) => {
-        const value = e.target.value.replace(/\D/g, "").slice(0, 2);
-        const currentExpiry = cardDetails.expiry || "/";
-        const [month] = currentExpiry.split("/");
-        const newExpiry = `${month || ""}/${value}`;
-        onCardDetailsChange("expiry", newExpiry);
-      },
-      [onCardDetailsChange, cardDetails.expiry]
-    );
+  // Validate card number using Luhn algorithm
+  const validateCardNumber = (number) => {
+    const cleanNumber = number.replace(/\D/g, "");
+    if (cleanNumber.length < 13 || cleanNumber.length > 19) return false;
 
-    const handleCvvChange = useCallback(
-      (e) => {
-        const value = e.target.value.replace(/\D/g, "").slice(0, 3);
-        onCardDetailsChange("cvv", value);
-        if (touched.cvv) {
-          setErrors((prev) => ({ ...prev, cvv: validateCvv(value) }));
-        }
-      },
-      [onCardDetailsChange, touched.cvv]
-    );
+    let sum = 0;
+    let shouldDouble = false;
 
-    const handlePinChange = useCallback(
-      (e) => {
-        const value = e.target.value.replace(/\D/g, "").slice(0, 4);
-        onCardDetailsChange("pin", value);
-        if (touched.pin) {
-          setErrors((prev) => ({ ...prev, pin: validatePin(value) }));
-        }
-      },
-      [onCardDetailsChange, touched.pin]
-    );
+    for (let i = cleanNumber.length - 1; i >= 0; i--) {
+      let digit = parseInt(cleanNumber.charAt(i), 10);
 
-    // Field blur handlers to trigger validation
-    const handleFieldBlur = useCallback(
-      (field) => {
-        setTouched((prev) => ({ ...prev, [field]: true }));
+      if (shouldDouble) {
+        if ((digit *= 2) > 9) digit -= 9;
+      }
 
-        switch (field) {
-          case "number":
-            setErrors((prev) => ({
-              ...prev,
-              number: validateCardNumber(cardDetails.number || ""),
-            }));
-            break;
-          case "expiryMonth":
-            const [month] = (cardDetails.expiry || "/").split("/");
-            setErrors((prev) => ({
-              ...prev,
-              expiryMonth: validateExpiryMonth(month || ""),
-            }));
-            break;
-          case "expiryYear":
-            const [, year] = (cardDetails.expiry || "/").split("/");
-            setErrors((prev) => ({
-              ...prev,
-              expiryYear: validateExpiryYear(year || ""),
-            }));
-            break;
-          case "cvv":
-            setErrors((prev) => ({
-              ...prev,
-              cvv: validateCvv(cardDetails.cvv || ""),
-            }));
-            break;
-          case "pin":
-            setErrors((prev) => ({
-              ...prev,
-              pin: validatePin(cardDetails.pin || ""),
-            }));
-            break;
-          default:
-            break;
-        }
-      },
-      [cardDetails]
-    );
+      sum += digit;
+      shouldDouble = !shouldDouble;
+    }
+
+    return sum % 10 === 0;
+  };
+
+  // Validate expiry date
+  const validateExpiry = (expiry) => {
+    if (!/^(0[1-9]|1[0-2])\/[0-9]{2}$/.test(expiry)) return false;
+
+    const [month, year] = expiry.split("/");
+    const currentDate = new Date();
+    const currentYear = currentDate.getFullYear() % 100;
+    const currentMonth = currentDate.getMonth() + 1;
+
+    const expYear = parseInt(year, 10);
+    const expMonth = parseInt(month, 10);
+
+    if (expYear < currentYear) return false;
+    if (expYear === currentYear && expMonth < currentMonth) return false;
+
+    return true;
+  };
+
+  // Validate CVV
+  const validateCVV = (cvv) => {
+    return /^[0-9]{3,4}$/.test(cvv);
+  };
+
+  // Handle input changes with validation
+  const handleInputChange = (field, value) => {
+    let formattedValue = value;
+
+    if (field === "number") {
+      formattedValue = formatCardNumber(value);
+    } else if (field === "expiry") {
+      formattedValue = formatExpiry(value, cardDetails.expiry || "");
+    }
+
+    const newCardDetails = { ...cardDetails, [field]: formattedValue };
+    onCardDetailsChange(newCardDetails);
+
+    // Mark field as touched
+    setTouched((prev) => ({ ...prev, [field]: true }));
+
+    // Validate fields only if they have been touched
+    const newErrors = { ...errors };
+
+    if (field === "number") {
+      if (formattedValue.length > 0 && !validateCardNumber(formattedValue)) {
+        newErrors.number = "Invalid card number";
+      } else {
+        delete newErrors.number;
+      }
+    } else if (field === "expiry") {
+      if (formattedValue.length > 0 && !validateExpiry(formattedValue)) {
+        newErrors.expiry = "Invalid expiry date";
+      } else {
+        delete newErrors.expiry;
+      }
+    } else if (field === "cvv") {
+      if (formattedValue.length > 0 && !validateCVV(formattedValue)) {
+        newErrors.cvv = "Invalid CVV";
+      } else {
+        delete newErrors.cvv;
+      }
+    }
+
+    setErrors(newErrors);
 
     // Check if form is valid
-    const isFormValid = () => {
-      const [month, year] = (cardDetails.expiry || "/").split("/");
-      return (
-        cardDetails.number &&
-        !validateCardNumber(cardDetails.number) &&
-        month &&
-        !validateExpiryMonth(month) &&
-        year &&
-        !validateExpiryYear(year) &&
-        cardDetails.cvv &&
-        !validateCvv(cardDetails.cvv) &&
-        cardDetails.pin &&
-        !validatePin(cardDetails.pin)
-      );
-    };
+    const isFormValid =
+      validateCardNumber(newCardDetails.number || "") &&
+      validateExpiry(newCardDetails.expiry || "") &&
+      validateCVV(newCardDetails.cvv || "");
 
-    // Error message component
-    const ErrorMessage = ({ error }) => {
-      if (!error) return null;
-      return (
-        <div
+    setIsValid(isFormValid);
+  };
+
+  // Handle key down for expiry field to improve backspace behavior
+  const handleExpiryKeyDown = (e) => {
+    const value = e.target.value;
+    const cursorPos = e.target.selectionStart;
+
+    // If backspace is pressed and cursor is right after the slash
+    if (e.key === "Backspace" && cursorPos === 3 && value.charAt(2) === "/") {
+      // Prevent default and manually remove the digit before the slash
+      e.preventDefault();
+      const newValue = value.substring(0, 1);
+      handleInputChange("expiry", newValue);
+
+      // Set cursor position after the remaining digit
+      setTimeout(() => {
+        e.target.setSelectionRange(1, 1);
+      }, 0);
+    }
+  };
+
+  // Handle field blur to show validation errors
+  const handleFieldBlur = (field) => {
+    setTouched((prev) => ({ ...prev, [field]: true }));
+
+    const newErrors = { ...errors };
+    const value = cardDetails[field] || "";
+
+    if (field === "number") {
+      if (value.length > 0 && !validateCardNumber(value)) {
+        newErrors.number = "Invalid card number";
+      } else {
+        delete newErrors.number;
+      }
+    } else if (field === "expiry") {
+      if (value.length > 0 && !validateExpiry(value)) {
+        newErrors.expiry = "Invalid expiry date";
+      } else {
+        delete newErrors.expiry;
+      }
+    } else if (field === "cvv") {
+      if (value.length > 0 && !validateCVV(value)) {
+        newErrors.cvv = "Invalid CVV";
+      } else {
+        delete newErrors.cvv;
+      }
+    }
+
+    setErrors(newErrors);
+  };
+
+  // Get card type from number
+  const getCardType = (number) => {
+    const cleanNumber = number.replace(/\D/g, "");
+    if (/^4/.test(cleanNumber)) return "visa";
+    if (/^5[1-5]/.test(cleanNumber)) return "mastercard";
+    if (/^3[47]/.test(cleanNumber)) return "amex";
+    return "unknown";
+  };
+
+  const cardType = getCardType(cardDetails.number || "");
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (isValid) {
+      onSubmit();
+    }
+  };
+
+  useEffect(() => {
+    if (cardNumberRef.current) {
+      cardNumberRef.current.focus();
+    }
+  }, []);
+
+  const inputStyle = {
+    width: "100%",
+    padding: "16px",
+    border: "2px solid #e2e8f0",
+    borderRadius: "12px",
+    fontSize: "16px",
+    transition: "all 0.3s ease",
+    backgroundColor: "#ffffff",
+    color: "#2d3748",
+    fontFamily:
+      "'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif",
+    outline: "none",
+  };
+
+  const inputErrorStyle = {
+    ...inputStyle,
+    borderColor: "#e53e3e",
+    backgroundColor: "#fed7d7",
+  };
+
+  return (
+    <div
+      style={{
+        backgroundColor: "#ffffff",
+        padding: "32px",
+        borderRadius: "20px",
+        boxShadow:
+          "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
+        border: "1px solid #e2e8f0",
+        maxWidth: "500px",
+        margin: "0 auto",
+        fontFamily:
+          "'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif",
+      }}
+    >
+      <div style={{ textAlign: "center", marginBottom: "24px" }}>
+        <h3
           style={{
-            color: "#dc2626",
-            fontSize: "12px",
-            marginTop: "4px",
-            padding: "4px 8px",
-            backgroundColor: "#fef2f2",
-            border: "1px solid #fecaca",
-            borderRadius: "4px",
-            display: "flex",
-            alignItems: "center",
-            gap: "4px",
+            fontSize: "24px",
+            fontWeight: "700",
+            color: "#2d3748",
+            margin: "0 0 8px 0",
           }}
         >
-          <span>⚠️</span>
-          {error}
-        </div>
-      );
-    };
-
-    // Get expiry month and year
-    const [expiryMonth = "", expiryYear = ""] = (
-      cardDetails.expiry || "/"
-    ).split("/");
-
-    return (
-      <div
-        style={{
-          padding: "20px 0",
-          animation: "slideInUp 0.4s ease-out",
-        }}
-      >
-        <div
+          💳 Card Payment
+        </h3>
+        <p
           style={{
-            textAlign: "center",
-            marginBottom: "25px",
-            padding: "20px",
-            background: "linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)",
-            borderRadius: "15px",
-            color: "white",
+            color: "#718096",
+            fontSize: "16px",
+            margin: "0",
           }}
         >
-          <div style={{ fontSize: "40px", marginBottom: "10px" }}>💳</div>
-          <h3 style={{ margin: "0 0 5px 0", fontSize: "20px" }}>
-            Card Payment
-          </h3>
-          <p style={{ margin: "0", opacity: "0.9", fontSize: "14px" }}>
-            Enter your card details securely
-          </p>
-        </div>
+          Enter your card details securely
+        </p>
+      </div>
 
+      <form onSubmit={handleSubmit}>
+        {/* Card Number */}
         <div style={{ marginBottom: "20px" }}>
           <label
             style={{
               display: "block",
-              marginBottom: "8px",
-              color: "#374151",
-              fontWeight: "600",
               fontSize: "14px",
+              fontWeight: "600",
+              color: "#4a5568",
+              marginBottom: "8px",
             }}
           >
-            💳 Card Number
+            Card Number
           </label>
-          <input
-            type="text"
-            name={`card-number-${Date.now()}`}
-            id={`card-number-${Date.now()}`}
-            placeholder="1234 5678 9012 3456"
-            value={cardDetails.number || ""}
-            onChange={handleNumberChange}
-            onBlur={() => handleFieldBlur("number")}
-            autoComplete="off"
-            autoCorrect="off"
-            autoCapitalize="off"
-            spellCheck="false"
-            style={{
-              width: "100%",
-              padding: "14px",
-              border: `2px solid ${
-                errors.number && touched.number ? "#dc2626" : "#e5e7eb"
-              }`,
-              borderRadius: "10px",
-              fontSize: "16px",
-              transition: "all 0.3s ease",
-              boxSizing: "border-box",
-            }}
-          />
-          <ErrorMessage error={touched.number ? errors.number : ""} />
+          <div style={{ position: "relative" }}>
+            <input
+              ref={cardNumberRef}
+              type="text"
+              placeholder="1234 5678 9012 3456"
+              value={cardDetails.number || ""}
+              onChange={(e) => handleInputChange("number", e.target.value)}
+              onBlur={() => handleFieldBlur("number")}
+              style={
+                errors.number && touched.number ? inputErrorStyle : inputStyle
+              }
+              maxLength="19"
+            />
+            {cardType !== "unknown" && (
+              <div
+                style={{
+                  position: "absolute",
+                  right: "16px",
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  fontSize: "12px",
+                  color: "#718096",
+                  textTransform: "uppercase",
+                  fontWeight: "600",
+                }}
+              >
+                {cardType}
+              </div>
+            )}
+          </div>
+          {errors.number && touched.number && (
+            <p
+              style={{
+                color: "#e53e3e",
+                fontSize: "12px",
+                marginTop: "4px",
+                margin: "4px 0 0 0",
+              }}
+            >
+              {errors.number}
+            </p>
+          )}
         </div>
 
-        <div style={{ display: "flex", gap: "15px", marginBottom: "20px" }}>
+        {/* Expiry and CVV */}
+        <div style={{ display: "flex", gap: "16px", marginBottom: "20px" }}>
           <div style={{ flex: 1 }}>
             <label
               style={{
                 display: "block",
-                marginBottom: "8px",
-                color: "#374151",
-                fontWeight: "600",
                 fontSize: "14px",
+                fontWeight: "600",
+                color: "#4a5568",
+                marginBottom: "8px",
               }}
             >
-              📅 Month
+              Expiry Date
             </label>
             <input
               type="text"
-              name={`card-month-${Date.now()}`}
-              id={`card-month-${Date.now()}`}
-              placeholder="MM"
-              value={expiryMonth}
-              onChange={handleExpiryMonthChange}
-              onBlur={() => handleFieldBlur("expiryMonth")}
-              autoComplete="off"
-              autoCorrect="off"
-              autoCapitalize="off"
-              spellCheck="false"
-              maxLength={2}
-              style={{
-                width: "100%",
-                padding: "14px",
-                border: `2px solid ${
-                  errors.expiryMonth && touched.expiryMonth
-                    ? "#dc2626"
-                    : "#e5e7eb"
-                }`,
-                borderRadius: "10px",
-                fontSize: "16px",
-                transition: "all 0.3s ease",
-                boxSizing: "border-box",
-              }}
+              placeholder="MM/YY"
+              value={cardDetails.expiry || ""}
+              onChange={(e) => handleInputChange("expiry", e.target.value)}
+              onKeyDown={handleExpiryKeyDown}
+              onBlur={() => handleFieldBlur("expiry")}
+              style={
+                errors.expiry && touched.expiry ? inputErrorStyle : inputStyle
+              }
+              maxLength="5"
             />
-            <ErrorMessage
-              error={touched.expiryMonth ? errors.expiryMonth : ""}
-            />
+            {errors.expiry && touched.expiry && (
+              <p
+                style={{
+                  color: "#e53e3e",
+                  fontSize: "12px",
+                  marginTop: "4px",
+                  margin: "4px 0 0 0",
+                }}
+              >
+                {errors.expiry}
+              </p>
+            )}
           </div>
           <div style={{ flex: 1 }}>
             <label
               style={{
                 display: "block",
-                marginBottom: "8px",
-                color: "#374151",
-                fontWeight: "600",
                 fontSize: "14px",
+                fontWeight: "600",
+                color: "#4a5568",
+                marginBottom: "8px",
               }}
             >
-              📅 Year
+              CVV
             </label>
             <input
               type="text"
-              name={`card-year-${Date.now()}`}
-              id={`card-year-${Date.now()}`}
-              placeholder="YY"
-              value={expiryYear}
-              onChange={handleExpiryYearChange}
-              onBlur={() => handleFieldBlur("expiryYear")}
-              autoComplete="off"
-              autoCorrect="off"
-              autoCapitalize="off"
-              spellCheck="false"
-              maxLength={2}
-              style={{
-                width: "100%",
-                padding: "14px",
-                border: `2px solid ${
-                  errors.expiryYear && touched.expiryYear
-                    ? "#dc2626"
-                    : "#e5e7eb"
-                }`,
-                borderRadius: "10px",
-                fontSize: "16px",
-                transition: "all 0.3s ease",
-                boxSizing: "border-box",
-              }}
-            />
-            <ErrorMessage error={touched.expiryYear ? errors.expiryYear : ""} />
-          </div>
-        </div>
-
-        <div style={{ display: "flex", gap: "15px", marginBottom: "20px" }}>
-          <div style={{ flex: 1 }}>
-            <label
-              style={{
-                display: "block",
-                marginBottom: "8px",
-                color: "#374151",
-                fontWeight: "600",
-                fontSize: "14px",
-              }}
-            >
-              🔒 CVV
-            </label>
-            <input
-              type="text"
-              name={`card-cvv-${Date.now()}`}
-              id={`card-cvv-${Date.now()}`}
               placeholder="123"
               value={cardDetails.cvv || ""}
-              onChange={handleCvvChange}
+              onChange={(e) => handleInputChange("cvv", e.target.value)}
               onBlur={() => handleFieldBlur("cvv")}
-              autoComplete="off"
-              autoCorrect="off"
-              autoCapitalize="off"
-              spellCheck="false"
-              style={{
-                width: "100%",
-                padding: "14px",
-                border: `2px solid ${
-                  errors.cvv && touched.cvv ? "#dc2626" : "#e5e7eb"
-                }`,
-                borderRadius: "10px",
-                fontSize: "16px",
-                transition: "all 0.3s ease",
-                boxSizing: "border-box",
-              }}
+              style={errors.cvv && touched.cvv ? inputErrorStyle : inputStyle}
+              maxLength="4"
             />
-            <ErrorMessage error={touched.cvv ? errors.cvv : ""} />
+            {errors.cvv && touched.cvv && (
+              <p
+                style={{
+                  color: "#e53e3e",
+                  fontSize: "12px",
+                  marginTop: "4px",
+                  margin: "4px 0 0 0",
+                }}
+              >
+                {errors.cvv}
+              </p>
+            )}
           </div>
         </div>
 
-        <div style={{ marginBottom: "25px" }}>
-          <label
-            style={{
-              display: "block",
-              marginBottom: "8px",
-              color: "#374151",
-              fontWeight: "600",
-              fontSize: "14px",
-            }}
-          >
-            🔑 Card PIN
-          </label>
-          <input
-            type="password"
-            name={`card-pin-${Date.now()}`}
-            id={`card-pin-${Date.now()}`}
-            placeholder="Enter your 4-digit PIN"
-            value={cardDetails.pin || ""}
-            onChange={handlePinChange}
-            onBlur={() => handleFieldBlur("pin")}
-            autoComplete="off"
-            autoCorrect="off"
-            autoCapitalize="off"
-            spellCheck="false"
-            style={{
-              width: "100%",
-              padding: "14px",
-              border: `2px solid ${
-                errors.pin && touched.pin ? "#dc2626" : "#e5e7eb"
-              }`,
-              borderRadius: "10px",
-              fontSize: "16px",
-              transition: "all 0.3s ease",
-              boxSizing: "border-box",
-            }}
-          />
-          <ErrorMessage error={touched.pin ? errors.pin : ""} />
+        {/* Security Info */}
+        <div
+          style={{
+            backgroundColor: "#f7fafc",
+            padding: "16px",
+            borderRadius: "12px",
+            marginBottom: "24px",
+            border: "1px solid #e2e8f0",
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            <span style={{ fontSize: "16px" }}>🔒</span>
+            <span
+              style={{
+                fontSize: "14px",
+                color: "#4a5568",
+                fontWeight: "500",
+              }}
+            >
+              Your payment is secured with 256-bit SSL encryption
+            </span>
+          </div>
         </div>
 
+        {/* Action Buttons */}
         <div style={{ display: "flex", gap: "12px" }}>
           <button
+            type="button"
             onClick={onBack}
             style={{
               flex: 1,
-              padding: "14px",
-              background: "#f3f4f6",
-              color: "#374151",
-              border: "none",
-              borderRadius: "10px",
+              padding: "16px 24px",
+              backgroundColor: "#f7fafc",
+              color: "#4a5568",
+              border: "2px solid #e2e8f0",
+              borderRadius: "12px",
               fontSize: "16px",
               fontWeight: "600",
               cursor: "pointer",
               transition: "all 0.3s ease",
+              fontFamily:
+                "'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif",
+            }}
+            onMouseOver={(e) => {
+              e.target.style.backgroundColor = "#edf2f7";
+              e.target.style.borderColor = "#cbd5e0";
+            }}
+            onMouseOut={(e) => {
+              e.target.style.backgroundColor = "#f7fafc";
+              e.target.style.borderColor = "#e2e8f0";
             }}
           >
             ← Back
           </button>
           <button
-            onClick={onSubmit}
-            disabled={!isFormValid}
+            type="submit"
+            disabled={!isValid}
             style={{
               flex: 2,
-              padding: "14px",
-              background: !isFormValid
-                ? "#d1d5db"
-                : "linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)",
+              padding: "16px 24px",
+              backgroundColor: isValid ? "#48bb78" : "#a0aec0",
               color: "white",
               border: "none",
-              borderRadius: "10px",
+              borderRadius: "12px",
               fontSize: "16px",
               fontWeight: "600",
-              cursor: !isFormValid ? "not-allowed" : "pointer",
+              cursor: isValid ? "pointer" : "not-allowed",
               transition: "all 0.3s ease",
+              fontFamily:
+                "'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif",
+            }}
+            onMouseOver={(e) => {
+              if (isValid) {
+                e.target.style.backgroundColor = "#38a169";
+                e.target.style.transform = "translateY(-1px)";
+              }
+            }}
+            onMouseOut={(e) => {
+              if (isValid) {
+                e.target.style.backgroundColor = "#48bb78";
+                e.target.style.transform = "translateY(0)";
+              }
             }}
           >
-            💳 Pay KES {amount.toLocaleString()}
+            💳 Pay KES {amount?.toLocaleString() || "0"}
           </button>
         </div>
-      </div>
-    );
-  }
-);
+      </form>
+    </div>
+  );
+};
 
 export default StableCardForm;
